@@ -1,0 +1,88 @@
+/* 通用重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 布局与字体 */
+html, body {
+  height: 100%;
+  font-family: "Arial", sans-serif;
+  color: white;
+  overflow: hidden; /* 不出现滚动条 */
+  margin: 0;
+}
+
+/* 粒子动画背景 */
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  /* 背景渐变 */
+  background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+  z-index: -1; /* 保证背景在底层 */
+}
+
+/* 主容器：自适应整个视窗 */
+.container-fluid {
+  height: 100vh;
+}
+
+/* 垂直居中容器 */
+.center-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* 头像样式 */
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+}
+
+/* 标题/文字样式 */
+h1 {
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(to right, #6dd5ed, #2193b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* 链接按钮区域 */
+.links {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+/* 单个链接按钮 */
+.link-btn {
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+  border: 2px solid white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.link-btn:hover {
+  transform: scale(1.05);
+  background-color: rgba(255,255,255,0.1);
+}

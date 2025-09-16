@@ -1,16 +1,58 @@
-<p>Welcome to My Personal Space!</p>
-<p>Hello! I'm Li Shuhao, currently working as a Technical Business (TB) Intern at 51world. My passion lies in Geographic Information Systems (GIS), data analysis, and machine learning, where I combine my technical expertise with a deep interest in urban analytics and sustainable development.</p>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>李书昊 - 个人主页</title>
 
-<p><strong>🌍 Industry Focus:</strong> I specialize in GIS software development, WebGIS, spatial data analysis, and remote sensing. My work often intersects with urban planning, environmental sustainability, and data science, where I use tools like ArcGIS, QGIS, and Python to analyze and visualize complex spatial data. I am particularly interested in applying machine learning to improve predictive models for urbanization trends, soil erosion, and other environmental factors.</p>
-<p><strong>🛠️ Skills & Expertise:</strong> Data Analysis: Expertise in Python, R, and machine learning libraries such as scikit-learn, TensorFlow, and PyTorch. Skilled in data visualization using Tableau, Matplotlib, and ggplot2.
-Web Development: Proficient in HTML, CSS, JavaScript, and OpenLayers for building interactive web maps and GIS platforms.
-GIS & Remote Sensing: Advanced knowledge in ArcGIS, GeoPandas, and remote sensing software like ENVI for analyzing satellite imagery and environmental data.
-Machine Learning: Experienced in applying regression, classification, and clustering algorithms to geographic datasets.</p>
-<p><strong>🎓 Academic Background:</strong>Master’s: MSc in Geographic Data Science and Spatial Analytics, University of Bristol (2023-2024)
-Bachelor’s: Geographic Information Science, Jiangxi University of Science and Technology (2019-2023)</p>
-<p><strong>🎯 Achievements:</strong>Awarded multiple academic scholarships for excellence, including the Zhang Wenhai Academician Scholarship and First-class Scholarship.
-Recognized in GIS competitions, winning the Second Prize at the "Yizhirui Cup" National University GIS Software Development Competition.
-Public speaker: Winner of the National English Speech Contest ("Foreign Languages Society National Talent Cup").</p>
-<p><strong>🎮 Personal Interests:</strong> Beyond academia, I’m passionate about exploring the intersection of technology and sustainability. When I'm not analyzing data or coding, I enjoy participating in community volunteer work, sports, and indulging in my love for video games, particularly RPGs.</p>
+  <!-- 引入Bootstrap（可选，如果想使用其排版和栅格） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-<p>I hope you find something of interest here!</p>
+  <!-- 引入自定义CSS -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+  <!-- 粒子动画背景 -->
+  <div id="particles-js"></div>
+
+  <!-- 页面主体容器 -->
+  <div class="container-fluid">
+    <div class="center-content">
+      <!-- 个人头像 -->
+      <img src="./assets/fig/pic.jpg" alt="头像" class="profile-pic">
+
+      <!-- 简要介绍 -->
+      <h1>你好，我是李书昊</h1>
+      <p>专注于地理数据科学、GIS开发和机器学习</p>
+      
+      <!-- 四个链接按钮 -->
+      <div class="links">
+        <a href="./about.html" class="link-btn">About</a>
+        <a href="./projects.html" class="link-btn">Projects</a>
+        <a href="./publications.html" class="link-btn">Publications</a>
+        <a href="./CV.html" class="link-btn">CV</a><br>
+ 
+        
+      </div>
+      <br>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <a href="https://github.com/Coldzera-010825" class="link-btn" target="_blank">
+          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="width: 24px; height: 24px;">
+        </a>
+        <a href="https://www.linkedin.com/in/shuhao-li-3a347a31b/" class="link-btn" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 24px; height: 24px;">
+        </a>
+        <a href="https://www.instagram.com/your-instagram-username" class="link-btn" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="width: 24px; height: 24px;">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引入粒子动画库与自定义脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="./assets/js/动态粒子.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,90 @@
+/* 全局样式 */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9; /* 简洁淡色背景 */
+    font-family: "Microsoft YaHei", sans-serif;
+    color: #333;
+  }
+  
+  /* 导航栏（最上方一行） */
+  .top-nav {
+    border-bottom: 1px solid #ccc; /* 细线分隔 */
+    background-color: #fff; /* 与页面背景略区分 */
+  }
+  
+  .nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline; /* 悬停效果 */
+  }
+  
+  /* 左侧个人信息区域 */
+  .left-box {
+    background-color: #fff; 
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  
+  .profile-img {
+    width: 200px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #eee;
+  }
+  
+  /* 右侧主要内容区域 */
+  .right-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  
+  h3 {
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  /* 让标题与段落或列表之间有一点空隙 */
+  section + section {
+    margin-top: 20px;
+  }
+
+  /* 淡入动画 */
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.6s ease forwards;
+  }
+  
+  /* 淡出动画 */
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  
+  .fade-out {
+    animation: fadeOut 0.6s ease forwards;
+  }
+  
+  
