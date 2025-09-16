@@ -2,29 +2,62 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>About - 李书昊</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Publications - 李书昊</title>
+        <!-- 视口配置，保证移动端自适应 -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- 引入Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <!-- 引入自定义CSS -->
+        <link rel="stylesheet" href="./assets/css/about.css">
 </head>
 <body>
-  <nav class="navbar">
-    <ul>
-      <li><a href="index.html">About</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="projects.html">Projects</a></li>
-      <li><a href="publications.html">Publications</a></li>
-      <li><a href="CV.html">CV</a></li>
-    </ul>
-  </nav>
+  <!-- 导航栏（最上方一行） -->
+<nav class="d-flex justify-content-center align-items-center py-2 top-nav">
+  <!-- 这里可根据实际页面链接进行修改 -->
+  <a href="./index.html" class="mx-3 nav-link">Home</a>
+  <a href="./about.html" class="mx-3 nav-link">About</a>
+  <a href="./projects.html" class="mx-3 nav-link">Projects</a>
+  <a href="./publications.html" class="mx-3 nav-link">Publications</a>
+  <a href="./CV.html" class="mx-3 nav-link">CV</a>
+</nav>
 
-  <div class="container">
-    <section id="CV">
-      <h1>个人简历</h1>
-      <p> </p>
-    </section>
-  </div>
+  <!-- 主体内容 -->
+  <div class="container py-4">
+    <div class="row">
+      <!-- 左侧个人信息 -->
+    <div class="col-md-4 mb-4">
+      <div class="left-box text-center p-3">
+        <!-- 个人照片 -->
+        <img src="./assets/fig/pic.jpg" alt="李书昊" class="profile-img mb-3">
+        <!-- 姓名与称号/定位 -->
+        <h2 class="mb-0">Shuhao Li</h2>
+        <p class="text-muted">Geospatial Data Science / Spatial Environmental Science / Machine Learning</p>
+        <hr>
+        <!-- 简要个人信息，比如所在地或联系信息 -->
+        <p class="mb-1">Wenzhou, Zhejiang Province, China</p>
+        <p class="mb-1">Email: <a href="mailto:lishuhao010825@163.com">lishuhao010825@163.com</a></p>
+        <p class="mb-0">Msc @ <a href="https://www.bristol.ac.uk" target="_blank">University of Bristol</a></p>
+        <p class="mb-0">BSc @ <a href="https://www.jxust.edu.cn/" target="_blank">Jiangxi University of Science and Technology</a></p>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="right-box p-3">
+      <h3 class="mb-3">Curriculum Vitae</h3>
+      <iframe src="./assets/fig/Shuhao%20LI_CV%204docx.pdf" width="100%" height="700px" style="border:1px solid #ccc;">
+        Your browser does not support iframes. 
+        <a href="./assets/fig/Shuhao%20LI_CV%204docx.pdf">Download CV</a>
+      </iframe>
+      </div>
+    </div>
+
+  <script src="./assets/js/fade.js"></script>
+  <script src="./assets/js/scroll-animate.js"></script>
+  <!-- <script src="./js/smooth-scroll.js"></script> -->
+  <script src="./assets/js/跳转脚本.js"></script>
 
   <footer>
-    <p>© 2024 李书昊. All rights reserved.</p>
+    <p>© 2025 Shuhao Li. All rights reserved.</p>
   </footer>
 </body>
 </html>
