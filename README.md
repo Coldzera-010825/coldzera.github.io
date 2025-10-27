@@ -1,6 +1,6 @@
 # Personal Academic Website
 
-This repository hosts my **personal academic website**, designed to showcase my research, projects, publications, and professional background.  
+This repository hosts my **personal academic website** ([https://coldzera-010825.github.io/coldzera.github.io/](https://coldzera-010825.github.io/coldzera.github.io/)), designed to showcase my research, projects, publications, and professional background.  
 The website serves as both an academic portfolio and a platform for sharing my interests in **geospatial data science, sustainable urban development, and social equity in cities**.
 
 ## 🌍 About the Website
@@ -22,7 +22,7 @@ By leveraging **multi-source data fusion, machine learning, and geospatial model
 - **Data Visualization:** Python (GeoPandas, Matplotlib, Plotly), R (ggplot2, tmap), WebGIS tools  
 
 ## 🚀 How to Use
-If you’d like to build a similar academic website:  
+If you'd like to build a similar academic website:  
 1. Clone this repository:  
    ```bash
    git clone https://github.com/yourusername/yourwebsite.git
