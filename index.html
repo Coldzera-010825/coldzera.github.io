@@ -1,64 +1,73 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>李书昊 - 个人主页</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shuhao Li — Geospatial Data Science</title>
+  <meta name="description" content="Shuhao Li — researcher in geospatial data science, urban sustainability, and machine learning." />
 
-  <!-- 引入Bootstrap（可选，如果想使用其排版和栅格） -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
-  <!-- 引入自定义CSS -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <!-- Design system -->
+  <link rel="stylesheet" href="./assets/css/design-system.css" />
 </head>
-
 <body>
-  <!-- 粒子动画背景 -->
-  <div id="particles-js"></div>
 
-  <!-- 页面主体容器 -->
-  <div class="container-fluid">
-    <div class="center-content">
-      <!-- 个人头像 -->
-      <div style="margin-top: 60px; display: flex; justify-content: center;">
-        <img src="./assets/fig/pic2.jpg" alt="头像" class="profile-pic" style="width: 220px; height: 220px; border-radius: 50%; border: 4px solid #ddd; object-position: 60% 60%; object-fit: cover;">
-      </div>
+  <!-- Nav -->
+  <nav class="pw-nav">
+    <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
+    <div class="pw-nav-links">
+      <a class="pw-nav-link is-active" href="./index.html">Home</a>
+      <a class="pw-nav-link" href="./about.html">About</a>
+      <a class="pw-nav-link" href="./projects.html">Projects</a>
+      <a class="pw-nav-link" href="./publications.html">Publications</a>
+      <a class="pw-nav-link" href="./CV.html">CV</a>
+    </div>
+    <span class="pw-nav-divider"></span>
+  </nav>
 
-      <!-- 简要介绍 -->
-      <h1>Hi, I'm Shuhao Li!</h1>
-      <p>
-        Passionate about geospatial data science,<br>
-        GIS development, and machine learning.<br>
-        Always exploring new ideas and building cool things with maps and data!
+  <!-- Hero -->
+  <section class="pw-hero">
+    <!-- Paper grain texture -->
+    <div class="pw-hero-grain" aria-hidden="true"></div>
+
+    <!-- Coordinate lattice -->
+    <svg class="pw-hero-lattice" viewBox="0 0 600 600" preserveAspectRatio="xMinYMax slice" aria-hidden="true">
+      <defs>
+        <pattern id="hp-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+          <path d="M 48 0 L 0 0 0 48" fill="none" stroke="oklch(0.13 0.01 275)" stroke-width="0.4"/>
+        </pattern>
+      </defs>
+      <rect width="600" height="600" fill="url(#hp-grid)"/>
+    </svg>
+
+    <!-- Globe (mounted by globe.js) -->
+    <div class="pw-hero-globe" id="globe-mount" aria-hidden="true"></div>
+
+    <!-- Title -->
+    <div class="pw-hero-title-block">
+      <h1 class="pw-hero-title" data-reveal>
+        Geospatial data, urban<br/>
+        equity &amp; resilient cities
+      </h1>
+      <p class="pw-hero-sub">
+        Shuhao&nbsp;Li &nbsp;·&nbsp; MSc, University of Bristol<br/>
+        Spatial Data Science &nbsp;·&nbsp; Machine Learning &nbsp;·&nbsp; Remote Sensing
       </p>
-      
-      <!-- 四个链接按钮 -->
-      <div class="links">
-        <a href="./about.html" class="link-btn">About</a>
-        <a href="./projects.html" class="link-btn">Projects</a>
-        <a href="./publications.html" class="link-btn">Publications</a>
-        <a href="./CV.html" class="link-btn">CV</a><br>
- 
-        
-      </div>
-      <br>
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <a href="https://github.com/Coldzera-010825" class="link-btn" target="_blank">
-          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="width: 24px; height: 24px;">
-        </a>
-        <a href="https://www.linkedin.com/in/shuhao-li-3a347a31b/" class="link-btn" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 24px; height: 24px;">
-        </a>
-        <a href="https://www.instagram.com/your-instagram-username" class="link-btn" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="width: 24px; height: 24px;">
-        </a>
+      <div class="pw-hero-actions">
+        <a class="pw-cta is-primary" href="./about.html">About&nbsp;the&nbsp;research →</a>
+        <a class="pw-cta" href="./publications.html">Publications</a>
+        <a class="pw-cta" href="https://github.com/Coldzera-010825" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 引入粒子动画库与自定义脚本 -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script src="./assets/js/动态粒子.js"></script>
-  
+  <!-- Scripts (loaded in Stage 2) -->
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+  <script src="./assets/js/globe.js" defer></script>
+  <script src="./assets/js/reveal-words.js" defer></script>
 </body>
 </html>

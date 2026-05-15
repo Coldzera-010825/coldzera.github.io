@@ -1,93 +1,86 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Publications - 李书昊</title>
-        <!-- 视口配置，保证移动端自适应 -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publications — Shuhao Li</title>
+  <meta name="description" content="Peer-reviewed publications by Shuhao Li." />
 
-        <!-- 引入Bootstrap -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <!-- 引入自定义CSS -->
-        <link rel="stylesheet" href="./assets/css/about.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./assets/css/design-system.css" />
 </head>
 <body>
-  <!-- 导航栏（最上方一行） -->
-<nav class="d-flex justify-content-center align-items-center py-2 top-nav">
-  <!-- 这里可根据实际页面链接进行修改 -->
-  <a href="./index.html" class="mx-3 nav-link">Home</a>
-  <a href="./about.html" class="mx-3 nav-link">About</a>
-  <a href="./projects.html" class="mx-3 nav-link">Projects</a>
-  <a href="./publications.html" class="mx-3 nav-link">Publications</a>
-  <a href="./CV.html" class="mx-3 nav-link">CV</a>
-</nav>
 
-  <!-- 主体内容 -->
-  <div class="container py-4">
-    <div class="row">
-      <!-- 左侧个人信息 -->
-    <div class="col-md-4 mb-4">
-      <div class="left-box text-center p-3">
-        <!-- 个人照片 -->
-        <img src="./assets/fig/pic.jpg" alt="李书昊" class="profile-img mb-3">
-        <!-- 姓名与称号/定位 -->
-        <h2 class="mb-0">Shuhao Li</h2>
-        <p class="text-muted">Geospatial Data Science / Spatial Environmental Science / Machine Learning</p>
-        <hr>
-        <!-- 简要个人信息，比如所在地或联系信息 -->
-        <p class="mb-1">Wenzhou, Zhejiang Province, China</p>
-        <p class="mb-1">Email: <a href="mailto:lishuhao010825@163.com">lishuhao010825@163.com</a></p>
-        <p class="mb-0">MSc @ <a href="https://www.bristol.ac.uk" target="_blank">University of Bristol</a></p>
-        <p class="mb-0">BSc @ <a href="https://www.jxust.edu.cn/" target="_blank">Jiangxi University of Science and Technology</a></p>
-      </div>
+  <nav class="pw-nav">
+    <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
+    <div class="pw-nav-links">
+      <a class="pw-nav-link" href="./index.html">Home</a>
+      <a class="pw-nav-link" href="./about.html">About</a>
+      <a class="pw-nav-link" href="./projects.html">Projects</a>
+      <a class="pw-nav-link is-active" href="./publications.html">Publications</a>
+      <a class="pw-nav-link" href="./CV.html">CV</a>
+    </div>
+    <span class="pw-nav-divider"></span>
+  </nav>
+
+  <section class="pw-page-wrapper">
+    <div style="max-width: 720px; margin: 0 auto 56px; text-align: center;">
+      <p class="eyebrow" style="margin-bottom: 18px;">Publications</p>
+      <h1 class="section-title" data-reveal>
+        Peer-reviewed work
+      </h1>
+      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65;">
+        Journal articles and conference papers, most recent first.
+      </p>
     </div>
 
-      <!-- 右侧发表内容 -->
-      <div class="col-md-8">
-        <h4 class="mb-3">Publications</h4>
-        <hr>
+    <div class="pub-wrapper">
 
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Publications</h5>
-            <ul style="list-style-type: disc; padding-left: 20px;">
-              <li style="margin-bottom: 1.5em;">
-              <a href="https://www.researchgate.net/publication/364790236_Study_of_urbanization_trend_prediction_in_Nanchang_based_on_CA-Markov_model" target="_blank">
-                Li, Shuhao. "Study of urbanization trend prediction in Nanchang based on CA-Markov model." E3S Web of Conferences. Vol. 358. EDP Sciences, 2022.
-              </a>
-              </li>
-              <li style="margin-bottom: 1.5em;">
-              <a href="https://acsess.onlinelibrary.wiley.com/doi/abs/10.1002/saj2.20633" target="_blank">
-                Li, S., Kang, J., Ye, J., He, Y., & Wang, H. (2024). Analysis of soil erosion changes and influencing factors based on the CSLE model and GeoDector in Dongjiang River Basin of China. Soil Science Society of America Journal, 88(3), 718–729. https://doi.org/10.1002/saj2.20633
-              </a>
-              </li>
-              <li style="margin-bottom: 1.5em;">
-              <a href="https://onlinelibrary.wiley.com/doi/10.1002/ldr.70043" target="_blank">
-                Xia, L., C. Ren, S. Li, et al. 2025. “ Spatiotemporal Characteristics of Carbon Emissions in the Pearl River Basin, China: From the Perspective of Land Use and Biomass Burning.” Land Degradation & Development 1–23. https://doi.org/10.1002/ldr.70043
-              </a>
-              </li>
-            </ul>
-            </ul>
-          </div>
+      <div class="pub-year">2025</div>
+
+      <article class="pub-item">
+        <a class="pub-item-title" href="https://onlinelibrary.wiley.com/doi/10.1002/ldr.70043" target="_blank" rel="noopener">
+          Spatiotemporal Characteristics of Carbon Emissions in the Pearl River Basin, China: From the Perspective of Land Use and Biomass Burning
+        </a>
+        <div class="pub-item-meta">
+          Xia, L., C. Ren, <strong>S. Li</strong>, et al. &nbsp;·&nbsp; <em>Land Degradation &amp; Development</em>, 2025, 1–23
         </div>
+        <div class="pub-item-doi">DOI: 10.1002/ldr.70043</div>
+      </article>
 
 
+      <div class="pub-year">2024</div>
 
-      </div>
+      <article class="pub-item">
+        <a class="pub-item-title" href="https://acsess.onlinelibrary.wiley.com/doi/abs/10.1002/saj2.20633" target="_blank" rel="noopener">
+          Analysis of soil erosion changes and influencing factors based on the CSLE model and GeoDetector in the Dongjiang River Basin of China
+        </a>
+        <div class="pub-item-meta">
+          <strong>Li, S.</strong>, Kang, J., Ye, J., He, Y., &amp; Wang, H. &nbsp;·&nbsp; <em>Soil Science Society of America Journal</em>, 88(3), 718–729
+        </div>
+        <div class="pub-item-doi">DOI: 10.1002/saj2.20633</div>
+      </article>
+
+
+      <div class="pub-year">2022</div>
+
+      <article class="pub-item">
+        <a class="pub-item-title" href="https://www.researchgate.net/publication/364790236_Study_of_urbanization_trend_prediction_in_Nanchang_based_on_CA-Markov_model" target="_blank" rel="noopener">
+          Study of urbanization trend prediction in Nanchang based on CA-Markov model
+        </a>
+        <div class="pub-item-meta">
+          <strong>Li, S.</strong> &nbsp;·&nbsp; <em>E3S Web of Conferences</em>, Vol. 358, EDP Sciences, 2022
+        </div>
+      </article>
+
     </div>
-  </div>
-  <script src="./assets/js/fade.js"></script>
-  <script src="./assets/js/scroll-animate.js"></script>
-  <!-- <script src="./js/smooth-scroll.js"></script> -->
-  <script src="./assets/js/跳转脚本.js"></script>
+  </section>
 
-   <footer>
-      <p>© 2025 Shuhao Li. All rights reserved.</p>
-   </footer>
+  <footer class="pw-footer">© 2025 Shuhao Li</footer>
 
-  <!-- Bootstrap脚本 -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
+  <script src="./assets/js/reveal-words.js" defer></script>
 </body>
 </html>
