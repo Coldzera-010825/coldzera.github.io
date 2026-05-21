@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -11,28 +11,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="./assets/css/design-system.css" />
+
+  <!-- Page transition curtain (must run before body paints to avoid flash) -->
+  <script src="./assets/js/page-transition.js"></script>
 </head>
 <body>
 
   <nav class="pw-nav">
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
-      <a class="pw-nav-link" href="./index.html">Home</a>
-      <a class="pw-nav-link" href="./about.html">About</a>
-      <a class="pw-nav-link" href="./projects.html">Projects</a>
-      <a class="pw-nav-link is-active" href="./publications.html">Publications</a>
-      <a class="pw-nav-link" href="./CV.html">CV</a>
+      <a class="pw-nav-link" href="./index.html"
+         data-i18n-en="Home" data-i18n-zh="首页">Home</a>
+      <a class="pw-nav-link" href="./about.html"
+         data-i18n-en="About" data-i18n-zh="关于">About</a>
+      <a class="pw-nav-link" href="./research.html"
+         data-i18n-en="Research" data-i18n-zh="研究">Research</a>
+      <a class="pw-nav-link" href="./projects.html"
+         data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+      <a class="pw-nav-link is-active" href="./publications.html"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+      <a class="pw-nav-link" href="./CV.html"
+         data-i18n-en="CV" data-i18n-zh="简历">CV</a>
     </div>
     <span class="pw-nav-divider"></span>
   </nav>
 
   <section class="pw-page-wrapper">
     <div style="max-width: 720px; margin: 0 auto 56px; text-align: center;">
-      <p class="eyebrow" style="margin-bottom: 18px;">Publications</p>
-      <h1 class="section-title" data-reveal>
+      <p class="eyebrow" style="margin-bottom: 18px;"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</p>
+      <h1 class="section-title" data-reveal
+          data-i18n-en="Peer-reviewed work" data-i18n-zh="同行评审成果">
         Peer-reviewed work
       </h1>
-      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65;">
+      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65;"
+         data-i18n-en="Journal articles and conference papers, most recent first."
+         data-i18n-zh="期刊论文与会议论文，按时间倒序排列。">
         Journal articles and conference papers, most recent first.
       </p>
     </div>
@@ -42,10 +56,14 @@
       <div class="pub-year">2025</div>
 
       <article class="pub-item">
-        <a class="pub-item-title" href="https://onlinelibrary.wiley.com/doi/10.1002/ldr.70043" target="_blank" rel="noopener">
+        <a class="pub-item-title" href="https://onlinelibrary.wiley.com/doi/10.1002/ldr.70043" target="_blank" rel="noopener"
+           data-i18n-en="Spatiotemporal Characteristics of Carbon Emissions in the Pearl River Basin, China: From the Perspective of Land Use and Biomass Burning"
+           data-i18n-zh="基于土地利用与生物质燃烧视角的中国珠江流域碳排放时空特征研究">
           Spatiotemporal Characteristics of Carbon Emissions in the Pearl River Basin, China: From the Perspective of Land Use and Biomass Burning
         </a>
-        <div class="pub-item-meta">
+        <div class="pub-item-meta" data-i18n-html
+             data-i18n-en="Xia, L., C. Ren, <strong>S. Li</strong>, et al. &nbsp;·&nbsp; <em>Land Degradation &amp; Development</em>, 2025, 1–23"
+             data-i18n-zh="Xia, L., C. Ren, <strong>S. Li</strong>, et al. &nbsp;·&nbsp; <em>Land Degradation &amp; Development</em>，2025，1–23">
           Xia, L., C. Ren, <strong>S. Li</strong>, et al. &nbsp;·&nbsp; <em>Land Degradation &amp; Development</em>, 2025, 1–23
         </div>
         <div class="pub-item-doi">DOI: 10.1002/ldr.70043</div>
@@ -55,10 +73,14 @@
       <div class="pub-year">2024</div>
 
       <article class="pub-item">
-        <a class="pub-item-title" href="https://acsess.onlinelibrary.wiley.com/doi/abs/10.1002/saj2.20633" target="_blank" rel="noopener">
+        <a class="pub-item-title" href="https://acsess.onlinelibrary.wiley.com/doi/abs/10.1002/saj2.20633" target="_blank" rel="noopener"
+           data-i18n-en="Analysis of soil erosion changes and influencing factors based on the CSLE model and GeoDetector in the Dongjiang River Basin of China"
+           data-i18n-zh="基于 CSLE 模型与 GeoDetector 的东江流域土壤侵蚀变化及影响因素分析">
           Analysis of soil erosion changes and influencing factors based on the CSLE model and GeoDetector in the Dongjiang River Basin of China
         </a>
-        <div class="pub-item-meta">
+        <div class="pub-item-meta" data-i18n-html
+             data-i18n-en="<strong>Li, S.</strong>, Kang, J., Ye, J., He, Y., &amp; Wang, H. &nbsp;·&nbsp; <em>Soil Science Society of America Journal</em>, 88(3), 718–729"
+             data-i18n-zh="<strong>Li, S.</strong>, Kang, J., Ye, J., He, Y., &amp; Wang, H. &nbsp;·&nbsp; <em>Soil Science Society of America Journal</em>，88(3)，718–729">
           <strong>Li, S.</strong>, Kang, J., Ye, J., He, Y., &amp; Wang, H. &nbsp;·&nbsp; <em>Soil Science Society of America Journal</em>, 88(3), 718–729
         </div>
         <div class="pub-item-doi">DOI: 10.1002/saj2.20633</div>
@@ -68,10 +90,14 @@
       <div class="pub-year">2022</div>
 
       <article class="pub-item">
-        <a class="pub-item-title" href="https://www.researchgate.net/publication/364790236_Study_of_urbanization_trend_prediction_in_Nanchang_based_on_CA-Markov_model" target="_blank" rel="noopener">
+        <a class="pub-item-title" href="https://www.researchgate.net/publication/364790236_Study_of_urbanization_trend_prediction_in_Nanchang_based_on_CA-Markov_model" target="_blank" rel="noopener"
+           data-i18n-en="Study of urbanization trend prediction in Nanchang based on CA-Markov model"
+           data-i18n-zh="基于 CA-Markov 模型的南昌市城市化趋势预测研究">
           Study of urbanization trend prediction in Nanchang based on CA-Markov model
         </a>
-        <div class="pub-item-meta">
+        <div class="pub-item-meta" data-i18n-html
+             data-i18n-en="<strong>Li, S.</strong> &nbsp;·&nbsp; <em>E3S Web of Conferences</em>, Vol. 358, EDP Sciences, 2022"
+             data-i18n-zh="<strong>Li, S.</strong> &nbsp;·&nbsp; <em>E3S Web of Conferences</em>，第 358 卷，EDP Sciences，2022">
           <strong>Li, S.</strong> &nbsp;·&nbsp; <em>E3S Web of Conferences</em>, Vol. 358, EDP Sciences, 2022
         </div>
       </article>
@@ -79,8 +105,11 @@
     </div>
   </section>
 
-  <footer class="pw-footer">© 2025 Shuhao Li</footer>
+  <footer class="pw-footer"
+          data-i18n-en="© 2026 Shuhao Li"
+          data-i18n-zh="© 2026 李书昊">© 2025 Shuhao Li</footer>
 
+  <script src="./assets/js/i18n.js" defer></script>
   <script src="./assets/js/reveal-words.js" defer></script>
 </body>
 </html>

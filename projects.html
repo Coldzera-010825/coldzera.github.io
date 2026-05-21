@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -11,64 +11,79 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="./assets/css/design-system.css" />
+
+  <!-- Page transition curtain (must run before body paints to avoid flash) -->
+  <script src="./assets/js/page-transition.js"></script>
 </head>
 <body>
 
   <nav class="pw-nav">
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
-      <a class="pw-nav-link" href="./index.html">Home</a>
-      <a class="pw-nav-link" href="./about.html">About</a>
-      <a class="pw-nav-link is-active" href="./projects.html">Projects</a>
-      <a class="pw-nav-link" href="./publications.html">Publications</a>
-      <a class="pw-nav-link" href="./CV.html">CV</a>
+      <a class="pw-nav-link" href="./index.html"
+         data-i18n-en="Home" data-i18n-zh="首页">Home</a>
+      <a class="pw-nav-link" href="./about.html"
+         data-i18n-en="About" data-i18n-zh="关于">About</a>
+      <a class="pw-nav-link" href="./research.html"
+         data-i18n-en="Research" data-i18n-zh="研究">Research</a>
+      <a class="pw-nav-link is-active" href="./projects.html"
+         data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+      <a class="pw-nav-link" href="./publications.html"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+      <a class="pw-nav-link" href="./CV.html"
+         data-i18n-en="CV" data-i18n-zh="简历">CV</a>
     </div>
     <span class="pw-nav-divider"></span>
   </nav>
 
-  <section class="pw-page-wrapper">
-    <div style="max-width: 720px; margin: 0 auto 32px; text-align: center;">
-      <p class="eyebrow" style="margin-bottom: 18px;">Selected projects</p>
-      <h1 class="section-title" data-reveal>
+  <section class="pw-page-wrapper proj-intro">
+    <div style="max-width: 720px; margin: 0 auto; text-align: center;">
+      <p class="eyebrow" style="margin-bottom: 18px;"
+         data-i18n-en="Selected projects" data-i18n-zh="精选项目">Selected projects</p>
+      <h1 class="section-title" data-reveal data-i18n-html
+          data-i18n-en="Several studies, one question:<br/>how do cities serve their people?"
+          data-i18n-zh="多项研究项目，一个问题：<br/>城市如何服务它的人？">
         Seven studies, one question:<br/>
         how do cities serve their people?
       </h1>
-      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65;">
+      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65;"
+         data-i18n-html
+         data-i18n-en='Code and full methods for most projects live in the <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">geospatial-Lab</a> repository. Scroll down — one project per screen.'
+         data-i18n-zh='大多数项目的代码与完整方法都存放在 <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">geospatial-Lab</a> 仓库中。向下滚动 — 每屏一个项目。'>
         Code and full methods for most projects live in the
         <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">geospatial-Lab</a>
-        repository. Swipe through below.
+        repository. Scroll down — one project per screen.
+      </p>
+      <p class="proj-scroll-cue" aria-hidden="true">
+        <span data-i18n-en="Scroll" data-i18n-zh="向下滚动">Scroll</span>
+        <span class="proj-scroll-cue-line"></span>
       </p>
     </div>
+  </section>
 
-    <!-- Embla carousel -->
-    <div class="hcar" id="projects-carousel">
-      <div class="hcar-viewport">
-        <div class="hcar-container" id="projects-track">
-          <!-- Slides injected by projects-carousel.js -->
-        </div>
-      </div>
-      <div class="hcar-controls">
-        <div class="hcar-buttons">
-          <button type="button" class="hcar-arrow" data-prev aria-label="Previous project">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <button type="button" class="hcar-arrow" data-next aria-label="Next project">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4l5 5-5 5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="hcar-dots" role="tablist" aria-label="Projects" id="projects-dots"></div>
-      </div>
-    </div>
+  <!-- Vertical full-screen project stack (one project = one page) -->
+  <main class="proj-stack" id="projects-stack">
+    <!-- Pages injected by projects-carousel.js -->
+  </main>
 
-    <div style="max-width: 720px; margin: 80px auto 0; text-align: center; color: var(--ink-dim); font-size: var(--type-body); line-height: 1.7;">
+  <!-- Fixed right-side dot navigator -->
+  <nav class="proj-rail" id="projects-rail" aria-label="Projects navigation"></nav>
+
+  <section class="pw-page-wrapper proj-outro">
+    <div style="max-width: 720px; margin: 0 auto; text-align: center; color: var(--ink-dim); font-size: var(--type-body); line-height: 1.7;"
+         data-i18n-html
+         data-i18n-en='For specific code implementation, please refer to <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent);">github.com/Coldzera-010825/geospatial-Lab</a>.'
+         data-i18n-zh='具体代码实现请参见 <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent);">github.com/Coldzera-010825/geospatial-Lab</a>。'>
       For specific code implementation, please refer to
       <a href="https://github.com/Coldzera-010825/geospatial-Lab" target="_blank" rel="noopener" style="color: var(--accent);">github.com/Coldzera-010825/geospatial-Lab</a>.
     </div>
   </section>
 
-  <footer class="pw-footer">© 2025 Shuhao Li</footer>
+  <footer class="pw-footer"
+          data-i18n-en="© 2025 Shuhao Li"
+          data-i18n-zh="© 2025 李书昊">© 2025 Shuhao Li</footer>
 
-  <script src="https://unpkg.com/embla-carousel@8.3.0/embla-carousel.umd.js"></script>
+  <script src="./assets/js/i18n.js" defer></script>
   <script src="./assets/js/reveal-words.js" defer></script>
   <script src="./assets/js/projects-carousel.js" defer></script>
 </body>

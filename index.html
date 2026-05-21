@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,6 +13,9 @@
 
   <!-- Design system -->
   <link rel="stylesheet" href="./assets/css/design-system.css" />
+
+  <!-- Page transition curtain (must run before body paints to avoid flash) -->
+  <script src="./assets/js/page-transition.js"></script>
 </head>
 <body>
 
@@ -20,11 +23,18 @@
   <nav class="pw-nav">
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
-      <a class="pw-nav-link is-active" href="./index.html">Home</a>
-      <a class="pw-nav-link" href="./about.html">About</a>
-      <a class="pw-nav-link" href="./projects.html">Projects</a>
-      <a class="pw-nav-link" href="./publications.html">Publications</a>
-      <a class="pw-nav-link" href="./CV.html">CV</a>
+      <a class="pw-nav-link is-active" href="./index.html"
+         data-i18n-en="Home" data-i18n-zh="首页">Home</a>
+      <a class="pw-nav-link" href="./about.html"
+         data-i18n-en="About" data-i18n-zh="关于">About</a>
+      <a class="pw-nav-link" href="./research.html"
+         data-i18n-en="Research" data-i18n-zh="研究">Research</a>
+      <a class="pw-nav-link" href="./projects.html"
+         data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+      <a class="pw-nav-link" href="./publications.html"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+      <a class="pw-nav-link" href="./CV.html"
+         data-i18n-en="CV" data-i18n-zh="简历">CV</a>
     </div>
     <span class="pw-nav-divider"></span>
   </nav>
@@ -49,17 +59,31 @@
 
     <!-- Title -->
     <div class="pw-hero-title-block">
-      <h1 class="pw-hero-title" data-reveal>
+      <h1 class="pw-hero-title" data-reveal data-i18n-html
+          data-i18n-en="Geospatial data, urban<br/>equity &amp; resilient cities"
+          data-i18n-zh="地理空间数据、城市<br/>公平与韧性都市">
         Geospatial data, urban<br/>
         equity &amp; resilient cities
       </h1>
-      <p class="pw-hero-sub">
+      <p class="pw-hero-sub" data-i18n-html
+         data-i18n-en="Shuhao&nbsp;Li &nbsp;·&nbsp; MSc, University of Bristol<br/>Spatial Data Science &nbsp;·&nbsp; Machine Learning &nbsp;·&nbsp; Remote Sensing"
+         data-i18n-zh="李书昊 &nbsp;·&nbsp; 布里斯托大学 硕士<br/>空间数据科学 &nbsp;·&nbsp; 机器学习 &nbsp;·&nbsp; 遥感">
         Shuhao&nbsp;Li &nbsp;·&nbsp; MSc, University of Bristol<br/>
         Spatial Data Science &nbsp;·&nbsp; Machine Learning &nbsp;·&nbsp; Remote Sensing
       </p>
       <div class="pw-hero-actions">
-        <a class="pw-cta is-primary" href="./about.html">About&nbsp;the&nbsp;research →</a>
-        <a class="pw-cta" href="./publications.html">Publications</a>
+        <a class="pw-cta is-primary" href="./research.html"
+           data-i18n-en="About&nbsp;the&nbsp;research →"
+           data-i18n-zh="研究方向 →"
+           data-i18n-html>About&nbsp;the&nbsp;research →</a>
+        <a class="pw-cta" href="./about.html"
+           data-i18n-en="About&nbsp;me" data-i18n-zh="关于我"
+           data-i18n-html>About&nbsp;me</a>
+        <a class="pw-cta" href="./projects.html"
+           data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+        <a class="pw-cta" href="./publications.html"
+           data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+        <span class="pw-hero-actions-break" aria-hidden="true"></span>
         <a class="pw-cta" href="https://github.com/Coldzera-010825" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </div>
@@ -68,6 +92,7 @@
   <!-- Scripts (loaded in Stage 2) -->
   <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
   <script src="./assets/js/globe.js" defer></script>
+  <script src="./assets/js/i18n.js" defer></script>
   <script src="./assets/js/reveal-words.js" defer></script>
 </body>
 </html>
