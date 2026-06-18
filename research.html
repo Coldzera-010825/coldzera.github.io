@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research — Shuhao Li</title>
+  <meta name="description" content="Four research themes by Shuhao Li: urban heat, environmental justice, geospatial ML, remote sensing." />
+
+  <link rel="preconnect" href="https://fonts.loli.net" />
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
+  <link href="https://fonts.loli.net/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./assets/css/design-system.css" />
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="pw-nav">
+    <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
+    <div class="pw-nav-links">
+      <a class="pw-nav-link" href="./index.html">Home</a>
+      <a class="pw-nav-link is-active" href="./research.html">Research</a>
+      <a class="pw-nav-link" href="./about.html">About</a>
+      <a class="pw-nav-link" href="./projects.html">Projects</a>
+      <a class="pw-nav-link" href="./publications.html">Publications</a>
+      <a class="pw-nav-link" href="./CV.html">CV</a>
+    </div>
+    <span class="pw-nav-divider"></span>
+  </nav>
+
+  <!-- Research themes -->
+  <section class="research-wrapper">
+    <div class="research-intro">
+      <p class="eyebrow" style="margin-bottom: 18px;">Research themes</p>
+      <h1 class="section-title" data-reveal>
+        Cities, climate &amp; the data<br/>that maps inequality
+      </h1>
+      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65; max-width: 560px; margin-left: auto; margin-right: auto;">
+        Four threads running through my work — each one a question about how
+        geospatial data can reveal who in a city is left behind, and how policy
+        can respond. Click a card to read more.
+      </p>
+    </div>
+
+    <div class="research-grid" id="research-grid">
+      <!-- Themes injected by research-modal.js -->
+    </div>
+
+    <div class="research-foot-links">
+      <a href="./projects.html">Browse projects ↗</a>
+      <a href="./publications.html">Read publications ↗</a>
+      <a href="./about.html">About me ↗</a>
+    </div>
+  </section>
+
+  <footer class="pw-footer">© 2025 Shuhao Li</footer>
+
+  <!-- Modal mount (research-modal.js injects content) -->
+  <div id="research-modal-root"></div>
+
+  <!-- Scripts -->
+  <script src="./assets/js/reveal-words.js" defer></script>
+  <script src="./assets/js/research-modal.js" defer></script>
+</body>
+</html>

@@ -13,7 +13,11 @@
       title: 'Urban Heat Island & Vulnerability',
       kicker: 'Theme 01',
       accent: 'oklch(0.65 0.15 30)',     // warm coral
-      accentSoft: 'oklch(0.92 0.05 30)',
+      accentSoft: 'oklch(0.94 0.025 30)',
+      figure: {
+        src: './assets/fig/Urban%20Heat%20Island%20%26%20Vulnerability.png',
+        caption: 'Figure · Urban heat-island analysis — thermal anomalies over the city fabric',
+      },
       tagline:
         'Mapping the disproportionate burden of urban heat on the people least equipped to escape it.',
       body: [
@@ -27,7 +31,11 @@
       title: 'Environmental Justice & Access',
       kicker: 'Theme 02',
       accent: 'oklch(0.55 0.13 200)',    // teal
-      accentSoft: 'oklch(0.92 0.04 200)',
+      accentSoft: 'oklch(0.94 0.022 200)',
+      figure: {
+        src: './assets/fig/Environmental%20Justice%20%26%20Access.png',
+        caption: 'Figure · Spatial-access analysis — service-area mapping across the urban grid',
+      },
       tagline:
         'Unequal access to infrastructure is a spatial fact. Geospatial data can name it precisely.',
       body: [
@@ -41,7 +49,11 @@
       title: 'Geospatial Machine Learning',
       kicker: 'Theme 03',
       accent: 'oklch(0.50 0.16 280)',    // indigo
-      accentSoft: 'oklch(0.92 0.04 280)',
+      accentSoft: 'oklch(0.94 0.022 280)',
+      figure: {
+        src: './assets/fig/Geospatial%20Machine%20Learning.png',
+        caption: 'Figure · Multi-source data fusion and interpretable modelling pipeline',
+      },
       tagline:
         'Multi-source data fusion and interpretable ML for environmental-risk prediction.',
       body: [
@@ -55,7 +67,11 @@
       title: 'Remote Sensing & Urbanization',
       kicker: 'Theme 04',
       accent: 'oklch(0.55 0.13 145)',    // moss green
-      accentSoft: 'oklch(0.92 0.04 145)',
+      accentSoft: 'oklch(0.94 0.022 145)',
+      figure: {
+        src: './assets/fig/Remote%20Sensing%20%26%20Urbanization.png',
+        caption: 'Figure · Land-use classification and change detection from satellite imagery',
+      },
       tagline:
         'Tracking land-use change at the pace cities actually grow.',
       body: [
@@ -66,55 +82,212 @@
     },
   ];
 
-  /* ---- SVG visual fills (one per theme) ---- */
+  /* ---- Editorial SVG visuals — one bespoke composition per theme.
+          800×600 viewBox, slice-fit so they fill any aspect ratio.
+          Designed to read at card-size and stay tasteful when faded
+          to ~18% opacity behind modal text. ---- */
   function renderVisual(theme) {
+    // If a theme supplies its own image, prefer that (kept for future use).
+    if (theme.image) {
+      return `
+        <div style="position:absolute;inset:0;background:${theme.accentSoft};">
+          <img src="${theme.image}" alt="${theme.title}" loading="lazy"
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;" />
+        </div>`;
+    }
+
     const a = theme.accent;
     const aSoft = theme.accentSoft;
+    const inkDim = 'oklch(0.45 0.008 275)';
+
     switch (theme.visual) {
-      case 'uhi':
-        // Concentric heat rings
+
+      /* ---------- 01 Urban Heat Island ----------
+       * Concentric isothermal bloom emanating from upper-right,
+       * faint census-tract dot field below, a few accent-hot points. */
+      case 'uhi': {
+        const dots = [];
+        for (let i = 0; i < 60; i++) {
+          const x = 60 + Math.random() * 680;
+          const y = 360 + Math.random() * 220;
+          const r = 1.2 + Math.random() * 1.8;
+          const hot = Math.random() < 0.18;
+          dots.push(`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(1)}" fill="${hot ? a : inkDim}" fill-opacity="${hot ? 0.85 : 0.28}"/>`);
+        }
         return `
-          <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;background:${aSoft};">
-            <defs>
-              <radialGradient id="uhi-g" cx="50%" cy="60%" r="55%">
-                <stop offset="0%" stop-color="${a}" stop-opacity="0.85"/>
-                <stop offset="60%" stop-color="${a}" stop-opacity="0.18"/>
-                <stop offset="100%" stop-color="${a}" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <rect width="400" height="300" fill="url(#uhi-g)"/>
-            ${[50,80,120,160,200].map((r,i)=>`<circle cx="200" cy="180" r="${r}" fill="none" stroke="${a}" stroke-opacity="${0.35 - i*0.06}" stroke-width="0.6"/>`).join('')}
-          </svg>`;
-      case 'justice':
-        // Grid + scattered nodes
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"
+             style="width:100%;height:100%;display:block;background:${aSoft};">
+          <defs>
+            <radialGradient id="uhi-bloom" cx="78%" cy="28%" r="62%">
+              <stop offset="0%"  stop-color="${a}" stop-opacity="0.55"/>
+              <stop offset="40%" stop-color="${a}" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="${a}" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="800" height="600" fill="url(#uhi-bloom)"/>
+          ${[60,100,150,210,280,360,450,560].map((r,i)=>
+            `<circle cx="624" cy="168" r="${r}" fill="none" stroke="${a}" stroke-opacity="${(0.38 - i*0.04).toFixed(2)}" stroke-width="0.6"/>`
+          ).join('')}
+          <line x1="0" y1="340" x2="800" y2="340" stroke="${inkDim}" stroke-opacity="0.10" stroke-width="0.5" stroke-dasharray="2 6"/>
+          ${dots.join('')}
+          <text x="40" y="62" font-family="'Cormorant SC', serif" font-weight="300" font-size="13" letter-spacing="0.3em" fill="${inkDim}" fill-opacity="0.55">ISOTHERMAL ANOMALY · °C</text>
+          <text x="624" y="172" font-family="'Space Grotesk', sans-serif" font-weight="500" font-size="11" fill="${a}" text-anchor="middle">+4.8</text>
+        </svg>`;
+      }
+
+      /* ---------- 02 Environmental Justice ----------
+       * Schematic street grid with reachable / unreachable nodes,
+       * a few curved walking-path connectors highlighted in accent. */
+      case 'justice': {
+        const nodes = [
+          [140,180],[260,180],[380,180],[500,180],[620,180],
+          [140,300],[260,300],[380,300],[500,300],[620,300],
+          [140,420],[260,420],[380,420],[500,420],[620,420],
+        ];
+        const reachable = new Set(['1-1','1-2','1-3','0-2','0-3','2-2']);
+        const paths = [
+          'M260 300 Q 320 240 380 300 T 500 300',
+          'M260 300 Q 260 240 260 180',
+          'M380 300 Q 380 240 380 180',
+        ];
+        const grid = [];
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 5; c++) {
+            const [x,y] = nodes[r*5+c];
+            const isOn = reachable.has(`${r}-${c}`);
+            grid.push(`<circle cx="${x}" cy="${y}" r="${isOn ? 6 : 4}" fill="${isOn ? a : 'none'}" stroke="${isOn ? a : inkDim}" stroke-width="${isOn ? 0 : 0.8}" stroke-opacity="${isOn ? 1 : 0.4}"/>`);
+          }
+        }
         return `
-          <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;background:${aSoft};">
-            <defs>
-              <pattern id="jg" width="28" height="28" patternUnits="userSpaceOnUse">
-                <path d="M28 0H0V28" fill="none" stroke="${a}" stroke-opacity="0.22" stroke-width="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="400" height="300" fill="url(#jg)"/>
-            ${[[60,80],[140,120],[220,90],[300,160],[100,200],[260,220],[340,70],[180,240]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4" fill="${a}"/>`).join('')}
-            <path d="M60 80 L140 120 L220 90 L300 160" fill="none" stroke="${a}" stroke-opacity="0.5" stroke-width="0.8"/>
-          </svg>`;
-      case 'ml':
-        // Network nodes radial
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"
+             style="width:100%;height:100%;display:block;background:${aSoft};">
+          <!-- thin street grid -->
+          ${[140,260,380,500,620].map(x=>`<line x1="${x}" y1="120" x2="${x}" y2="480" stroke="${inkDim}" stroke-opacity="0.18" stroke-width="0.5"/>`).join('')}
+          ${[180,300,420].map(y=>`<line x1="80" y1="${y}" x2="720" y2="${y}" stroke="${inkDim}" stroke-opacity="0.18" stroke-width="0.5"/>`).join('')}
+          <!-- reachable paths -->
+          ${paths.map(d=>`<path d="${d}" fill="none" stroke="${a}" stroke-opacity="0.55" stroke-width="1.2" stroke-linecap="round"/>`).join('')}
+          <!-- nodes -->
+          ${grid.join('')}
+          <!-- callout -->
+          <text x="40" y="62" font-family="'Cormorant SC', serif" font-weight="300" font-size="13" letter-spacing="0.3em" fill="${inkDim}" fill-opacity="0.55">ACCESS · 15-MIN WALKSHED</text>
+          <text x="660" y="180" font-family="'Space Grotesk', sans-serif" font-weight="500" font-size="11" fill="${a}">CLINIC</text>
+          <text x="660" y="305" font-family="'Space Grotesk', sans-serif" font-weight="500" font-size="11" fill="${a}">PARK</text>
+        </svg>`;
+      }
+
+      /* ---------- 03 Geospatial Machine Learning ----------
+       * Three stacked translucent raster-layer rectangles with subtle
+       * inner pattern, vertical feature-extraction pipes through all,
+       * a small node graph in the lower right. */
+      case 'ml': {
+        const features = [180, 280, 380, 480, 580];
         return `
-          <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;background:${aSoft};">
-            <g transform="translate(200 150)">
-              ${Array.from({length:12}).map((_,i)=>{const t=i/12*Math.PI*2;const x=Math.cos(t)*110,y=Math.sin(t)*110;return `<line x1="0" y1="0" x2="${x}" y2="${y}" stroke="${a}" stroke-opacity="0.32" stroke-width="0.6"/><circle cx="${x}" cy="${y}" r="3.5" fill="${a}"/>`}).join('')}
-              <circle r="9" fill="${a}"/>
-            </g>
-          </svg>`;
-      case 'rs':
-        // Stratified bands (land-use layers)
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"
+             style="width:100%;height:100%;display:block;background:${aSoft};">
+          <defs>
+            <pattern id="ml-dots" width="14" height="14" patternUnits="userSpaceOnUse">
+              <circle cx="7" cy="7" r="0.9" fill="${inkDim}" fill-opacity="0.35"/>
+            </pattern>
+            <pattern id="ml-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+              <path d="M16 0 H0 V16" fill="none" stroke="${inkDim}" stroke-opacity="0.30" stroke-width="0.5"/>
+            </pattern>
+            <pattern id="ml-hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="10" stroke="${inkDim}" stroke-opacity="0.32" stroke-width="0.6"/>
+            </pattern>
+          </defs>
+
+          <!-- three stacked raster layers -->
+          <g transform="translate(120 130)">
+            <rect width="420" height="90" fill="url(#ml-dots)"  stroke="${a}" stroke-opacity="0.45" stroke-width="0.8"/>
+            <rect y="110" width="420" height="90" fill="url(#ml-grid)"  stroke="${a}" stroke-opacity="0.45" stroke-width="0.8"/>
+            <rect y="220" width="420" height="90" fill="url(#ml-hatch)" stroke="${a}" stroke-opacity="0.45" stroke-width="0.8"/>
+
+            <!-- layer labels -->
+            <text x="-12" y="48"  text-anchor="end" font-family="'Cormorant SC', serif" font-weight="300" font-size="11" letter-spacing="0.22em" fill="${inkDim}">LANDSAT</text>
+            <text x="-12" y="158" text-anchor="end" font-family="'Cormorant SC', serif" font-weight="300" font-size="11" letter-spacing="0.22em" fill="${inkDim}">CENSUS</text>
+            <text x="-12" y="268" text-anchor="end" font-family="'Cormorant SC', serif" font-weight="300" font-size="11" letter-spacing="0.22em" fill="${inkDim}">ROAD · POI</text>
+
+            <!-- feature pipes through all 3 layers -->
+            ${features.map(x => `<line x1="${x-120}" y1="-12" x2="${x-120}" y2="322" stroke="${a}" stroke-opacity="0.45" stroke-width="0.8" stroke-dasharray="2 4"/>`).join('')}
+            ${features.map(x => `<circle cx="${x-120}" cy="-12" r="2.5" fill="${a}"/>`).join('')}
+          </g>
+
+          <!-- node graph (model) -->
+          <g transform="translate(540 460)">
+            ${(()=>{
+              const xs = [0,40,80,120], ys = [-30,-10,10,30,50];
+              const layers = [
+                xs.slice(0,1).map(x=>ys.slice(1,4).map(y=>[x,y])).flat(),
+                xs.slice(1,2).map(x=>ys.map(y=>[x,y])).flat(),
+                xs.slice(2,3).map(x=>ys.map(y=>[x,y])).flat(),
+                xs.slice(3,4).map(x=>[[xs[3], 10]]).flat(),
+              ];
+              let out = '';
+              for (let i = 0; i < layers.length - 1; i++) {
+                for (const [x1,y1] of layers[i]) {
+                  for (const [x2,y2] of layers[i+1]) {
+                    out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${inkDim}" stroke-opacity="0.22" stroke-width="0.4"/>`;
+                  }
+                }
+              }
+              for (const layer of layers) {
+                for (const [x,y] of layer) {
+                  out += `<circle cx="${x}" cy="${y}" r="2.5" fill="${a}" fill-opacity="0.7"/>`;
+                }
+              }
+              return out;
+            })()}
+          </g>
+
+          <text x="40" y="62" font-family="'Cormorant SC', serif" font-weight="300" font-size="13" letter-spacing="0.3em" fill="${inkDim}" fill-opacity="0.55">MULTI-SOURCE FUSION → MODEL</text>
+        </svg>`;
+      }
+
+      /* ---------- 04 Remote Sensing & Urbanization ----------
+       * Coarse pixel-grid satellite imagery on the left transitioning
+       * to vector urban-footprint polygons on the right; a thin
+       * time-arrow with tick markers along the bottom. */
+      case 'rs': {
+        const cells = [];
+        const cols = 20, rows = 12;
+        const cellW = 800 / cols, cellH = 400 / rows;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            // Imagery on the left third, fading into vector world on the right
+            const fade = Math.max(0, Math.min(1, 1 - (c - 8) / 6));
+            if (fade <= 0) continue;
+            const x = c * cellW, y = 60 + r * cellH;
+            const intensity = 0.08 + Math.random() * 0.32 * fade;
+            const useAccent = Math.random() < 0.18 && fade > 0.5;
+            cells.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" fill="${useAccent ? a : inkDim}" fill-opacity="${intensity.toFixed(2)}"/>`);
+          }
+        }
+        // Vector urban footprint polygons on the right side
+        const polys = [
+          'M540 180 L580 168 L620 172 L640 200 L630 240 L590 248 L555 232 Z',
+          'M560 280 L600 270 L640 290 L644 320 L612 340 L572 332 Z',
+          'M520 380 L560 372 L600 390 L592 420 L548 428 L516 410 Z',
+          'M620 200 L660 196 L688 220 L680 250 L644 252 Z',
+        ];
         return `
-          <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;background:${aSoft};">
-            ${[0,0.18,0.34,0.5,0.66,0.82].map((t,i)=>`<rect x="0" y="${t*300}" width="400" height="${300/6 + 2}" fill="${a}" fill-opacity="${0.10 + (i%3)*0.07}"/>`).join('')}
-            <path d="M0 90 Q 100 70 200 95 T 400 110" fill="none" stroke="${a}" stroke-opacity="0.55" stroke-width="1"/>
-            <path d="M0 180 Q 120 165 240 175 T 400 195" fill="none" stroke="${a}" stroke-opacity="0.45" stroke-width="1"/>
-          </svg>`;
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"
+             style="width:100%;height:100%;display:block;background:${aSoft};">
+          ${cells.join('')}
+          ${polys.map(d=>`<path d="${d}" fill="${a}" fill-opacity="0.18" stroke="${a}" stroke-width="0.8"/>`).join('')}
+          <!-- time arrow -->
+          <line x1="60" y1="530" x2="740" y2="530" stroke="${inkDim}" stroke-opacity="0.4" stroke-width="0.6"/>
+          <polygon points="740,530 732,526 732,534" fill="${inkDim}" fill-opacity="0.5"/>
+          ${['2000','2010','2020'].map((label, i) => {
+            const x = 120 + i * 290;
+            return `<line x1="${x}" y1="524" x2="${x}" y2="536" stroke="${inkDim}" stroke-opacity="0.45" stroke-width="0.6"/>
+                    <text x="${x}" y="552" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="500" font-size="10" fill="${inkDim}" fill-opacity="0.6">${label}</text>`;
+          }).join('')}
+          <!-- scan line over imagery -->
+          <line x1="0" y1="58" x2="540" y2="58" stroke="${a}" stroke-opacity="0.55" stroke-width="0.8"/>
+          <text x="40" y="44" font-family="'Cormorant SC', serif" font-weight="300" font-size="13" letter-spacing="0.3em" fill="${inkDim}" fill-opacity="0.55">RASTER → VECTOR · LAND USE</text>
+        </svg>`;
+      }
+
       default:
         return `<div style="width:100%;height:100%;background:${aSoft};"></div>`;
     }
@@ -174,15 +347,28 @@
         </svg>
       </button>
       <div class="pw-research-modal-inner" data-inner>
-        <div style="max-width: 820px; margin: 0 auto; padding: 96px 0 64px;">
-          <p class="eyebrow" style="margin-bottom: 18px;">${theme.kicker}</p>
-          <h2>${theme.title}</h2>
-          <div class="modal-rule" style="background:${theme.accent};"></div>
-          <p style="font-weight: 500;">${theme.tagline}</p>
-          ${theme.body.map((p) => `<p>${p}</p>`).join('')}
-          <p style="margin-top: 40px;">
-            <a href="./projects.html" style="color: ${theme.accent}; border-bottom: 0.5px solid ${theme.accent}; padding-bottom: 2px;">See related projects ↗</a>
-          </p>
+        <div class="modal-content" style="padding: 96px 0 64px;">
+          <header class="modal-header">
+            <p class="eyebrow" style="margin-bottom: 18px;">${theme.kicker}</p>
+            <h2>${theme.title}</h2>
+            <div class="modal-rule" style="background:${theme.accent};"></div>
+            <p style="font-weight: 500;">${theme.tagline}</p>
+          </header>
+
+          <div class="modal-split">
+            <div class="modal-text">
+              ${theme.body.map((p) => `<p>${p}</p>`).join('')}
+              <p style="margin-top: 32px;">
+                <a href="./projects.html" style="color: ${theme.accent}; border-bottom: 0.5px solid ${theme.accent}; padding-bottom: 2px;">See related projects ↗</a>
+              </p>
+            </div>
+
+            ${theme.figure ? `
+              <figure class="modal-figure">
+                <img src="${theme.figure.src}" alt="${theme.title}" loading="lazy" />
+                ${theme.figure.caption ? `<figcaption>${theme.figure.caption}</figcaption>` : ''}
+              </figure>` : ''}
+          </div>
         </div>
       </div>
     `;

@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About — Shuhao Li</title>
-  <meta name="description" content="Shuhao Li — research themes, background, and academic journey." />
+  <meta name="description" content="Shuhao Li — background, academic journey, and the path from Ganzhou to Cardiff." />
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.loli.net" />
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
+  <link href="https://fonts.loli.net/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Design system -->
   <link rel="stylesheet" href="./assets/css/design-system.css" />
@@ -24,6 +24,7 @@
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
       <a class="pw-nav-link" href="./index.html">Home</a>
+      <a class="pw-nav-link" href="./research.html">Research</a>
       <a class="pw-nav-link is-active" href="./about.html">About</a>
       <a class="pw-nav-link" href="./projects.html">Projects</a>
       <a class="pw-nav-link" href="./publications.html">Publications</a>
@@ -32,32 +33,15 @@
     <span class="pw-nav-divider"></span>
   </nav>
 
-  <!-- Research themes grid -->
-  <section class="research-wrapper">
-    <div class="research-intro">
-      <p class="eyebrow" style="margin-bottom: 18px;">Research themes</p>
+  <!-- Bio -->
+  <section class="pw-page-wrapper">
+    <div style="max-width: 720px; margin: 0 auto 56px; text-align: center;">
+      <p class="eyebrow" style="margin-bottom: 18px;">About me</p>
       <h1 class="section-title" data-reveal>
-        Cities, climate &amp; the data<br/>that maps inequality
+        Researcher in geospatial<br/>data &amp; urban equity
       </h1>
-      <p style="margin-top: 24px; font-size: var(--type-body-lg); color: var(--ink-dim); line-height: 1.65; max-width: 560px; margin-left: auto; margin-right: auto;">
-        Four threads running through my work — each one a question about how
-        geospatial data can reveal who in a city is left behind, and how policy
-        can respond.
-      </p>
     </div>
 
-    <div class="research-grid" id="research-grid">
-      <!-- Themes injected by research-modal.js -->
-    </div>
-
-    <div class="research-foot-links">
-      <a href="./projects.html">Browse projects ↗</a>
-      <a href="./publications.html">Read publications ↗</a>
-    </div>
-  </section>
-
-  <!-- Bio / narrative -->
-  <section class="pw-page-wrapper" style="padding-top: 56px;">
     <div class="bio-layout">
       <aside class="bio-portrait-wrap">
         <img class="bio-portrait" src="./assets/fig/pic.jpg" alt="Shuhao Li" />
@@ -99,14 +83,10 @@
           GIS workflows and Python-based geoprocessing automation.
           <a href="https://coldzera-010825.github.io/gis/" target="_blank" rel="noopener" style="color: var(--accent);">Read the book ↗</a>
         </p>
-
-        <h3>Background</h3>
-        <ul>
-          <li><strong>09/2019 – 06/2023</strong> · B.Sc. Geographic Information Science, Jiangxi University of Science and Technology (top 5 in department)</li>
-          <li><strong>09/2023 – 11/2024</strong> · M.Sc. Geographic Data Science and Spatial Analytics, University of Bristol</li>
-          <li><strong>02/2025 – present</strong> · Technology &amp; Business Manager, 51WORLD Digital Twin Technology Co., Ltd.</li>
-          <li><strong>Internships</strong> · GIS engineering, digital-twin technology, and international organisations (UNIDO, CCP12, WCCO)</li>
-        </ul>
+        <p style="margin-top: 22px;">
+          For the four research threads my work runs along, see
+          <a href="./research.html" style="color: var(--accent); border-bottom: 0.5px solid var(--accent); padding-bottom: 1px;">About the research ↗</a>.
+        </p>
 
         <h3>Professional skills</h3>
         <ul>
@@ -123,29 +103,37 @@
           compelling stories, and I value cross-cultural collaboration on
           <strong>climate change, urban resilience, and social justice</strong>.
         </p>
+      </div>
+    </div>
 
-        <!-- Bio map -->
-        <h3 style="margin-top: 56px;">Where I've been</h3>
-        <p style="color: var(--ink-dim);">
-          Four anchors on the path from a small city in Jiangxi to the data-science
-          lab at Bristol and the digital-twin work in Beijing.
+    <!-- Footprints — interactive journey map -->
+    <div class="footprints-section">
+      <div class="footprints-head">
+        <p class="eyebrow" style="margin-bottom: 18px;">Footprints</p>
+        <h2 class="section-title">Five stops on the path</h2>
+        <p style="margin-top: 18px; color: var(--ink-dim); font-size: var(--type-body-lg); line-height: 1.65; max-width: 620px;">
+          Click a numbered pin or the cards below the map. Each anchor opens a brief account of what that chapter was for — eventually, with photos.
         </p>
-        <div class="bio-map-wrap">
-          <div class="bio-map" id="bio-map"></div>
-        </div>
+      </div>
+
+      <div class="footprints-grid">
+        <div class="footprints-map" id="footprints-map"></div>
+        <aside class="footprints-panel" id="footprints-panel">
+          <!-- populated by footprints.js -->
+        </aside>
+      </div>
+
+      <div class="footprints-timeline" id="footprints-timeline">
+        <!-- populated by footprints.js -->
       </div>
     </div>
   </section>
 
   <footer class="pw-footer">© 2025 Shuhao Li</footer>
 
-  <!-- Modal mount (research-modal.js injects content) -->
-  <div id="research-modal-root"></div>
-
   <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./assets/js/reveal-words.js" defer></script>
-  <script src="./assets/js/research-modal.js" defer></script>
-  <script src="./assets/js/bio-map.js" defer></script>
+  <script src="./assets/js/footprints.js" defer></script>
 </body>
 </html>
