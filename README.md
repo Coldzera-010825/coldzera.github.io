@@ -7,9 +7,8 @@ Research focus: **geospatial data science, urban sustainability, and social equi
 
 ## Site map
 
-- **Home** (`index.html`) — Hero with a rotating procedural Earth (Three.js); CTAs split into "About the research" and "About me"
-- **Research** (`research.html`) — Four research-theme cards that expand into fullscreen modals
-- **About** (`about.html`) — Personal bio, background, skills, plus a Leaflet map of education / work anchors (Ganzhou → Bristol → Wenzhou → Beijing)
+- **Home** (`index.html`) — Hero with a rotating procedural Earth (Three.js) and four life-points marked
+- **About** (`about.html`) — Four research-theme cards that expand into fullscreen modals, plus a Leaflet map of education / work anchors (Ganzhou → Bristol → Wenzhou → Beijing)
 - **Projects** (`projects.html`) — Seven projects in an Embla carousel
 - **Publications** (`publications.html`) — Year-grouped list with DOI links
 - **CV** (`CV.html`) — Embedded PDF + download
@@ -32,7 +31,6 @@ Design language is borrowed from [yc-lin.com](https://yc-lin.com) (Sea-level, Cl
 ```
 coldzera.github.io/
 ├─ index.html
-├─ research.html
 ├─ about.html
 ├─ projects.html
 ├─ publications.html
