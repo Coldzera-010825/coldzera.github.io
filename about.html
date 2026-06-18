@@ -1,10 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About — Shuhao Li</title>
+<<<<<<< HEAD
   <meta name="description" content="Shuhao Li — background, academic journey, and the path from Ganzhou to Cardiff." />
+=======
+  <meta name="description" content="Shuhao Li — background, training, and academic journey." />
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.loli.net" />
@@ -16,6 +20,9 @@
 
   <!-- Design system -->
   <link rel="stylesheet" href="./assets/css/design-system.css" />
+
+  <!-- Page transition curtain (must run before body paints to avoid flash) -->
+  <script src="./assets/js/page-transition.js"></script>
 </head>
 <body>
 
@@ -23,16 +30,32 @@
   <nav class="pw-nav">
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
+<<<<<<< HEAD
       <a class="pw-nav-link" href="./index.html">Home</a>
       <a class="pw-nav-link" href="./research.html">Research</a>
       <a class="pw-nav-link is-active" href="./about.html">About</a>
       <a class="pw-nav-link" href="./projects.html">Projects</a>
       <a class="pw-nav-link" href="./publications.html">Publications</a>
       <a class="pw-nav-link" href="./CV.html">CV</a>
+=======
+      <a class="pw-nav-link" href="./index.html"
+         data-i18n-en="Home" data-i18n-zh="首页">Home</a>
+      <a class="pw-nav-link is-active" href="./about.html"
+         data-i18n-en="About" data-i18n-zh="关于">About</a>
+      <a class="pw-nav-link" href="./research.html"
+         data-i18n-en="Research" data-i18n-zh="研究">Research</a>
+      <a class="pw-nav-link" href="./projects.html"
+         data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+      <a class="pw-nav-link" href="./publications.html"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+      <a class="pw-nav-link" href="./CV.html"
+         data-i18n-en="CV" data-i18n-zh="简历">CV</a>
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
     </div>
     <span class="pw-nav-divider"></span>
   </nav>
 
+<<<<<<< HEAD
   <!-- Bio -->
   <section class="pw-page-wrapper">
     <div style="max-width: 720px; margin: 0 auto 56px; text-align: center;">
@@ -42,22 +65,84 @@
       </h1>
     </div>
 
+=======
+  <!-- Bio / narrative -->
+  <section class="pw-page-wrapper">
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
     <div class="bio-layout">
       <aside class="bio-portrait-wrap">
-        <img class="bio-portrait" src="./assets/fig/pic.jpg" alt="Shuhao Li" />
+        <img class="bio-portrait" src="./assets/fig/GitHub.jpg" alt="Shuhao Li" />
         <h2 class="bio-name">Shuhao&nbsp;Li</h2>
-        <p class="bio-lede">Geospatial Data Science<br/>Spatial Environmental Science<br/>Machine Learning</p>
-        <div class="bio-contact">
-          Wenzhou, Zhejiang, China<br/>
-          <a href="mailto:lishuhao010825@163.com">lishuhao010825@163.com</a><br/>
-          <a href="https://github.com/Coldzera-010825" target="_blank" rel="noopener">GitHub ↗</a> ·
-          <a href="https://www.linkedin.com/in/shuhao-li-3a347a31b/" target="_blank" rel="noopener">LinkedIn ↗</a>
-        </div>
+        <p class="bio-role" data-i18n-html
+           data-i18n-en="MSc, University of Bristol<br/>Geospatial Data Science"
+           data-i18n-zh="布里斯托大学 · 硕士<br/>地理空间数据科学">
+          MSc, University of Bristol<br/>Geospatial Data Science
+        </p>
+        <p class="bio-blurb" data-i18n-en="Geospatial data science, urban equity and resilient cities. Combining GIS, remote sensing and machine learning to study how data can map—and respond to—inequality."
+           data-i18n-zh="地理空间数据科学、城市公平与韧性城市。结合 GIS、遥感与机器学习，研究数据如何揭示并回应不平等。">
+          Geospatial data science, urban equity and resilient cities.
+          Combining GIS, remote sensing and machine learning to study how
+          data can map—and respond to—inequality.
+        </p>
+        <ul class="bio-meta-list">
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-7.58-7-13a7 7 0 1 1 14 0c0 5.42-7 13-7 13z"/><circle cx="12" cy="9" r="2.6"/></svg>
+            </span>
+            <span class="bio-meta-val" data-i18n-en="Wenzhou · Beijing, CN" data-i18n-zh="中国 温州 · 北京">Wenzhou · Beijing, CN</span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg>
+            </span>
+            <span class="bio-meta-val">51WORLD Digital Twin</span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3 7 9 6 9-6"/></svg>
+            </span>
+            <span class="bio-meta-val"><a href="mailto:lishuhao010825@163.com">lishuhao010825@163.com</a></span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-1.96c-3.2.7-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.82 1.18 3.08 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56 4.56-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5z"/></svg>
+            </span>
+            <span class="bio-meta-val"><a href="https://github.com/Coldzera-010825" target="_blank" rel="noopener">github.com/Coldzera-010825</a></span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.02h4.56V23H.22V8.02zM8.27 8.02h4.37v2.05h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.48 3.04 5.48 6.99V23h-4.56v-6.43c0-1.53-.03-3.5-2.13-3.5-2.13 0-2.46 1.66-2.46 3.39V23H8.27V8.02z"/></svg>
+            </span>
+            <span class="bio-meta-val"><a href="https://www.linkedin.com/in/shuhao-li-3a347a31b/" target="_blank" rel="noopener">linkedin.com/in/shuhao-li</a></span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2 1 8.5 12 15l9-5.32V16h2V8.5L12 2z"/><path d="M4 11.95v3.55L12 20l8-4.5v-3.55L12 16.4 4 11.95z"/></svg>
+            </span>
+            <span class="bio-meta-val"><a href="https://scholar.google.com/" target="_blank" rel="noopener">Google Scholar</a></span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zM7.36 18.17H5.55V7.6h1.81v10.57zM6.45 6.55c-.6 0-1.08-.5-1.08-1.08 0-.6.48-1.08 1.08-1.08.6 0 1.08.49 1.08 1.08 0 .59-.48 1.08-1.08 1.08zm12.18 11.62h-1.81v-5.16c0-3.71-4.49-3.43-4.49 0v5.16H10.5V7.6h1.83v1.07c.85-1.58 4.49-1.69 4.49 1.52v7.98z"/></svg>
+            </span>
+            <span class="bio-meta-val"><a href="https://orcid.org/" target="_blank" rel="noopener">ORCID</a></span>
+          </li>
+          <li>
+            <span class="bio-meta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5c2.8 3.2 4.3 6.7 4.3 9.5s-1.5 6.3-4.3 9.5"/><path d="M12 2.5c-2.8 3.2-4.3 6.7-4.3 9.5s1.5 6.3 4.3 9.5"/></svg>
+            </span>
+            <span class="bio-meta-val" data-i18n-en="English · Mandarin" data-i18n-zh="英语 · 普通话">English · Mandarin</span>
+          </li>
+        </ul>
+        <a class="bio-cv-link" href="./CV.html"
+           data-i18n-en="View full CV →" data-i18n-zh="查看完整简历 →">View full CV →</a>
       </aside>
 
       <div class="bio-text">
-        <h3>About</h3>
-        <p>
+        <h3 data-i18n-en="About" data-i18n-zh="个人简介">About</h3>
+        <p data-i18n-html
+           data-i18n-en="I am a researcher passionate about exploring the intersection of <strong>geospatial data, urban sustainability, and social equity</strong>. I recently completed an MSc in Geographic Data Science and Spatial Analytics at the University of Bristol, building on undergraduate training in Geographic Information Science at Jiangxi University of Science and Technology. My work combines GIS, remote sensing, and data-driven modelling to investigate how cities can become smarter, fairer, and more resilient under environmental and social pressure."
+           data-i18n-zh="我是一名研究者，致力于探索 <strong>地理空间数据、城市可持续性与社会公平</strong> 的交叉领域。我于布里斯托大学完成地理数据科学与空间分析硕士学位，本科毕业于江西理工大学地理信息科学专业。我的工作结合 GIS、遥感与数据驱动建模，研究在环境与社会压力下，城市如何变得更智慧、更公平、更具韧性。">
           I am a researcher passionate about exploring the intersection of
           <strong>geospatial data, urban sustainability, and social equity</strong>.
           I recently completed an MSc in Geographic Data Science and Spatial Analytics
@@ -67,7 +152,9 @@
           how cities can become smarter, fairer, and more resilient under environmental
           and social pressure.
         </p>
-        <p>
+        <p data-i18n-html
+           data-i18n-en="My long-term goal is to reveal and address the <strong>hidden inequalities faced by vulnerable communities</strong> in urban environments — particularly around infrastructure access, exposure to environmental risk, and resilience to extreme weather. By pairing geospatial big data with machine learning, I aim to contribute research that informs <strong>data-driven policies for sustainable and inclusive urban development</strong>."
+           data-i18n-zh="我的长期目标，是揭示并回应城市环境中 <strong>弱势群体所面临的隐性不平等</strong>——尤其是基础设施可达性、环境风险暴露以及面对极端天气的韧性。通过将地理空间大数据与机器学习相结合，我希望为 <strong>可持续、包容性的城市发展政策</strong> 提供数据驱动的研究支持。">
           My long-term goal is to reveal and address the
           <strong>hidden inequalities faced by vulnerable communities</strong>
           in urban environments — particularly around infrastructure access, exposure
@@ -76,28 +163,59 @@
           that informs <strong>data-driven policies for sustainable and inclusive
           urban development</strong>.
         </p>
-        <p>
+        <p data-i18n-html
+           data-i18n-en='I have also released an open-source digital book, <em>“Geospatial Data Processing and Visualization”</em>, built with MyST and Jupyter Book — a structured, interactive walk-through of reproducible GIS workflows and Python-based geoprocessing automation. <a href="https://coldzera-010825.github.io/gis/" target="_blank" rel="noopener" style="color: var(--accent);">Read the book ↗</a>'
+           data-i18n-zh='我还编写了一本开源数字书 <em>《地理空间数据处理与可视化》</em>，基于 MyST 与 Jupyter Book 构建——结构化、可交互地介绍可复现的 GIS 工作流与基于 Python 的地理处理自动化。<a href="https://coldzera-010825.github.io/gis/" target="_blank" rel="noopener" style="color: var(--accent);">阅读电子书 ↗</a>'>
           I have also released an open-source digital book,
           <em>“Geospatial Data Processing and Visualization”</em>, built with MyST
           and Jupyter Book — a structured, interactive walk-through of reproducible
           GIS workflows and Python-based geoprocessing automation.
           <a href="https://coldzera-010825.github.io/gis/" target="_blank" rel="noopener" style="color: var(--accent);">Read the book ↗</a>
         </p>
+<<<<<<< HEAD
         <p style="margin-top: 22px;">
           For the four research threads my work runs along, see
           <a href="./research.html" style="color: var(--accent); border-bottom: 0.5px solid var(--accent); padding-bottom: 1px;">About the research ↗</a>.
         </p>
+=======
 
-        <h3>Professional skills</h3>
+        <h3 data-i18n-en="Background" data-i18n-zh="教育与经历">Background</h3>
         <ul>
-          <li><strong>GIS &amp; remote sensing</strong> · ArcGIS Pro · QGIS · ENVI · ERDAS · PostGIS</li>
-          <li><strong>Programming &amp; data</strong> · Python (Pandas, NumPy, GeoPandas, Arcpy) · R (ggplot2, tmap) · SQL</li>
-          <li><strong>Machine learning</strong> · Scikit-learn · TensorFlow · PyTorch · SAE · ST-CNN</li>
-          <li><strong>WebGIS</strong> · HTML/CSS/JS · OpenLayers · Leaflet · ArcGIS API for JavaScript</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>09/2019 – 06/2023</strong> · B.Sc. Geographic Information Science, Jiangxi University of Science and Technology (top 5 in department)"
+              data-i18n-zh="<strong>2019.09 – 2023.06</strong> · 江西理工大学 地理信息科学 学士（专业前 5 名）"><strong>09/2019 – 06/2023</strong> · B.Sc. Geographic Information Science, Jiangxi University of Science and Technology (top 5 in department)</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>09/2023 – 11/2024</strong> · M.Sc. Geographic Data Science and Spatial Analytics, University of Bristol"
+              data-i18n-zh="<strong>2023.09 – 2024.11</strong> · 布里斯托大学 地理数据科学与空间分析 硕士"><strong>09/2023 – 11/2024</strong> · M.Sc. Geographic Data Science and Spatial Analytics, University of Bristol</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>02/2025 – present</strong> · Technology &amp; Business Manager, 51WORLD Digital Twin Technology Co., Ltd."
+              data-i18n-zh="<strong>2025.02 – 至今</strong> · 51WORLD 数字孪生技术有限公司 技术与商务经理"><strong>02/2025 – present</strong> · Technology &amp; Business Manager, 51WORLD Digital Twin Technology Co., Ltd.</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>Internships</strong> · GIS engineering, digital-twin technology, and international organisations (UNIDO, CCP12, WCCO)"
+              data-i18n-zh="<strong>实习经历</strong> · GIS 工程、数字孪生技术，以及国际组织（UNIDO、CCP12、WCCO）"><strong>Internships</strong> · GIS engineering, digital-twin technology, and international organisations (UNIDO, CCP12, WCCO)</li>
+        </ul>
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
+
+        <h3 data-i18n-en="Professional skills" data-i18n-zh="专业技能">Professional skills</h3>
+        <ul>
+          <li data-i18n-html
+              data-i18n-en="<strong>GIS &amp; remote sensing</strong> · ArcGIS Pro · QGIS · ENVI · ERDAS · PostGIS"
+              data-i18n-zh="<strong>GIS 与遥感</strong> · ArcGIS Pro · QGIS · ENVI · ERDAS · PostGIS"><strong>GIS &amp; remote sensing</strong> · ArcGIS Pro · QGIS · ENVI · ERDAS · PostGIS</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>Programming &amp; data</strong> · Python (Pandas, NumPy, GeoPandas, Arcpy) · R (ggplot2, tmap) · SQL"
+              data-i18n-zh="<strong>编程与数据</strong> · Python（Pandas、NumPy、GeoPandas、Arcpy）· R（ggplot2、tmap）· SQL"><strong>Programming &amp; data</strong> · Python (Pandas, NumPy, GeoPandas, Arcpy) · R (ggplot2, tmap) · SQL</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>Machine learning</strong> · Scikit-learn · TensorFlow · PyTorch · SAE · ST-CNN"
+              data-i18n-zh="<strong>机器学习</strong> · Scikit-learn · TensorFlow · PyTorch · SAE · ST-CNN"><strong>Machine learning</strong> · Scikit-learn · TensorFlow · PyTorch · SAE · ST-CNN</li>
+          <li data-i18n-html
+              data-i18n-en="<strong>WebGIS</strong> · HTML/CSS/JS · OpenLayers · Leaflet · ArcGIS API for JavaScript"
+              data-i18n-zh="<strong>WebGIS</strong> · HTML/CSS/JS · OpenLayers · Leaflet · ArcGIS API for JavaScript"><strong>WebGIS</strong> · HTML/CSS/JS · OpenLayers · Leaflet · ArcGIS API for JavaScript</li>
         </ul>
 
-        <h3>Beyond research</h3>
-        <p>
+        <h3 data-i18n-en="Beyond research" data-i18n-zh="工作之外">Beyond research</h3>
+        <p data-i18n-html
+           data-i18n-en="Outside of work I enjoy <strong>music, basketball, running, and volunteering</strong>. I'm fascinated by how data visualisation can turn complex information into compelling stories, and I value cross-cultural collaboration on <strong>climate change, urban resilience, and social justice</strong>."
+           data-i18n-zh="工作之外，我喜欢 <strong>音乐、篮球、跑步与志愿服务</strong>。我着迷于数据可视化如何把复杂信息转化为引人入胜的叙事，也珍视在 <strong>气候变化、城市韧性与社会公正</strong> 议题上的跨文化协作。">
           Outside of work I enjoy <strong>music, basketball, running, and volunteering</strong>.
           I'm fascinated by how data visualisation can turn complex information into
           compelling stories, and I value cross-cultural collaboration on
@@ -106,6 +224,7 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Footprints — interactive journey map -->
     <div class="footprints-section">
       <div class="footprints-head">
@@ -125,15 +244,176 @@
 
       <div class="footprints-timeline" id="footprints-timeline">
         <!-- populated by footprints.js -->
+=======
+    <div class="research-foot-links" style="margin-top: 72px;">
+      <a href="./research.html"
+         data-i18n-en="See research themes ↗" data-i18n-zh="查看研究主题 ↗">See research themes ↗</a>
+      <a href="./projects.html"
+         data-i18n-en="Browse projects ↗" data-i18n-zh="浏览项目 ↗">Browse projects ↗</a>
+      <a href="./CV.html"
+         data-i18n-en="View CV ↗" data-i18n-zh="查看简历 ↗">View CV ↗</a>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       Where I've been — immersive full-bleed journey
+       ==================================================== -->
+  <section class="journey-section" id="journey-section">
+    <div class="journey-stage">
+      <!-- Title that begins centred-and-huge, then docks to the top -->
+      <div class="journey-title-block">
+        <p class="journey-eyebrow"
+           data-i18n-en="Where I've been" data-i18n-zh="走过的地方">Where I've been</p>
+        <h2 class="journey-title">
+          <span data-i18n-en="A scrolling field-book" data-i18n-zh="一本可滚动的地点手记">A scrolling field-book</span>
+          <span class="journey-title-em"
+                data-i18n-en="of the places that shaped this path"
+                data-i18n-zh="记录塑造这条路的地点">of the places that shaped this path</span>
+        </h2>
+        <p class="journey-lede"
+           data-i18n-en="From a small city in Zhejiang to a data-science lab in Bristol and the digital-twin office in Beijing — four coordinates, four chapters."
+           data-i18n-zh="从浙江的小城到布里斯托的数据科学实验室，再到北京的数字孪生办公室——四个坐标，四个章节。">
+          From a small city in Jiangxi to a data-science lab in Bristol
+          and the digital-twin office in Beijing — four coordinates, four chapters.
+        </p>
+      </div>
+
+      <div class="journey-wrap">
+        <div class="journey-map-col">
+          <div class="journey-map" id="bio-map"></div>
+          <!-- Floating photo gallery over the map (populated by bio-map.js) -->
+          <div class="journey-gallery" id="journey-gallery" aria-live="polite">
+            <button class="journey-gallery-nav is-prev" type="button" aria-label="Previous photo">‹</button>
+            <button class="journey-gallery-nav is-next" type="button" aria-label="Next photo">›</button>
+            <div class="journey-gallery-track" id="journey-gallery-track"></div>
+            <div class="journey-gallery-meta">
+              <span class="journey-gallery-place" id="journey-gallery-place"></span>
+              <span class="journey-gallery-count" id="journey-gallery-count"></span>
+            </div>
+            <div class="journey-gallery-dots" id="journey-gallery-dots"></div>
+          </div>
+          <p class="journey-map-hint"
+             data-i18n-en="Scroll the stories → the map follows."
+             data-i18n-zh="滚动章节 → 地图会跟随过去。">Scroll the stories → the map follows.</p>
+        </div>
+        <ol class="journey-chapters" id="journey-chapters">
+
+          <li class="journey-chapter" data-lat="27.99" data-lng="120.70" data-zoom="6" id="ch-wenzhou">
+            <div class="journey-chapter-head">
+              <span class="journey-num">01</span>
+              <h4 class="journey-place" data-i18n-en="Wenzhou" data-i18n-zh="温州">Wenzhou</h4>
+              <p class="journey-period" data-i18n-en="Hometown · Zhejiang, China" data-i18n-zh="故乡 · 中国浙江">Hometown · Zhejiang, China</p>
+            </div>
+            <p class="journey-prose"
+               data-i18n-en="The coastal city where I grew up: river deltas, mountains stepping down into the sea, and a culture of restless, small-trader pragmatism. Most of my earliest curiosity about how places work—how land, water and people interlock—started here."
+               data-i18n-zh="我长大的海滨城市：江河入海、群山含海，以及一种永不停歇、小商小贩的务实气质。我最早对“地方如何运转”的好奇，都从这里开始。">
+              The coastal city where I grew up: river deltas, mountains
+              stepping down into the sea, and a culture of restless,
+              small-trader pragmatism. Most of my earliest curiosity about
+              how places work—how land, water and people interlock—started here.
+            </p>
+            <div class="journey-photos">
+              <figure><img src="./assets/fig/journey/wenzhou-1.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/wenzhou-2.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/wenzhou-3.jpg" alt="" loading="lazy"/></figure>
+            </div>
+          </li>
+
+          <li class="journey-chapter" data-lat="25.83" data-lng="114.94" data-zoom="6" id="ch-ganzhou">
+            <div class="journey-chapter-head">
+              <span class="journey-num">02</span>
+              <h4 class="journey-place" data-i18n-en="Ganzhou" data-i18n-zh="赣州">Ganzhou</h4>
+              <p class="journey-period" data-i18n-en="2019 – 2023 · B.Sc. GIS, JXUST" data-i18n-zh="2019—2023 · 江西理工大学 · 地理信息科学 学士">2019 – 2023 · B.Sc. GIS, JXUST</p>
+            </div>
+            <p class="journey-prose"
+               data-i18n-en="Four undergraduate years in the red-soil hills of southern Jiangxi. Mornings in the GIS lab tracing rare-earth mining footprints from Landsat, afternoons biking through the old city wall. The discipline of remote sensing and Python—and a habit of asking what a map is hiding—was forged here."
+               data-i18n-zh="赣南红土丘陵间的本科四年。上午在 GIS 实验室用 Landsat 追踪稀土开采的足迹，下午骑车穿越老城墙。遥感与 Python 的基本功，以及“地图背后隐藏着什么”的习惯，都是在这里塑造的。">
+              Four undergraduate years in the red-soil hills of southern
+              Jiangxi. Mornings in the GIS lab tracing rare-earth mining
+              footprints from Landsat, afternoons biking through the old
+              city wall. The discipline of remote sensing and Python—and
+              a habit of asking what a map is hiding—was forged here.
+            </p>
+            <div class="journey-photos">
+              <figure><img src="./assets/fig/journey/ganzhou-1.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/ganzhou-2.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/ganzhou-3.jpg" alt="" loading="lazy"/></figure>
+            </div>
+          </li>
+
+          <li class="journey-chapter" data-lat="51.45" data-lng="-2.58" data-zoom="5" id="ch-bristol">
+            <div class="journey-chapter-head">
+              <span class="journey-num">03</span>
+              <h4 class="journey-place" data-i18n-en="Bristol" data-i18n-zh="布里斯托">Bristol</h4>
+              <p class="journey-period" data-i18n-en="2023 – 2024 · MSc, University of Bristol" data-i18n-zh="2023—2024 · 布里斯托大学 · 硕士">2023 – 2024 · MSc, University of Bristol</p>
+            </div>
+            <p class="journey-prose"
+               data-i18n-en="Across the world, into the pastel terraces and harbour fog of southwestern England. The MSc in Geographic Data Science taught me to think with code and with cities at once — spatial statistics, machine learning on satellite imagery, and long evenings in the Pervasive Media Studio debating what 'fair' means in a model."
+               data-i18n-zh="一路向西走到英格兰西南部。布里斯托大学的地理数据科学硕士，教会我同时用代码与城市思考问题——空间统计、遥感机器学习，以及在 Pervasive Media Studio 讨论“公平”于一个模型意味着什么的夜晚。">
+              Across the world, into the pastel terraces and harbour fog of
+              southwestern England. The MSc in Geographic Data Science
+              taught me to think with code and with cities at once —
+              spatial statistics, machine learning on satellite imagery,
+              and long evenings debating what 'fair' means in a model.
+            </p>
+            <div class="journey-photos">
+              <figure><img src="./assets/fig/journey/bristol-1.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/bristol-2.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/bristol-3.jpg" alt="" loading="lazy"/></figure>
+            </div>
+          </li>
+
+          <li class="journey-chapter" data-lat="39.90" data-lng="116.40" data-zoom="5" id="ch-beijing">
+            <div class="journey-chapter-head">
+              <span class="journey-num">04</span>
+              <h4 class="journey-place" data-i18n-en="Beijing" data-i18n-zh="北京">Beijing</h4>
+              <p class="journey-period" data-i18n-en="2025 – present · 51WORLD Digital Twin" data-i18n-zh="2025—至今 · 51WORLD 数字孪生">2025 – present · 51WORLD Digital Twin</p>
+            </div>
+            <p class="journey-prose"
+               data-i18n-en="Back to China, this time to the capital. At 51WORLD I work where geospatial data meets industry: city-scale digital twins, sensor fusion, and the messy politics of standing in a planning meeting and explaining what a model can — and cannot — say about a city."
+               data-i18n-zh="回到中国，这一次在首都。在 51WORLD，我的工作在地理空间数据与产业之间：城市级数字孪生、多源传感器融合，以及站在规划会议里讲清楚“一个模型能讲什么、不能讲什么”那些现实的东西。">
+              Back to China, this time to the capital. At 51WORLD I work
+              where geospatial data meets industry: city-scale digital twins,
+              sensor fusion, and the messy politics of standing in a planning
+              meeting and explaining what a model can — and cannot — say
+              about a city.
+            </p>
+            <div class="journey-photos">
+              <figure><img src="./assets/fig/journey/beijing-1.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/beijing-2.jpg" alt="" loading="lazy"/></figure>
+              <figure><img src="./assets/fig/journey/beijing-3.jpg" alt="" loading="lazy"/></figure>
+            </div>
+          </li>
+
+        </ol>
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
       </div>
     </div>
   </section>
 
+<<<<<<< HEAD
   <footer class="pw-footer">© 2025 Shuhao Li</footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./assets/js/reveal-words.js" defer></script>
   <script src="./assets/js/footprints.js" defer></script>
+=======
+  <footer class="pw-footer"
+          data-i18n-en="© 2025 Shuhao Li"
+          data-i18n-zh="© 2025 李书昊">© 2025 Shuhao Li</footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./assets/js/i18n.js" defer></script>
+  <script src="./assets/js/reveal-words.js" defer></script>
+  <script src="./assets/js/bio-map.js" defer></script>
+  <script>
+    // Hide journey photos that fail to load so the paper texture shows through.
+    document.querySelectorAll('.journey-photos img').forEach((img) => {
+      img.addEventListener('error', () => { img.style.display = 'none'; }, { once: true });
+    });
+  </script>
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
 </body>
 </html>

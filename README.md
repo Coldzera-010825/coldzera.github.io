@@ -1,4 +1,4 @@
-# Shuhao Li — Personal Academic Website
+﻿# Shuhao Li — Personal Academic Website
 
 A multi-page academic homepage showcasing research themes, projects, publications, and CV.
 Hosted via GitHub Pages → [https://coldzera-010825.github.io/coldzera.github.io/](https://coldzera-010825.github.io/coldzera.github.io/)

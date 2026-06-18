@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -11,18 +11,36 @@
   <link href="https://fonts.loli.net/css2?family=Playfair+Display:wght@700;800&family=Cormorant+SC:wght@300;400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="./assets/css/design-system.css" />
+
+  <!-- Page transition curtain (must run before body paints to avoid flash) -->
+  <script src="./assets/js/page-transition.js"></script>
 </head>
 <body>
 
   <nav class="pw-nav">
     <a class="pw-nav-logo" href="./index.html">Shuhao&nbsp;Li</a>
     <div class="pw-nav-links">
+<<<<<<< HEAD
       <a class="pw-nav-link" href="./index.html">Home</a>
       <a class="pw-nav-link" href="./research.html">Research</a>
       <a class="pw-nav-link" href="./about.html">About</a>
       <a class="pw-nav-link" href="./projects.html">Projects</a>
       <a class="pw-nav-link" href="./publications.html">Publications</a>
       <a class="pw-nav-link is-active" href="./CV.html">CV</a>
+=======
+      <a class="pw-nav-link" href="./index.html"
+         data-i18n-en="Home" data-i18n-zh="首页">Home</a>
+      <a class="pw-nav-link" href="./about.html"
+         data-i18n-en="About" data-i18n-zh="关于">About</a>
+      <a class="pw-nav-link" href="./research.html"
+         data-i18n-en="Research" data-i18n-zh="研究">Research</a>
+      <a class="pw-nav-link" href="./projects.html"
+         data-i18n-en="Projects" data-i18n-zh="项目">Projects</a>
+      <a class="pw-nav-link" href="./publications.html"
+         data-i18n-en="Publications" data-i18n-zh="论著">Publications</a>
+      <a class="pw-nav-link is-active" href="./CV.html"
+         data-i18n-en="CV" data-i18n-zh="简历">CV</a>
+>>>>>>> 8b431936c9ff42424bc9fab2a3f5fe5b8cf159bf
     </div>
     <span class="pw-nav-divider"></span>
   </nav>
@@ -32,12 +50,17 @@
 
       <div class="cv-toolbar">
         <div>
-          <p class="eyebrow" style="margin-bottom: 8px;">Curriculum Vitae</p>
-          <h1 class="section-title" data-reveal>Shuhao Li · CV</h1>
+          <p class="eyebrow" style="margin-bottom: 8px;"
+             data-i18n-en="Curriculum Vitae" data-i18n-zh="个人简历">Curriculum Vitae</p>
+          <h1 class="section-title" data-reveal
+              data-i18n-en="Shuhao Li · CV"
+              data-i18n-zh="李书昊 · 简历">Shuhao Li · CV</h1>
         </div>
         <a class="pw-cta is-primary"
            href="./assets/fig/Shuhao%20LI_CV%204docx.pdf"
-           download>
+           download
+           data-i18n-en="Download PDF ↓"
+           data-i18n-zh="下载 PDF ↓">
           Download PDF ↓
         </a>
       </div>
@@ -49,15 +72,21 @@
         <a href="./assets/fig/Shuhao%20LI_CV%204docx.pdf">Download the CV</a>.
       </iframe>
 
-      <p style="margin-top: 24px; font-size: var(--type-meta); color: var(--ink-dim); text-align: center;">
+      <p style="margin-top: 24px; font-size: var(--type-meta); color: var(--ink-dim); text-align: center;"
+         data-i18n-html
+         data-i18n-en='Trouble viewing? &nbsp; <a href="./assets/fig/Shuhao%20LI_CV%204docx.pdf" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">Open the PDF directly ↗</a>'
+         data-i18n-zh='查看遇到问题？&nbsp; <a href="./assets/fig/Shuhao%20LI_CV%204docx.pdf" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">直接打开 PDF ↗</a>'>
         Trouble viewing? &nbsp;
         <a href="./assets/fig/Shuhao%20LI_CV%204docx.pdf" style="color: var(--accent); border-bottom: 0.5px solid var(--accent);">Open the PDF directly ↗</a>
       </p>
     </div>
   </section>
 
-  <footer class="pw-footer">© 2025 Shuhao Li</footer>
+  <footer class="pw-footer"
+          data-i18n-en="© 2025 Shuhao Li"
+          data-i18n-zh="© 2025 李书昊">© 2025 Shuhao Li</footer>
 
+  <script src="./assets/js/i18n.js" defer></script>
   <script src="./assets/js/reveal-words.js" defer></script>
 </body>
 </html>

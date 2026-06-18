@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    reveal-words.js — word-mask rise-from-below animation
    For any element marked with `data-reveal`, split its text into
    words wrapped in <span class="rt-word-mask"><span class="rt-word">…</span></span>
@@ -85,4 +85,12 @@
   } else {
     init();
   }
+
+  /* Allow other scripts (i18n) to re-split a reveal element after its
+     content has been swapped, so the rise-from-below animation replays. */
+  window.PW_REVEAL_RESPLIT = function (el) {
+    if (!el) return;
+    el.dataset.revealed = '';
+    splitElement(el);
+  };
 })();
