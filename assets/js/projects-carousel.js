@@ -692,6 +692,73 @@
         sourceLabel: { en: 'Open the full report (urban.html)', zh: '打开完整研究报告（urban.html）' },
       },
     },
+    {
+      n: '09',
+      accent: 'oklch(0.52 0.16 300)',
+      accentSoft: 'oklch(0.92 0.05 300)',
+      title: 'Geospatial Research Visualization · A Living Showcase',
+      titleZh: '地理空间科研可视化 · 展示总集',
+      zh: '一个持续生长的练习集：用更有代表性的图表与配色，表达地理空间科研结果',
+      zhEn: 'An ongoing practice set of visualization types and palettes for research',
+      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. The first piece reproduces a family of 3D figures built with the R package ggcube; more 2D and thematic techniques will follow.',
+      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。第一篇复现了一组用 R 包 ggcube 绘制的三维图；之后还会加入更多二维与专题制图技法。',
+      link: './assets/reports/ggcube-3d-viz.html',
+      linkLabel: 'Open piece 01 · 3D with ggcube',
+      linkLabelZh: '打开第一篇 · ggcube 三维可视化',
+      details: {
+        hero: './assets/fig/projects/09-ggcube-dem.png',
+        tagline: {
+          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Piece 01: a set of 3D figures in R with ggcube.',
+          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。第一篇：用 R 的 ggcube 绘制的一组三维图。',
+        },
+        sections: [
+          {
+            heading: { en: 'The idea', zh: '缘起' },
+            body: {
+              en: 'Good science deserves visuals that actually carry the result. This project is my personal lab for that — a place to try visualization types and colour schemes that are not just correct but representative and memorable, before they earn a place in a paper or a report. The emphasis is practice: building a vocabulary of techniques I can reach for when a real dataset needs to speak clearly.',
+              zh: '好的研究值得能真正承载结果的图。这个项目就是我为此设立的个人实验场——在某种图表或配色进入论文或报告之前，先在这里尝试那些不仅正确、而且更具代表性、更令人印象深刻的可视化类型与配色方案。重点在于"练习"：积累一套技法词汇，等真实数据需要清晰表达时随手可用。',
+            },
+          },
+          {
+            heading: { en: 'Piece 01 · 3D visualization with ggcube', zh: '第一篇 · ggcube 三维可视化' },
+            body: {
+              en: 'The first entry explores three dimensions with the R package ggcube, which extends ggplot2 via coord_3d() and geom_*_3d(). It rebuilds five figure types — 3D scatter, a four-variable scatter, a simulated DEM surface with hillshade lighting, 3D bars, and a space–time propagation path — encoding space, time and intensity together. The full walkthrough, code and palettes live in the linked report.',
+              zh: '第一篇用 R 包 ggcube 探索三维——它通过 coord_3d() 与 geom_*_3d() 扩展 ggplot2。复刻了五种图：3D 散点、四变量散点、带地形晕渲的模拟 DEM 曲面、3D 柱状，以及空间—时间传播路径，把空间、时间与强度一起编码。完整讲解、代码与配色都在所链接的报告里。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-ggcube-dem.png',
+              caption: {
+                en: 'Piece 01 — a simulated DEM surface (geom_surface_3d + light hillshading), one of five 3D figures in the ggcube report.',
+                zh: '第一篇 —— 模拟 DEM 曲面（geom_surface_3d + 光照晕渲），是 ggcube 报告里五张三维图之一。',
+              },
+            },
+          },
+          {
+            heading: { en: 'Where this is heading', zh: '接下来' },
+            body: {
+              en: 'Future pieces will move well beyond 3D: bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines, animated time series, and dedicated palette studies (viridis, scientific colour maps, ColorBrewer) chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
+              zh: '之后的篇目会走出三维：双变量与小多组分级设色图、流向 / OD 地图、山脊线图、动画时间序列，以及专门的配色研究（viridis、科学配色 scientific colour maps、ColorBrewer）——以感知诚实为准则挑选。这里的每一种技法都是排练，最终目的是把其中最有力的，用到我真实的地理空间科研成果中。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-ggcube-path.png',
+              caption: {
+                en: 'A space–time propagation path from Piece 01 — the kind of representation this showcase collects and refines.',
+                zh: '第一篇中的空间—时间传播路径——正是这个展示集所收集与打磨的表达方式。',
+              },
+            },
+          },
+        ],
+        bullets: [
+          { en: 'A personal, growing showcase of geospatial research-visualization techniques', zh: '一个持续生长的地理空间科研可视化技法个人展示集' },
+          { en: 'Focus on both visualization types and colour palettes', zh: '同时关注可视化类型与配色方案' },
+          { en: 'Goal: express research results more representatively, then apply them to real science', zh: '目标：更有代表性地表达科研结果，并最终应用到真实科研' },
+          { en: 'Piece 01: 3D figures in R with ggcube (scatter · surface · bars · path)', zh: '第一篇：用 R 的 ggcube 绘制三维图（散点 · 曲面 · 柱状 · 路径）' },
+          { en: 'More 2D, thematic and animated pieces to follow', zh: '后续将加入更多二维、专题与动画篇目' },
+        ],
+        sourceUrl: './assets/reports/ggcube-3d-viz.html',
+        sourceLabel: { en: 'Open piece 01 · 3D with ggcube (report)', zh: '打开第一篇 · ggcube 三维可视化（报告）' },
+      },
+    },
   ];
 
   function attr(v) {

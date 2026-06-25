@@ -1,0 +1,273 @@
+---
+title: "Visualizing Geo-Science Results in 3D with ggcube"
+subtitle: "A ggcube tutorial — 3D scatter, multivariate scatter, DEM surface, bars and paths in R"
+author: "Shuhao Li"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: readable
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: false
+    number_sections: true
+    code_folding: show
+    fig_width: 8
+    fig_height: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE, warning = FALSE,
+  fig.align = "center", out.width = "100%", dpi = 130
+)
+```
+
+> This report is a hands-on tutorial for [**ggcube**](https://matthewkling.github.io/ggcube/),
+> an R package (by Matthew Kling, on CRAN) that extends ggplot2 into three dimensions.
+> When hydro-meteorological and geographic data carry **spatial location, a time process and a
+> variable intensity** at once, a 3D view is often more expressive than a single 2D plot.
+> ggcube keeps the ggplot2 layer grammar and adds 3D coordinates via `coord_3d()`, 3D geometric
+> objects, lighting, projection and viewpoint control — so familiar ggplot2 code moves naturally
+> into three dimensions. This page reproduces five core ggcube figures end to end.
+
+# Why 3D, and why ggcube
+
+The idea behind `ggcube` is direct: **keep the ggplot2 layer grammar, but let 2D graphics move
+into 3D space.** It reuses `ggplot()`, `aes()`, `geom_*()` and `theme_*()`, then adds 3D
+coordinates, 3D geoms, lighting, projection and viewpoint control — so you never have to switch
+to a different plotting system. In short: **ggplot2 handles the layer logic, ggcube places those
+layers into three dimensions.** The main 3D layers used here:
+
+| Plot type | ggcube function |
+|---|---|
+| 3D scatter | `geom_point_3d()` |
+| 3D surface (DEM / continuous field) | `geom_surface_3d()` (with `light()`) |
+| 3D bars (histogram / grid columns) | `geom_bar_3d()` / `geom_col_3d()` |
+| 3D path (trajectory / space–time) | `geom_path_3d()` |
+| 3D coordinate system | `coord_3d()` (view `yaw / pitch / roll`, distance `dist`, aspect `ratio`) |
+
+# Installation & setup
+
+```{r install, eval=FALSE}
+# ggcube is on CRAN:
+install.packages("ggcube")
+
+# Or the development version from GitHub:
+# install.packages("remotes")
+# remotes::install_github("matthewkling/ggcube")
+```
+
+```{r libs}
+library(ggplot2)
+library(ggcube)
+library(scales)
+```
+
+# The simplest 3D scatter
+
+The logic is clear: `displ` maps to the X axis, `hwy` to Y, `cty` to Z, and `class` distinguishes
+categories by colour. `geom_point_3d()` draws the three-dimensional points and `coord_3d()`
+establishes the 3D coordinate system. If you can already build an ordinary ggplot2 scatter plot,
+this needs almost no extra learning.
+
+```{r p1-scatter}
+p1 <- ggplot(mpg, aes(x = displ, y = hwy, z = cty, color = class)) +
+  geom_point_3d(size = 2, alpha = 0.8) +
+  coord_3d() +
+  theme_minimal()
+p1
+```
+
+# A 3D scatter for multiple variables
+
+A 3D scatter is well suited to showing the relationship between three continuous variables; adding
+colour, point size or transparency encodes a fourth. Here `lon` and `lat` represent spatial
+position, `time` represents the time step, and `intensity` represents an event strength such as
+heatwave or precipitation intensity — so a single figure captures how an event evolves across
+**four dimensions**.
+
+```{r p2-weather}
+set.seed(123)
+weather_data <- data.frame(
+  lon       = runif(120, 100, 125),
+  lat       = runif(120, 25, 45),
+  time      = sample(1:6, 120, replace = TRUE),
+  intensity = rnorm(120, mean = 3, sd = 1)
+)
+
+p2 <- ggplot(weather_data, aes(x = lon, y = lat, z = time, color = intensity)) +
+  geom_point_3d(size = 2.5, alpha = 0.85) +
+  coord_3d() +
+  scale_color_viridis_c(option = "C") +
+  labs(
+    x = "Longitude", y = "Latitude", z = "Time step",
+    color = "Intensity",
+    title = "Spatio-temporal distribution of a weather event"
+  ) +
+  theme_minimal()
+p2
+```
+
+# 3D surfaces — a simulated DEM
+
+Many geographic and environmental variables are themselves continuous surfaces: elevation (DEM),
+land-surface temperature, precipitation fields, water tables, pollutant concentration, soil
+moisture, model-error surfaces. A 2D heat map can show high and low areas, but the relief and
+gradients are not intuitive; a 3D surface shows peaks, valleys and continuous change directly.
+
+Here a DEM over the China region (80–130°E, 20–55°N) is simulated: a **western massif**
+(Tibetan-Plateau style, peak ~3500 m), a **north-eastern secondary massif** (~1200 m) and a
+low-frequency undulation. `geom_surface_3d()` auto-detects the regular grid, tessellates it into a
+mesh, and `light()` applies terrain hillshading. In practice you simply swap `elevation` for a real
+DEM or any other continuous environmental variable.
+
+```{r p3-dem, fig.height=6.5}
+set.seed(123)
+lon_seq <- seq(80, 130, length.out = 60)
+lat_seq <- seq(20, 55,  length.out = 60)
+
+dem_data <- expand.grid(lon = lon_seq, lat = lat_seq)
+dem_data$elevation <- with(
+  dem_data,
+  3500 * exp(-(((lon - 92) / 12)^2 + ((lat - 33) / 9)^2)) +   # western massif
+  1200 * exp(-(((lon - 122) / 7)^2 + ((lat - 47) / 6)^2)) +   # north-eastern massif
+  250  * sin(lon / 6) * cos(lat / 5) +                        # low-frequency undulation
+  rnorm(length(lon), 0, 40)                                   # fine-scale noise
+)
+
+p3 <- ggplot(dem_data, aes(x = lon, y = lat, z = elevation,
+                           fill = elevation, color = elevation)) +
+  geom_surface_3d(
+    light     = light(direction = c(1, 0, 0.5), mode = "hsv", contrast = 1.3),
+    linewidth = 0.08
+  ) +
+  scale_fill_gradientn(colors = terrain.colors(10)) +
+  scale_color_gradientn(colors = terrain.colors(10)) +
+  coord_3d(ratio = c(1, 1, 0.6)) +
+  guides(fill = guide_colorbar_3d()) +
+  labs(x = "Longitude", y = "Latitude", z = "Elevation (m)",
+       fill = "Elev. (m)", title = "Simulated DEM surface (China region)") +
+  theme_minimal() +
+  theme(legend.position = "right")
+p3
+```
+
+# 3D bars and columns
+
+Beyond continuous variables, ggcube can also draw 3D bar charts — useful for comparisons across
+sites, months, years or scenarios.
+
+**`geom_bar_3d()`** is a 2D histogram: it takes two continuous variables on x / y and counts the z
+(frequency) automatically.
+
+```{r p4-bar, fig.height=6}
+p4 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length)) +
+  geom_bar_3d(
+    fill  = "steelblue",
+    color = "steelblue4",
+    bins  = 10,
+    width = c(0.85, 0.85)
+  ) +
+  coord_3d(yaw = 40, ratio = c(1, 1, 0.6), dist = 1.6) +
+  scale_z_continuous(expand = c(0, 0)) +
+  labs(title = "3D histogram (geom_bar_3d)") +
+  theme_minimal()
+p4
+```
+
+**`geom_col_3d()`** draws 3D columns directly from grid data with an explicit z height. Here a small
+categorical dataset is simulated — `site` is a station, `month` is the month, `precip` is rainfall —
+extending a 2D bar chart into three dimensions.
+
+```{r p4b-col, fig.height=6}
+set.seed(123)
+col_data <- expand.grid(site = 1:5, month = 1:6)
+col_data$precip <- round(runif(nrow(col_data), 20, 200))
+
+p4b <- ggplot(col_data, aes(x = site, y = month, z = precip, fill = precip)) +
+  geom_col_3d(width = 0.7) +
+  scale_fill_viridis_c(option = "D") +
+  coord_3d(yaw = 40, ratio = c(1, 1, 0.7)) +
+  guides(fill = guide_colorbar_3d()) +
+  scale_x_continuous(breaks = 1:5, labels = paste0("S", 1:5)) +
+  labs(x = "Site", y = "Month", z = "Precip (mm)", fill = "Precip",
+       title = "3D columns by site x month (geom_col_3d)") +
+  theme_minimal()
+p4b
+```
+
+# 3D paths through space and time
+
+Many processes are not static but move and evolve: heatwave centres shifting, rain bands advancing,
+drought expanding, typhoon tracks changing, pollutant transport, water-mass migration, cloud or
+vapour-flux propagation. These are a natural fit for a 3D path.
+
+Here a propagation trajectory is simulated — moving north-east with a fluctuating intensity. `lon`
+and `lat` are spatial position, `time` is the z (time) layer and `intensity` is event strength. A
+grey path projected onto the floor face acts as a "ground shadow", making the horizontal movement
+easy to read.
+
+```{r p5-path, fig.height=6.5}
+set.seed(123)
+n <- 40
+track <- data.frame(time = 1:n)
+track$lon <- 100 + cumsum(rnorm(n, 0.5, 0.4))
+track$lat <- 25  + cumsum(rnorm(n, 0.45, 0.35))
+track$intensity <- 3 + 2 * sin(seq(0, 3 * pi, length.out = n)) + rnorm(n, 0, 0.3)
+
+p5 <- ggplot(track, aes(x = lon, y = lat, z = time, color = intensity)) +
+  # ground projection (shadow on the floor face)
+  geom_path_3d(linewidth = 0.4, color = "grey70",
+               position = position_on_face("zmin")) +
+  # the 3D trajectory itself + nodes
+  geom_path_3d(linewidth = 1) +
+  geom_point_3d(size = 2.2) +
+  scale_color_viridis_c(option = "B") +
+  coord_3d() +
+  labs(x = "Longitude", y = "Latitude", z = "Time step",
+       color = "Intensity", title = "3D propagation trajectory") +
+  theme_minimal()
+p5
+```
+
+> **Plugging in a real province shapefile (optional).** To replace the random track with real data,
+> read province boundaries with `sf`, repeat the boundary coordinates for each time slice with the
+> matching `z` (time) value, and overlay another `geom_path_3d()`:
+>
+> ```r
+> # library(sf)
+> # prov <- st_read("china_provinces.shp")
+> # prov_df <- as.data.frame(st_coordinates(prov))
+> # names(prov_df)[1:2] <- c("lon", "lat")
+> ```
+
+# Exporting thumbnails
+
+Each figure is also saved as a PNG into `../fig/projects/`, where the personal website's
+"Project 09" card picks them up as thumbnails.
+
+```{r export, eval=TRUE, results='hide'}
+out_dir <- "../fig/projects"
+if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+
+ggsave(file.path(out_dir, "09-ggcube-scatter.png"), p1,  width = 8, height = 6,   dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-weather.png"), p2,  width = 8, height = 6,   dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-dem.png"),     p3,  width = 8, height = 6.5, dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-bar.png"),     p4,  width = 8, height = 6,   dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-path.png"),    p5,  width = 8, height = 6.5, dpi = 150)
+```
+
+# Summary
+
+`ggcube` extends the familiar ggplot2 grammar into three dimensions: just add `z` to `aes()`, swap
+`geom_*()` for the matching `geom_*_3d()`, and append `coord_3d()` to obtain scatter, surface, bar
+and path figures — with support for lighting, viewpoint control and mixed 2D/3D layers. For
+hydro-meteorological and geographic data that carry space, time and intensity together, this is a
+low-friction, reproducible visualization approach that plugs straight into an existing ggplot2
+workflow.
+
+---
+
+*Package: [ggcube](https://matthewkling.github.io/ggcube/) by Matthew Kling.*
