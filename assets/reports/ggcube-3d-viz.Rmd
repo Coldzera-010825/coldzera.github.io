@@ -4,15 +4,12 @@ subtitle: "A ggcube tutorial — 3D scatter, multivariate scatter, DEM surface, 
 author: "Shuhao Li"
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output:
-  html_document:
-    self_contained: true
-    theme: readable
-    highlight: tango
+  prettydoc::html_pretty:
+    theme: cayman      # alternatives: tactile, architect, leonids, hpstr
+    highlight: github
     toc: true
-    toc_float:
-      collapsed: false
     number_sections: true
-    code_folding: show
+    math: katex
     fig_width: 8
     fig_height: 6
 ---
@@ -52,7 +49,7 @@ layers into three dimensions.** The main 3D layers used here:
 
 ```{r install, eval=FALSE}
 # ggcube is on CRAN:
-install.packages("ggcube")
+install.packages(c("rmarkdown","prettydoc","ggplot2","scales","ggcube"))  # 首次
 
 # Or the development version from GitHub:
 # install.packages("remotes")
@@ -146,7 +143,9 @@ p3 <- ggplot(dem_data, aes(x = lon, y = lat, z = elevation,
   scale_fill_gradientn(colors = terrain.colors(10)) +
   scale_color_gradientn(colors = terrain.colors(10)) +
   coord_3d(ratio = c(1, 1, 0.6)) +
-  guides(fill = guide_colorbar_3d()) +
+  # elevation is mapped to both fill (faces) and color (mesh lines), which would
+  # create two identical legends — keep only the 3D fill colorbar, hide the color one
+  guides(fill = guide_colorbar_3d(), color = "none") +
   labs(x = "Longitude", y = "Latitude", z = "Elevation (m)",
        fill = "Elev. (m)", title = "Simulated DEM surface (China region)") +
   theme_minimal() +
@@ -243,6 +242,141 @@ p5
 > # names(prov_df)[1:2] <- c("lon", "lat")
 > ```
 
+# Stacked surface layers in one cube (the multi-index style)
+
+The reference figure does something more than a single surface per panel: each cube holds **three
+stacked layers** — three different standardized drought indices (e.g. NSPEI / NSSMI / NSRR), each
+drawn as its own spatial surface and offset vertically along `z` so they read as a layer cake. ggcube
+handles this naturally: a `coord_3d()` plot can take **several `geom_surface_3d()` layers**, each with
+its own `data` (a complete, single-valued grid) placed at a different base height.
+
+## Step 1 — one panel, three stacked layers
+
+We simulate three index fields as progressively smaller regular grids, flatten their vertical relief,
+and offset them to well-separated base heights. The upper sheets are slightly smaller than the lower
+sheet, and a small planar tilt is added inside `z`. This keeps the original `coord_3d()` view while
+making each layer read as a separated, inclined spatial sheet rather than a large horizontal cover
+that hides the one below it.
+
+```{r p6a-stack, fig.width=7, fig.height=7}
+set.seed(7)
+layer_gap <- 12
+z_relief  <- 0.18
+
+# one index field: a Gaussian anomaly + low-frequency undulation on a smaller complete grid
+make_layer <- function(cx, cy, sx, sy, amp, base, sheet_cx, sheet_cy, rx, ry, tilt_x, tilt_y) {
+  g <- expand.grid(
+    lon = seq(sheet_cx - rx, sheet_cx + rx, length.out = 26),
+    lat = seq(sheet_cy - ry, sheet_cy + ry, length.out = 18)
+  )
+  g$val <- amp * exp(-(((g$lon - cx) / sx)^2 + ((g$lat - cy) / sy)^2)) +
+           0.3 * sin(g$lon / 5) * cos(g$lat / 4) +
+           rnorm(nrow(g), 0, 0.12)
+  nx <- (g$lon - sheet_cx) / rx
+  ny <- (g$lat - sheet_cy) / ry
+  g$z <- base + g$val * z_relief + tilt_x * nx + tilt_y * ny
+  g
+}
+
+L1 <- make_layer(104, 33, 7, 5,  1.6, 0,             108, 35, 10.2, 6.0, -0.75, 0.55) # NSPEI-like
+L2 <- make_layer(110, 37, 6, 4, -1.4, layer_gap,     108, 35,  9.0, 5.2, -0.85, 0.60) # NSSMI-like
+L3 <- make_layer( 99, 31, 8, 6,  1.2, 2 * layer_gap, 108, 35,  7.8, 4.6, -0.95, 0.65) # NSRR-like
+
+p6a <- ggplot(mapping = aes(x = lon, y = lat, z = z, fill = val, color = val)) +
+  geom_surface_3d(data = L1, linewidth = 0.03) +
+  geom_surface_3d(data = L2, linewidth = 0.03) +
+  geom_surface_3d(data = L3, linewidth = 0.03) +
+  scale_fill_distiller(palette = "RdYlBu") +    # blue = wet, red = dry (flip with direction = -1)
+  scale_color_distiller(palette = "RdYlBu") +
+  scale_z_continuous(breaks = c(0, layer_gap, 2 * layer_gap),
+                     labels = function(z) c("NSPEI", "NSSMI", "NSRR")[match(round(z, 6), round(c(0, layer_gap, 2 * layer_gap), 6))]) +
+  coord_3d(ratio = c(1, 1, 0.6)) +
+  guides(fill = guide_colorbar_3d(), color = "none") +
+  labs(x = "Lon", y = "Lat", z = "Stacked indices", fill = "DI",
+       title = "One panel, three stacked index layers") +
+  theme_minimal()
+p6a
+```
+
+## Step 2 — extend to a 3 x 3 grid, three layers per panel
+
+Now give every layer a `month` column so it spans all nine months (with the anomaly drifting over
+time), keep the three smaller and tilted `geom_surface_3d()` layers, and add `facet_wrap(~ month)`.
+Each panel ends up with its own three-layer cube. (The grid is coarser here, since every panel
+tessellates three surfaces.)
+
+```{r p6b-stack-facets, fig.width=9, fig.height=8.5}
+set.seed(11)
+months <- sprintf("1997-%02d", 3:11)        # 9 months -> 3 x 3
+
+# build one index layer across all months: centre drifts (dx, dy) and amplitude swings seasonally
+layer_gap_f <- 10
+z_relief_f  <- 0.16
+make_layer_t <- function(cx0, cy0, sx, sy, amp, base, dx, dy, phase,
+                         sheet_cx, sheet_cy, rx, ry, tilt_x, tilt_y) {
+  do.call(rbind, lapply(seq_along(months) - 1, function(k) {
+    g  <- expand.grid(
+      lon = seq(sheet_cx - rx, sheet_cx + rx, length.out = 18),
+      lat = seq(sheet_cy - ry, sheet_cy + ry, length.out = 14)
+    )
+    cx <- cx0 + k * dx
+    cy <- cy0 + k * dy
+    a  <- amp * (0.55 + 0.45 * sin(k / 2 + phase))
+    g$val <- a * exp(-(((g$lon - cx) / sx)^2 + ((g$lat - cy) / sy)^2)) +
+             0.25 * sin(g$lon / 5) * cos(g$lat / 4) +
+             rnorm(nrow(g), 0, 0.10)
+    nx <- (g$lon - sheet_cx) / rx
+    ny <- (g$lat - sheet_cy) / ry
+    g$z     <- base + g$val * z_relief_f + tilt_x * nx + tilt_y * ny
+    g$month <- factor(months[k + 1], levels = months)
+    g
+  }))
+}
+
+S1 <- make_layer_t(100, 32, 7, 5,  1.6, 0,                 1.4, 0.7, 0, 108, 35, 9.8, 5.8, -0.70, 0.50)
+S2 <- make_layer_t(112, 38, 6, 4, -1.4, layer_gap_f,      -1.0, 0.3, 1, 108, 35, 8.6, 5.0, -0.80, 0.55)
+S3 <- make_layer_t( 98, 30, 8, 6,  1.2, 2 * layer_gap_f,   1.1, 0.6, 2, 108, 35, 7.4, 4.4, -0.90, 0.60)
+
+p6b <- ggplot(mapping = aes(x = lon, y = lat, z = z, fill = val, color = val)) +
+  geom_surface_3d(data = S1, linewidth = 0.02) +
+  geom_surface_3d(data = S2, linewidth = 0.02) +
+  geom_surface_3d(data = S3, linewidth = 0.02) +
+  facet_wrap(~ month, ncol = 3) +
+  scale_fill_distiller(palette = "RdYlBu") +
+  scale_color_distiller(palette = "RdYlBu") +
+  scale_z_continuous(breaks = c(0, layer_gap_f, 2 * layer_gap_f),
+                     labels = function(z) c("NSPEI", "NSSMI", "NSRR")[match(round(z, 6), round(c(0, layer_gap_f, 2 * layer_gap_f), 6))]) +
+  coord_3d(ratio = c(1, 1, 0.6)) +
+  guides(fill = guide_colorbar_3d(), color = "none") +
+  labs(x = "Lon", y = "Lat", z = "Stacked indices", fill = "DI",
+       title = "3 x 3 small multiples — three stacked index layers per panel") +
+  theme_minimal(base_size = 8) +
+  theme(legend.position = "right")
+p6b
+```
+
+> **Notes.** (1) Use *one* `geom_surface_3d()` per layer, each with its own complete grid — don't put
+> three `z` values on the same `(lon, lat)` in a single frame, or the surface stat can't tessellate a
+> single-valued grid. (2) Map color to the index *value*, but map height (`z`) to
+> `base + value * z_relief + tilt`; this keeps the sheets thin, inclined and separated, avoiding
+> top-layer occlusion. (3) Tune `layer_gap` upward for more separation, tune `z_relief` downward for
+> flatter sheets, or reduce `rx / ry` to make each complete layer grid smaller.
+> (4) This is render-heavy
+> (panels x layers x grid cells) — keep the per-panel grid modest. (5) For the real "masked basin"
+> look, swap the simulated fields for an open gridded index — **SPEI** (CSIC), **CRU TS**,
+> **TerraClimate**, or SPI/SPEI from **ERA5-Land** (Copernicus). For `geom_surface_3d()`, prefer
+> cropping/resampling each layer to a complete regular grid before plotting; sparse `NA` masks can
+> create incomplete surface strips that some ggcube versions cannot group reliably:
+>
+> ```r
+> # library(sf)
+> # basin <- st_read("basin.gpkg")
+> # bbox  <- st_bbox(basin)
+> # lon   <- seq(bbox["xmin"], bbox["xmax"], length.out = 30)
+> # lat   <- seq(bbox["ymin"], bbox["ymax"], length.out = 20)
+> # layer <- expand.grid(lon = lon, lat = lat)  # complete grid for geom_surface_3d()
+> ```
+
 # Exporting thumbnails
 
 Each figure is also saved as a PNG into `../fig/projects/`, where the personal website's
@@ -257,6 +391,8 @@ ggsave(file.path(out_dir, "09-ggcube-weather.png"), p2,  width = 8, height = 6, 
 ggsave(file.path(out_dir, "09-ggcube-dem.png"),     p3,  width = 8, height = 6.5, dpi = 150)
 ggsave(file.path(out_dir, "09-ggcube-bar.png"),     p4,  width = 8, height = 6,   dpi = 150)
 ggsave(file.path(out_dir, "09-ggcube-path.png"),    p5,  width = 8, height = 6.5, dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-stack.png"),   p6a, width = 7, height = 7,   dpi = 150)
+ggsave(file.path(out_dir, "09-ggcube-facets.png"),  p6b, width = 9, height = 8.5, dpi = 150)
 ```
 
 # Summary

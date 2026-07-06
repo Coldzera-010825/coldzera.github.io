@@ -700,16 +700,16 @@
       titleZh: '地理空间科研可视化 · 展示总集',
       zh: '一个持续生长的练习集：用更有代表性的图表与配色，表达地理空间科研结果',
       zhEn: 'An ongoing practice set of visualization types and palettes for research',
-      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. The first piece reproduces a family of 3D figures built with the R package ggcube; more 2D and thematic techniques will follow.',
-      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。第一篇复现了一组用 R 包 ggcube 绘制的三维图；之后还会加入更多二维与专题制图技法。',
-      link: './assets/reports/ggcube-3d-viz.html',
-      linkLabel: 'Open piece 01 · 3D with ggcube',
-      linkLabelZh: '打开第一篇 · ggcube 三维可视化',
+      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Three pieces so far: a family of 3D figures built with the R package ggcube; a circular lollipop chart fused with a categorical heatmap in Python; and a research-grade composite of violin, correlation and bubble panels for urban facility equity.',
+      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有三篇：用 R 包 ggcube 绘制的一组三维图；用 Python 把环形棒棒糖图与分类热图融为一体；以及一张面向城市设施公平的小提琴 + 相关 + 气泡组合图。',
+      link: 'https://coldzera-010825.github.io/gis/index',
+      linkLabel: 'Open the Visual Gallery (Geobook)',
+      linkLabelZh: '打开可视化展示馆（Geobook）',
       details: {
         hero: './assets/fig/projects/09-ggcube-dem.png',
         tagline: {
-          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Piece 01: a set of 3D figures in R with ggcube.',
-          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。第一篇：用 R 的 ggcube 绘制的一组三维图。',
+          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Three pieces so far: 3D figures with ggcube in R, a circular lollipop-heatmap hybrid in Python, and a multi-panel residual diagnostic for urban facility equity.',
+          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有三篇：R/ggcube 三维图、Python 环形棒棒糖与热图的混合体，以及面向城市设施公平的多面板残差诊断图。',
         },
         sections: [
           {
@@ -732,12 +732,55 @@
                 zh: '第一篇 —— 模拟 DEM 曲面（geom_surface_3d + 光照晕渲），是 ggcube 报告里五张三维图之一。',
               },
             },
+            link: {
+              url: './assets/reports/ggcube-3d-viz.html',
+              en: 'Read the full tutorial · 3D with ggcube',
+              zh: '阅读完整教程 · ggcube 三维可视化',
+            },
+          },
+          {
+            heading: { en: 'Piece 02 · Circular lollipop + categorical heatmap', zh: '第二篇 · 环形棒棒糖图 + 分类热图' },
+            body: {
+              en: 'Piece 02 moves to Python and matplotlib: 64 samples wrap around a shared polar axis — three continuous variables (age, education, plot area) as outer lollipop rings, two categorical variables (training, machinery) as inner heatmap rings — with box-plot and stacked-bar summaries docked at the side. One figure carries what would otherwise take five separate panels, a compact fit for survey and household data where every sample mixes numeric and categorical attributes. The same script renders eight alternative palettes — the seed of the palette studies to come.',
+              zh: '第二篇转向 Python 与 matplotlib：64 个样本环绕同一极坐标轴——三个连续变量（年龄、受教育年限、地块面积）作为外圈棒棒糖环，两个分类变量（是否参加培训、机械数量）作为内圈热图环，侧边还停靠着箱线图与堆叠条形的汇总。一张图承载了原本需要五个面板的信息，非常适合问卷/农户调查这类每个样本同时携带数值与分类属性的数据。同一脚本还输出了八套备选配色——正是后续配色研究的种子。',
+            },
+            figure: {
+              src: './assets/reports/outputs/circular_lollipop_heatmap/circular_lollipop_heatmap.png',
+              caption: {
+                en: 'Piece 02 — five data rings on one polar axis: three lollipop rings for continuous variables, two heatmap rings for categorical ones, with marginal summaries.',
+                zh: '第二篇 —— 同一极坐标轴上的五个数据环：三个连续变量棒棒糖环 + 两个分类热图环，外加边际汇总。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/circular-lollipop',
+              en: 'Read the full tutorial · code walkthrough + 8 palettes (Geobook)',
+              zh: '阅读完整教程 · 代码拆解 + 8 套配色（Geobook）',
+            },
+          },
+          {
+            heading: { en: 'Piece 03 · Facility-equity residual diagnostics', zh: '第三篇 · 设施公平残差诊断图' },
+            body: {
+              en: 'Piece 03 is a research-grade composite: facility-provision residuals for 339 cities across ten amenity types (education, healthcare, parks, transit…). Violin plots show each facility\'s residual distribution, a Spearman correlation matrix reveals which amenities over- or under-provide together, and a sign-log bubble matrix pinpoints city-level anomalies. It is exactly the kind of figure my environmental-justice work calls for — who gets more than expected, who gets less, and where.',
+              zh: '第三篇是一张接近论文级的组合图：339 个城市 × 10 类设施（教育、医疗、公园、公交……）的供给残差。小提琴图展示每类设施的残差分布，Spearman 相关矩阵揭示哪些设施倾向于同涨同落，符号对数变换的气泡矩阵则精确定位城市级异常。这正是我的环境公平研究需要的图——谁获得的超出预期、谁不足，以及在哪里。',
+            },
+            figure: {
+              src: './assets/reports/outputs/facility_residual_visualization/facility_residual_visualization.png',
+              caption: {
+                en: 'Piece 03 — violin distributions, a Spearman correlation matrix and a city × facility bubble matrix, composed into one residual diagnostic.',
+                zh: '第三篇 —— 小提琴分布、Spearman 相关矩阵与城市 × 设施气泡矩阵，合成一张残差诊断图。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/facility-residuals',
+              en: 'Read the full tutorial · three panels, one GridSpec (Geobook)',
+              zh: '阅读完整教程 · 三块面板一张 GridSpec（Geobook）',
+            },
           },
           {
             heading: { en: 'Where this is heading', zh: '接下来' },
             body: {
-              en: 'Future pieces will move well beyond 3D: bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines, animated time series, and dedicated palette studies (viridis, scientific colour maps, ColorBrewer) chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
-              zh: '之后的篇目会走出三维：双变量与小多组分级设色图、流向 / OD 地图、山脊线图、动画时间序列，以及专门的配色研究（viridis、科学配色 scientific colour maps、ColorBrewer）——以感知诚实为准则挑选。这里的每一种技法都是排练，最终目的是把其中最有力的，用到我真实的地理空间科研成果中。',
+              en: 'Next up: dedicated palette studies — the eight colour schemes shipped with Piece 02 are the opening move — alongside bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines and animated time series, all chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
+              zh: '接下来：专门的配色研究——第二篇随脚本交付的八套配色方案就是开篇——以及双变量与小多组分级设色图、流向 / OD 地图、山脊线图与动画时间序列，一律以感知诚实为准则挑选。这里的每一种技法都是排练，最终目的是把其中最有力的，用到我真实的地理空间科研成果中。',
             },
             figure: {
               src: './assets/fig/projects/09-ggcube-path.png',
@@ -751,12 +794,13 @@
         bullets: [
           { en: 'A personal, growing showcase of geospatial research-visualization techniques', zh: '一个持续生长的地理空间科研可视化技法个人展示集' },
           { en: 'Focus on both visualization types and colour palettes', zh: '同时关注可视化类型与配色方案' },
-          { en: 'Goal: express research results more representatively, then apply them to real science', zh: '目标：更有代表性地表达科研结果，并最终应用到真实科研' },
           { en: 'Piece 01: 3D figures in R with ggcube (scatter · surface · bars · path)', zh: '第一篇：用 R 的 ggcube 绘制三维图（散点 · 曲面 · 柱状 · 路径）' },
-          { en: 'More 2D, thematic and animated pieces to follow', zh: '后续将加入更多二维、专题与动画篇目' },
+          { en: 'Piece 02: circular lollipop + categorical heatmap in Python, with 8 palette variants', zh: '第二篇：Python 环形棒棒糖图 + 分类热图，附 8 套配色变体' },
+          { en: 'Piece 03: violin + correlation + bubble composite for urban facility equity (339 cities × 10 amenities)', zh: '第三篇：小提琴 + 相关 + 气泡组合图，呈现城市设施公平（339 城市 × 10 类设施）' },
+          { en: 'Next: dedicated palette studies, thematic and animated pieces', zh: '接下来：专门的配色研究与更多专题、动画篇目' },
         ],
-        sourceUrl: './assets/reports/ggcube-3d-viz.html',
-        sourceLabel: { en: 'Open piece 01 · 3D with ggcube (report)', zh: '打开第一篇 · ggcube 三维可视化（报告）' },
+        sourceUrl: 'https://coldzera-010825.github.io/gis/index',
+        sourceLabel: { en: 'Open the Visual Gallery on my Geobook', zh: '在我的 Geobook 上打开可视化展示馆' },
       },
     },
   ];
@@ -971,6 +1015,11 @@
                        data-i18n-zh="${attr(s.figure.caption.zh)}">${pick(s.figure.caption.en, s.figure.caption.zh)}</figcaption>` : ''}
                </figure>`
             : '';
+          const linkHtml = s.link
+            ? `<p style="margin-top:10px;"><a class="project-modal-source" href="${attr(s.link.url)}" target="_blank" rel="noopener"
+                  data-i18n-en="${attr(s.link.en + ' ↗')}"
+                  data-i18n-zh="${attr(s.link.zh + ' ↗')}">${pick(s.link.en, s.link.zh)} ↗</a></p>`
+            : '';
           return `
             <section class="project-modal-section">
               <h3 class="project-modal-h3"
@@ -980,6 +1029,7 @@
                  data-i18n-en="${attr(s.body.en)}"
                  data-i18n-zh="${attr(s.body.zh)}">${pick(s.body.en, s.body.zh)}</p>
               ${figHtml}
+              ${linkHtml}
             </section>`;
         }).join('')
       : `<p class="project-modal-p project-modal-soon"
