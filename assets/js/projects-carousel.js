@@ -702,7 +702,7 @@
       zhEn: 'An ongoing practice set of visualization types and palettes for research',
       body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Three pieces so far: a family of 3D figures built with the R package ggcube; a circular lollipop chart fused with a categorical heatmap in Python; and a research-grade composite of violin, correlation and bubble panels for urban facility equity.',
       bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有三篇：用 R 包 ggcube 绘制的一组三维图；用 Python 把环形棒棒糖图与分类热图融为一体；以及一张面向城市设施公平的小提琴 + 相关 + 气泡组合图。',
-      link: 'https://coldzera-010825.github.io/gis/index',
+      link: 'https://coldzera-010825.github.io/gis/gallery',
       linkLabel: 'Open the Visual Gallery (Geobook)',
       linkLabelZh: '打开可视化展示馆（Geobook）',
       details: {
@@ -799,7 +799,7 @@
           { en: 'Piece 03: violin + correlation + bubble composite for urban facility equity (339 cities × 10 amenities)', zh: '第三篇：小提琴 + 相关 + 气泡组合图，呈现城市设施公平（339 城市 × 10 类设施）' },
           { en: 'Next: dedicated palette studies, thematic and animated pieces', zh: '接下来：专门的配色研究与更多专题、动画篇目' },
         ],
-        sourceUrl: 'https://coldzera-010825.github.io/gis/index',
+        sourceUrl: 'https://coldzera-010825.github.io/gis/gallery',
         sourceLabel: { en: 'Open the Visual Gallery on my Geobook', zh: '在我的 Geobook 上打开可视化展示馆' },
       },
     },
