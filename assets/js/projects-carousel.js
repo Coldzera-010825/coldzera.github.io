@@ -700,16 +700,16 @@
       titleZh: '地理空间科研可视化 · 展示总集',
       zh: '一个持续生长的练习集：用更有代表性的图表与配色，表达地理空间科研结果',
       zhEn: 'An ongoing practice set of visualization types and palettes for research',
-      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Five pieces so far: 3D figures with ggcube in R; a circular lollipop–heatmap hybrid in Python; a violin + correlation + bubble composite for urban facility equity; declarative CNN/U-Net architecture diagrams with PlotNeuralNet; and classic node-link network figures in matplotlib and TikZ.',
-      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有五篇：R/ggcube 三维图；Python 环形棒棒糖与分类热图混合体；城市设施公平的小提琴 + 相关 + 气泡组合图；PlotNeuralNet 声明式 CNN/U-Net 架构图；以及 matplotlib 与 TikZ 双轨的经典节点-连线网络图。',
+      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Seven pieces so far, spanning 3D figures, hybrid polar charts, equity diagnostics, neural-network diagrams (volume and node-link styles), SHAP interpretability and the classifier evaluation panel.',
+      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有七篇：涵盖三维图、混合极坐标图、公平诊断图、神经网络图（体积风与节点风）、SHAP 可解释性与分类器评估面板。',
       link: 'https://coldzera-010825.github.io/gis/gallery',
       linkLabel: 'Open the Visual Gallery (Geobook)',
       linkLabelZh: '打开可视化展示馆（Geobook）',
       details: {
         hero: './assets/fig/projects/09-ggcube-dem.png',
         tagline: {
-          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Five pieces so far: 3D figures with ggcube, a circular lollipop-heatmap hybrid, a facility-equity residual diagnostic, declarative CNN/U-Net architecture diagrams, and node-link network figures in matplotlib + TikZ.',
-          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有五篇：ggcube 三维图、环形棒棒糖热图混合体、设施公平残差诊断图、声明式 CNN/U-Net 架构图，以及 matplotlib + TikZ 的节点-连线网络图。',
+          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Seven pieces so far, from 3D figures and hybrid polar charts to neural-network diagrams, SHAP interpretability and the classifier evaluation panel.',
+          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有七篇：从三维图、混合极坐标图到神经网络图、SHAP 可解释性与分类器评估面板。',
         },
         sections: [
           {
@@ -815,6 +815,44 @@
             },
           },
           {
+            heading: { en: 'Piece 06 · SHAP interpretability', zh: '第六篇 · SHAP 可解释性' },
+            body: {
+              en: 'Piece 06 moves from architecture to explanation: an urban-heat XGBoost model (NDVI, building density, albedo… → land-surface temperature) opened up with SHAP — global bar, the signature beeswarm, interaction-coloured dependence plots and a waterfall for the hottest neighbourhood. It closes with how the display evolves for LSTM-style sequence models: from beeswarms to temporal attribution heatmaps.',
+              zh: '第六篇从架构转向解释：用 SHAP 打开一个城市热岛 XGBoost 模型（NDVI、建筑密度、反照率…… → 地表温度）——全局条形图、标志性的蜂群图、交互着色的依赖图，以及针对最热街区的瀑布图。结尾讲了 LSTM 类时序模型的呈现如何演化：从蜂群图到时间步归因热图。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-shap-beeswarm.jpg',
+              caption: {
+                en: 'Piece 06 — the SHAP beeswarm: importance, direction and distribution of eight heat drivers in one panel.',
+                zh: '第六篇 —— SHAP 蜂群图：八个热驱动因子的重要性、方向与分布，一张图说清。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/shap-interpretability',
+              en: 'Read the full tutorial · SHAP on an urban-heat model (Geobook)',
+              zh: '阅读完整教程 · 城市热岛模型的 SHAP 解释（Geobook）',
+            },
+          },
+          {
+            heading: { en: 'Piece 07 · The classifier evaluation panel', zh: '第七篇 · 分类器评估面板' },
+            body: {
+              en: 'Piece 07 assembles the four figures every classification paper needs — a row-normalized annotated confusion matrix, one-vs-rest ROC curves, imbalance-honest precision–recall curves and a learning curve — each built as an ax-taking function, then composed into a single 2×2 GridSpec panel. Demonstrated on a simulated five-class land-cover task.',
+              zh: '第七篇把分类论文必备的四张图——行归一化带标注的混淆矩阵、一对多 ROC 曲线、对类别不平衡诚实的 PR 曲线、学习曲线——各自写成接收 ax 的函数，再合成一张 2×2 GridSpec 面板。以模拟的五类土地覆盖分类任务演示。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-eval-panel.jpg',
+              caption: {
+                en: 'Piece 07 — confusion matrix, ROC, PR and learning curve composed into one evaluation panel.',
+                zh: '第七篇 —— 混淆矩阵、ROC、PR 与学习曲线合成的评估面板。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/model-evaluation',
+              en: 'Read the full tutorial · the evaluation panel (Geobook)',
+              zh: '阅读完整教程 · 分类器评估面板（Geobook）',
+            },
+          },
+          {
             heading: { en: 'Where this is heading', zh: '接下来' },
             body: {
               en: 'Next up: dedicated palette studies — the eight colour schemes shipped with Piece 02 are the opening move — alongside bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines and animated time series, all chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
@@ -837,6 +875,8 @@
           { en: 'Piece 03: violin + correlation + bubble composite for urban facility equity (339 cities × 10 amenities)', zh: '第三篇：小提琴 + 相关 + 气泡组合图，呈现城市设施公平（339 城市 × 10 类设施）' },
           { en: 'Piece 04: declarative U-Net / CNN architecture diagrams with PlotNeuralNet (Python → LaTeX/TikZ)', zh: '第四篇：用 PlotNeuralNet 声明式绘制 U-Net / CNN 架构图（Python → LaTeX/TikZ）' },
           { en: 'Piece 05: node-link MLP figures in matplotlib + TikZ, with weight-encoded edges', zh: '第五篇：matplotlib + TikZ 双轨的节点-连线 MLP 图，边携带权重编码' },
+          { en: 'Piece 06: SHAP interpretability on an urban-heat XGBoost model (beeswarm · dependence · waterfall)', zh: '第六篇：城市热岛 XGBoost 模型的 SHAP 可解释性（蜂群 · 依赖 · 瀑布）' },
+          { en: 'Piece 07: the classifier evaluation panel (confusion · ROC · PR · learning curve)', zh: '第七篇：分类器评估面板（混淆矩阵 · ROC · PR · 学习曲线）' },
           { en: 'Next: dedicated palette studies, thematic and animated pieces', zh: '接下来：专门的配色研究与更多专题、动画篇目' },
         ],
         sourceUrl: 'https://coldzera-010825.github.io/gis/gallery',
