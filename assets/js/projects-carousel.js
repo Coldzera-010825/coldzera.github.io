@@ -700,16 +700,16 @@
       titleZh: '地理空间科研可视化 · 展示总集',
       zh: '一个持续生长的练习集：用更有代表性的图表与配色，表达地理空间科研结果',
       zhEn: 'An ongoing practice set of visualization types and palettes for research',
-      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Four pieces so far: a family of 3D figures built with the R package ggcube; a circular lollipop chart fused with a categorical heatmap in Python; a research-grade composite of violin, correlation and bubble panels for urban facility equity; and declarative neural-network architecture diagrams with PlotNeuralNet.',
-      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有四篇：用 R 包 ggcube 绘制的一组三维图；用 Python 把环形棒棒糖图与分类热图融为一体；一张面向城市设施公平的小提琴 + 相关 + 气泡组合图；以及用 PlotNeuralNet 声明式绘制的神经网络架构图。',
+      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Five pieces so far: 3D figures with ggcube in R; a circular lollipop–heatmap hybrid in Python; a violin + correlation + bubble composite for urban facility equity; declarative CNN/U-Net architecture diagrams with PlotNeuralNet; and classic node-link network figures in matplotlib and TikZ.',
+      bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有五篇：R/ggcube 三维图；Python 环形棒棒糖与分类热图混合体；城市设施公平的小提琴 + 相关 + 气泡组合图；PlotNeuralNet 声明式 CNN/U-Net 架构图；以及 matplotlib 与 TikZ 双轨的经典节点-连线网络图。',
       link: 'https://coldzera-010825.github.io/gis/gallery',
       linkLabel: 'Open the Visual Gallery (Geobook)',
       linkLabelZh: '打开可视化展示馆（Geobook）',
       details: {
         hero: './assets/fig/projects/09-ggcube-dem.png',
         tagline: {
-          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Four pieces so far: 3D figures with ggcube in R, a circular lollipop-heatmap hybrid in Python, a multi-panel residual diagnostic for urban facility equity, and declarative neural-network architecture diagrams.',
-          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有四篇：R/ggcube 三维图、Python 环形棒棒糖与热图的混合体、面向城市设施公平的多面板残差诊断图，以及声明式神经网络架构图。',
+          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Five pieces so far: 3D figures with ggcube, a circular lollipop-heatmap hybrid, a facility-equity residual diagnostic, declarative CNN/U-Net architecture diagrams, and node-link network figures in matplotlib + TikZ.',
+          zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有五篇：ggcube 三维图、环形棒棒糖热图混合体、设施公平残差诊断图、声明式 CNN/U-Net 架构图，以及 matplotlib + TikZ 的节点-连线网络图。',
         },
         sections: [
           {
@@ -796,6 +796,25 @@
             },
           },
           {
+            heading: { en: 'Piece 05 · Node-link network figures', zh: '第五篇 · 节点-连线网络图' },
+            body: {
+              en: 'The sister of Piece 04: the classic neurons-and-edges MLP figure, built twice — from scratch in matplotlib (edge colour = weight sign, thickness = magnitude) and in publication-grade TikZ with the same loop grammar. The tutorial closes with honest tooling advice: when a one-off draft is all you need, the browser tool NN-SVG wins.',
+              zh: '第四篇的姊妹篇：经典的神经元圆圈 + 层间连线 MLP 图，用两套工具各搭一遍——matplotlib 从零构建（边色 = 权重符号、线宽 = 量级），以及同一循环语法的出版级 TikZ 版本。教程结尾给出实诚的工具建议：只需要一次性草图时，浏览器工具 NN-SVG 更快。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-nl-mlp.jpg',
+              caption: {
+                en: 'Piece 05 — a 4-6-6-3 MLP in pure matplotlib: weight-encoded edges (blue positive, orange negative; thickness = magnitude).',
+                zh: '第五篇 —— 纯 matplotlib 绘制的 4-6-6-3 MLP：权重编码边（蓝正橙负，线宽 = 量级）。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/node-link-networks',
+              en: 'Read the full tutorial · node-link figures, two toolchains (Geobook)',
+              zh: '阅读完整教程 · 节点-连线图双轨实现（Geobook）',
+            },
+          },
+          {
             heading: { en: 'Where this is heading', zh: '接下来' },
             body: {
               en: 'Next up: dedicated palette studies — the eight colour schemes shipped with Piece 02 are the opening move — alongside bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines and animated time series, all chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
@@ -817,6 +836,7 @@
           { en: 'Piece 02: circular lollipop + categorical heatmap in Python, with 8 palette variants', zh: '第二篇：Python 环形棒棒糖图 + 分类热图，附 8 套配色变体' },
           { en: 'Piece 03: violin + correlation + bubble composite for urban facility equity (339 cities × 10 amenities)', zh: '第三篇：小提琴 + 相关 + 气泡组合图，呈现城市设施公平（339 城市 × 10 类设施）' },
           { en: 'Piece 04: declarative U-Net / CNN architecture diagrams with PlotNeuralNet (Python → LaTeX/TikZ)', zh: '第四篇：用 PlotNeuralNet 声明式绘制 U-Net / CNN 架构图（Python → LaTeX/TikZ）' },
+          { en: 'Piece 05: node-link MLP figures in matplotlib + TikZ, with weight-encoded edges', zh: '第五篇：matplotlib + TikZ 双轨的节点-连线 MLP 图，边携带权重编码' },
           { en: 'Next: dedicated palette studies, thematic and animated pieces', zh: '接下来：专门的配色研究与更多专题、动画篇目' },
         ],
         sourceUrl: 'https://coldzera-010825.github.io/gis/gallery',
