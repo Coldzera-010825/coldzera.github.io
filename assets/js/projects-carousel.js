@@ -700,7 +700,7 @@
       titleZh: '地理空间科研可视化 · 展示总集',
       zh: '一个持续生长的练习集：用更有代表性的图表与配色，表达地理空间科研结果',
       zhEn: 'An ongoing practice set of visualization types and palettes for research',
-      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Seven pieces so far, spanning 3D figures, hybrid polar charts, equity diagnostics, neural-network diagrams (volume and node-link styles), SHAP interpretability and the classifier evaluation panel.',
+      body: 'A growing personal showcase where I practice compelling, sometimes unconventional ways to visualize geospatial science — both visualization types and colour palettes — so that research results can be expressed more representatively, and ultimately carried into real scientific output. Nine pieces so far, spanning 3D figures, hybrid polar charts, equity diagnostics, neural-network diagrams (volume and node-link styles), SHAP interpretability, the classifier evaluation panel, clustering visualization and correlation / Mantel-network heatmaps.',
       bodyZh: '一个持续生长的个人展示总集：在这里我练习各种有表现力、甚至带点新意的地理空间科研可视化——既包括可视化类型，也包括配色——目的是让科研结果被更有代表性地表达出来，并最终应用到真实的科研成果中。目前已有七篇：涵盖三维图、混合极坐标图、公平诊断图、神经网络图（体积风与节点风）、SHAP 可解释性与分类器评估面板。',
       link: 'https://coldzera-010825.github.io/gis/gallery',
       linkLabel: 'Open the Visual Gallery (Geobook)',
@@ -708,7 +708,7 @@
       details: {
         hero: './assets/fig/projects/09-ggcube-dem.png',
         tagline: {
-          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Seven pieces so far, from 3D figures and hybrid polar charts to neural-network diagrams, SHAP interpretability and the classifier evaluation panel.',
+          en: 'An evolving collection of geospatial research-visualization experiments — visualization types and colour palettes practiced now, to be applied to real research later. Nine pieces so far, from 3D figures and hybrid polar charts to neural-network diagrams, SHAP interpretability, model evaluation, clustering visualization and correlation / Mantel-network heatmaps.',
           zh: '一个不断演进的地理空间科研可视化实验集——现在练习可视化类型与配色，未来应用到真实科研中。目前已有七篇：从三维图、混合极坐标图到神经网络图、SHAP 可解释性与分类器评估面板。',
         },
         sections: [
@@ -853,6 +853,44 @@
             },
           },
           {
+            heading: { en: 'Piece 08 · Clustering visualization', zh: '第八篇 · 聚类可视化' },
+            body: {
+              en: 'Piece 08 walks one neighbourhood dataset from a naive KMeans scatter up to the diagnostics reviewers expect: elbow + silhouette for choosing k, 2D/3D PCA projections, t-SNE vs UMAP manifolds, a per-sample silhouette plot, and a seaborn clustermap — closing with the R pheatmap equivalent. Basic to advanced, one dataset throughout.',
+              zh: '第八篇把一份街区数据从朴素的 KMeans 散点一路带到审稿人期待的诊断图：肘2部图 + 轮廓系数选 k、2D/3D PCA 投影、t-SNE 与 UMAP 流形、逐样本轮廓图，以及 seaborn clustermap——结尾附 R 的 pheatmap 等价写法。从初级到高级，一份数据贯穿。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-clustering.jpg',
+              caption: {
+                en: 'Piece 08 — PCA projection, silhouette blades and the silhouette-vs-k curve, composed into one clustering-diagnostic panel.',
+                zh: '第八篇 —— PCA 投影、轮廓刀片与轮廓-k 曲线，合成一张聚类诊断面板。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/clustering-viz',
+              en: 'Read the full tutorial · clustering, basic to advanced (Geobook)',
+              zh: '阅读完整教程 · 聚类可视化初级到高级（Geobook）',
+            },
+          },
+          {
+            heading: { en: 'Piece 09 · Correlation heatmaps & Mantel networks', zh: '第九篇 · 相关热图与 Mantel 网络' },
+            body: {
+              en: 'Piece 09 climbs from a plain correlation heatmap (annotated, triangular, hierarchically clustered in Python/seaborn) to the ecology-standard Mantel-network figure in R — a soil-chemistry correlation heatmap linked to species blocks. It also documents a real tooling problem: the classic ggcor package is unmaintained and breaks on modern ggplot2, so the piece migrates to linkET, its maintained successor by the same author.',
+              zh: '第九篇从普通相关热图（Python/seaborn 的标注、三角、层次聚类版）爬升到 R 里生态学经典的 Mantel 网络图——土壤化学相关热图连接物种块。同时记录了一个真实的工具问题：经典的 ggcor 包已停更、在新版 ggplot2 下报错，因此本篇迁移到同作者维护的接班包 linkET。',
+            },
+            figure: {
+              src: './assets/fig/projects/09-corr-mantel.jpg',
+              caption: {
+                en: 'Piece 09 — a Mantel network (linkET): a soil-chemistry correlation heatmap with species blocks linked by Mantel-test couples (colour = p, width = r).',
+                zh: '第九篇 —— Mantel 网络（linkET）：土壤化学相关热图 + 物种块的 Mantel 检验连线（颜色 = p，粗细 = r）。',
+              },
+            },
+            link: {
+              url: 'https://coldzera-010825.github.io/gis/correlation-heatmaps',
+              en: 'Read the full tutorial · correlation & Mantel networks (Geobook)',
+              zh: '阅读完整教程 · 相关热图与 Mantel 网络（Geobook）',
+            },
+          },
+          {
             heading: { en: 'Where this is heading', zh: '接下来' },
             body: {
               en: 'Next up: dedicated palette studies — the eight colour schemes shipped with Piece 02 are the opening move — alongside bivariate and small-multiple choropleths, flow and origin–destination maps, ridgelines and animated time series, all chosen for perceptual honesty. Every technique here is rehearsal — the goal is to apply the strongest of them to my actual geospatial research output.',
@@ -877,6 +915,8 @@
           { en: 'Piece 05: node-link MLP figures in matplotlib + TikZ, with weight-encoded edges', zh: '第五篇：matplotlib + TikZ 双轨的节点-连线 MLP 图，边携带权重编码' },
           { en: 'Piece 06: SHAP interpretability on an urban-heat XGBoost model (beeswarm · dependence · waterfall)', zh: '第六篇：城市热岛 XGBoost 模型的 SHAP 可解释性（蜂群 · 依赖 · 瀑布）' },
           { en: 'Piece 07: the classifier evaluation panel (confusion · ROC · PR · learning curve)', zh: '第七篇：分类器评估面板（混淆矩阵 · ROC · PR · 学习曲线）' },
+          { en: 'Piece 08: clustering visualization, basic to advanced (KMeans · PCA · t-SNE/UMAP · clustermap)', zh: '第八篇：聚类可视化初级到高级（KMeans · PCA · t-SNE/UMAP · clustermap）' },
+          { en: 'Piece 09: correlation heatmaps & the Mantel-network figure (Python seaborn + R linkET)', zh: '第九篇：相关热图与 Mantel 网络图（Python seaborn + R linkET）' },
           { en: 'Next: dedicated palette studies, thematic and animated pieces', zh: '接下来：专门的配色研究与更多专题、动画篇目' },
         ],
         sourceUrl: 'https://coldzera-010825.github.io/gis/gallery',
