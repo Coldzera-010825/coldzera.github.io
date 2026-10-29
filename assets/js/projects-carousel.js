@@ -923,6 +923,66 @@
         sourceLabel: { en: 'Open the Visual Gallery on my Geobook', zh: '在我的 Geobook 上打开可视化展示馆' },
       },
     },
+    {
+      n: '10',
+      accent: 'oklch(0.66 0.17 35)',
+      accentSoft: 'oklch(0.93 0.05 35)',
+      title: 'TerraHeat · Global Heat Observatory',
+      titleZh: 'TerraHeat · 全球高温观测平台',
+      zh: '一个从全球热场到城市点位分析的交互式气候观测原型',
+      zhEn: 'An interactive climate-observation prototype from planetary heat fields to city-scale inspection',
+      body: 'An interactive Mapbox-based observatory for exploring global temperature fields across scales. TerraHeat combines ERA5-Land heatwave context, air and land-surface temperature layers, a time controller, city observatories and point-level diagnostics in one map-led interface.',
+      bodyZh: '一个以 Mapbox 为底图、跨尺度探索全球气温场的交互式观测平台。TerraHeat 将 ERA5-Land 热浪背景、近地面气温与地表温度图层、时间控制器、城市观测点和点位诊断整合在同一个地图主导界面中。',
+      link: './terraheat/',
+      linkLabel: 'Open TerraHeat Observatory',
+      linkLabelZh: '打开 TerraHeat 观测平台',
+      details: {
+        hero: './assets/fig/projects/10-terraheat-hero.png',
+        tagline: {
+          en: 'A map-led prototype for reading extreme heat from planet to place — combining gridded thermal fields, time, urban observatories and point-level analysis without leaving the map.',
+          zh: '一个从全球到地点阅读极端高温的地图型原型：把栅格热场、时间、城市观测点与点位分析放在同一张地图中完成。',
+        },
+        sections: [
+          {
+            heading: { en: 'Why TerraHeat', zh: '为什么做 TerraHeat' },
+            body: {
+              en: 'Heat research often separates the planetary field, the urban pattern and the lived conditions at a specific place into different products. TerraHeat tests a more continuous experience: begin with the global thermal field, move toward an observatory city, then inspect a selected location and its local temperature signature. The interface is designed as a research communication prototype rather than a finished forecasting service.',
+              zh: '高温研究常把全球热场、城市格局和具体地点的体感条件拆成不同产品。TerraHeat 尝试一种更连续的体验：先读取全球温度场，再进入城市观测点，最后检查某一位置及其局地温度特征。它目前定位为科研传播原型，而不是已投入业务运行的预报服务。',
+            },
+            figure: {
+              src: './assets/fig/projects/10-terraheat-hero.png',
+              caption: {
+                en: 'TerraHeat global view — a layered thermal field, timeline and observatory navigation arranged around the map.',
+                zh: 'TerraHeat 全球视图——围绕地图组织的多层热场、时间轴与观测点导航。',
+              },
+            },
+          },
+          {
+            heading: { en: 'Layers & time', zh: '图层与时间' },
+            body: {
+              en: 'The prototype exposes three selectable thermal views: an ERA5-Land daily heatwave field, 2 m air temperature and land-surface / skin temperature. Pre-generated raster tiles keep transitions lightweight, while the timeline lets the reader step through the available frames and compare how the spatial pattern changes.',
+              zh: '原型提供三类可选择的热场视图：ERA5-Land 日尺度热浪场、2 m 近地面气温，以及地表／皮肤温度。预生成栅格瓦片让切换保持轻量，时间轴则用于逐帧比较空间格局如何变化。',
+            },
+          },
+          {
+            heading: { en: 'From global field to place', zh: '从全球热场到具体地点' },
+            body: {
+              en: 'Map zoom is used as an analytical hierarchy. At planetary scale the thermal surface dominates; at regional and urban scales, observatory locations and local context become more important. Selecting a city or point pauses the guided motion and turns the right-hand panel into a compact inspection space for the chosen location.',
+              zh: '地图缩放同时承担分析层级的作用：全球尺度突出热场，区域与城市尺度则逐步强调观测点和局地背景。选择城市或点位后，引导运动会暂停，右侧面板转为该位置的紧凑分析空间。',
+            },
+          },
+        ],
+        bullets: [
+          { en: 'Mapbox globe-to-city navigation with smooth scale transitions', zh: '基于 Mapbox 的全球—城市平滑尺度过渡' },
+          { en: 'ERA5-Land heatwave, 2 m air-temperature and surface-temperature layers', zh: 'ERA5-Land 热浪、2 m 气温与地表温度图层' },
+          { en: 'Time controls for stepping through pre-generated thermal frames', zh: '用于浏览预生成热场帧的时间控制器' },
+          { en: 'Urban observatories and point-level inspection in the map interface', zh: '地图界面中的城市观测点与点位分析' },
+          { en: 'Responsive standalone demo published with GitHub Pages', zh: '通过 GitHub Pages 发布的响应式独立演示' },
+        ],
+        sourceUrl: './terraheat/',
+        sourceLabel: { en: 'Launch the live TerraHeat demo', zh: '打开 TerraHeat 在线演示' },
+      },
+    },
   ];
 
   function attr(v) {

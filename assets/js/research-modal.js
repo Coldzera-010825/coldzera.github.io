@@ -1,6 +1,6 @@
 ﻿/* ================================================================
    research-modal.js — Research themes grid + FLIP-style modal
-   Renders 4 theme cards into #research-grid; clicking a card
+   Renders research cards into #research-grid; clicking a card
    expands its rectangle into a fullscreen modal via CSS transition,
    reverses on close. Vanilla JS, no framework.
    ================================================================ */
@@ -100,6 +100,33 @@
       image: './assets/fig/research/env%20justice.png',
       visual: 'justice',
     },
+    {
+      id: 'terraheat',
+      title: 'TerraHeat · Live Observatory Demo',
+      titleZh: 'TerraHeat · 高温观测平台演示',
+      kicker: 'Live Research Demo',
+      kickerZh: '在线研究演示',
+      accent: 'oklch(0.66 0.17 35)',
+      accentSoft: 'oklch(0.93 0.05 35)',
+      tagline:
+        'A map-led prototype for exploring heat from planetary fields to individual urban locations.',
+      taglineZh:
+        '一个从全球热场逐级进入具体城市点位的地图型高温观测原型。',
+      body: [
+        'TerraHeat brings several parts of my heat research into one interactive surface: ERA5-Land heatwave context, air and land-surface temperature layers, time controls, urban observatories and point-level inspection.',
+        'The current public build is a lightweight research-communication demo using prepared raster frames. It is intended to test the visual and analytical hierarchy of a future observation platform — global first, then regional, urban and local.',
+      ],
+      bodyZh: [
+        'TerraHeat 把我的高温研究中的多个部分汇集到同一张交互式地图中：ERA5-Land 热浪背景、近地面与地表温度图层、时间控制、城市观测点和点位分析。',
+        '当前公开版本是使用预生成栅格帧的轻量科研传播演示，用来检验未来观测平台的视觉与分析层级——先全球，再区域、城市与地点。',
+      ],
+      image: './assets/fig/projects/10-terraheat-hero.png',
+      visual: 'uhi',
+      wide: true,
+      link: './terraheat/',
+      linkLabel: 'Launch the TerraHeat demo ↗',
+      linkLabelZh: '打开 TerraHeat 在线演示 ↗',
+    },
   ];
 
   /* Helper: encode a value for safe placement inside a double-quoted attribute. */
@@ -180,7 +207,7 @@
 
   THEMES.forEach((theme, idx) => {
     const card = document.createElement('div');
-    card.className = 'research-box';
+    card.className = theme.wide ? 'research-box research-box--wide' : 'research-box';
     card.dataset.themeId = theme.id;
     card.style.transitionDelay = (idx * 80) + 'ms';
     card.innerHTML = `
@@ -220,6 +247,10 @@
       transition: top 620ms var(--ease), left 620ms var(--ease),
                   width 620ms var(--ease), height 620ms var(--ease);
     `;
+    const linkHref = theme.link || './projects.html';
+    const linkLabel = theme.linkLabel || 'See related projects ↗';
+    const linkLabelZh = theme.linkLabelZh || '查看相关项目 ↗';
+    const linkTarget = theme.link ? ' target="_blank" rel="noopener"' : '';
     frame.innerHTML = `
       <div style="position:absolute;inset:0;opacity:1;transition:opacity 620ms ease;">
         ${renderVisual(theme)}
@@ -247,9 +278,9 @@
              data-i18n-zh="${attr(theme.taglineZh)}">${pick(theme.tagline, theme.taglineZh)}</p>
           ${theme.body.map((p, i) => `<p data-i18n-en="${attr(p)}" data-i18n-zh="${attr(theme.bodyZh[i])}">${pick(p, theme.bodyZh[i])}</p>`).join('')}
           <p style="margin-top: 40px;">
-            <a href="./projects.html" style="color: ${theme.accent}; border-bottom: 0.5px solid ${theme.accent}; padding-bottom: 2px;"
-               data-i18n-en="See related projects ↗"
-               data-i18n-zh="查看相关项目 ↗">${pick('See related projects ↗', '查看相关项目 ↗')}</a>
+            <a href="${attr(linkHref)}"${linkTarget} style="color: ${theme.accent}; border-bottom: 0.5px solid ${theme.accent}; padding-bottom: 2px;"
+               data-i18n-en="${attr(linkLabel)}"
+               data-i18n-zh="${attr(linkLabelZh)}">${pick(linkLabel, linkLabelZh)}</a>
           </p>
         </div>
       </div>
