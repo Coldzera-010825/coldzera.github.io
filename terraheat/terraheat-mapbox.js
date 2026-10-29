@@ -5,8 +5,12 @@
   const cities = [
     ['Cardiff','United Kingdom',-3.1791,51.4816],['London','United Kingdom',-0.1276,51.5072],['Madrid','Spain',-3.7038,40.4168],['Paris','France',2.3522,48.8566],['Rome','Italy',12.4964,41.9028],['Athens','Greece',23.7275,37.9838],['Cairo','Egypt',31.2357,30.0444],['Lagos','Nigeria',3.3792,6.5244],['Nairobi','Kenya',36.8219,-1.2921],['Cape Town','South Africa',18.4241,-33.9249],['Dubai','UAE',55.2708,25.2048],['Riyadh','Saudi Arabia',46.6753,24.7136],['Delhi','India',77.1025,28.7041],['Karachi','Pakistan',67.0099,24.8615],['Bangkok','Thailand',100.5018,13.7563],['Beijing','China',116.4074,39.9042],['Tokyo','Japan',139.6917,35.6895],['Jakarta','Indonesia',106.8456,-6.2088],['Sydney','Australia',151.2093,-33.8688],['Perth','Australia',115.8605,-31.9505],['Phoenix','United States',-112.074,33.4484],['Houston','United States',-95.3698,29.7604],['New York','United States',-74.006,40.7128],['Mexico City','Mexico',-99.1332,19.4326],['São Paulo','Brazil',-46.6333,-23.5505],['Santiago','Chile',-70.6693,-33.4489]
   ].map(([name,country,lon,lat],index)=>({name,country,lon,lat,index}));
-  const state={field:'era5',frame:6,playing:false,selected:null,autoRotate:true,timer:null,tourIndex:-1,landsatMode:'event'};
+  const state={field:'era5',frame:6,playing:false,selected:null,autoRotate:true,timer:null,tourIndex:-1,landsatMode:'event',thermalFront:'thermal-field',thermalTransitioning:false,thermalTransition:0,thermalSwapCount:0,thermalLastDuration:0};
   const fieldCache=new Map();
+  const thermalLayers=['thermal-field','thermal-field-buffer'];
+  const thermalOpacity=factor=>['interpolate',['linear'],['zoom'],0,.84*factor,2.6,.76*factor,4.4,.3*factor,6,0];
+  const thermalUrls={'thermal-field':'tiles/era5/6/{z}/{x}/{y}.png','thermal-field-buffer':'tiles/era5/6/{z}/{x}/{y}.png'};
+  let thermalTransitionToken=0;
   let gfs,era5,live,londonBoundary,map,baseSymbols=[],toggleLayers=()=>{},tourTarget=null;
   const tourSteps=[
     {target:'#layers-panel',title:'Switch global data layers',copy:'Use Layers to compare ERA5-Land daily maximum temperature, 2 m air temperature, surface skin temperature and MODIS Terra LST. The legend and timeline update with the selected field.',enter:()=>{resetGlobal(false);toggleLayers(true)}},
@@ -85,6 +89,51 @@
     return {type:'Feature',properties:{name:'Outside Greater London mask'},geometry:{type:'Polygon',coordinates:[outer,...holes]}};
   }
 
+  function thermalUrl(field,index){return `tiles/${field}/${index}/{z}/{x}/{y}.png`}
+  function thermalBack(){return state.thermalFront==='thermal-field'?'thermal-field-buffer':'thermal-field'}
+  function setThermalMix(layer,factor){if(map?.getLayer(layer))map.setPaintProperty(layer,'raster-opacity',thermalOpacity(Math.max(.001,Math.min(1,factor))))}
+  function waitForThermalSource(sourceId,token,timeout=7000){
+    return new Promise(resolve=>{
+      if(token!==thermalTransitionToken)return resolve(false);
+      if(map.isSourceLoaded(sourceId))return resolve(true);
+      let finished=false;
+      const done=value=>{if(finished)return;finished=true;clearTimeout(timer);map.off('sourcedata',onData);resolve(value)};
+      const onData=event=>{if(event.sourceId===sourceId&&map.isSourceLoaded(sourceId))done(true)};
+      const timer=setTimeout(()=>done(token===thermalTransitionToken&&map.isSourceLoaded(sourceId)),timeout);
+      map.on('sourcedata',onData);
+    });
+  }
+  function cancelThermalTransition(){
+    thermalTransitionToken++;state.thermalTransitioning=false;state.thermalTransition=0;
+    const front=state.thermalFront,back=thermalBack();setThermalMix(front,1);setThermalMix(back,0);
+  }
+  function primeNextThermal(){
+    if(state.field==='modis'||state.thermalTransitioning||!map?.isStyleLoaded())return;
+    const frames=framesFor(state.field),next=(state.frame+1)%frames.length,back=thermalBack(),url=thermalUrl(state.field,next);
+    setThermalMix(back,0);
+    if(thermalUrls[back]!==url){thermalUrls[back]=url;map.getSource(back).setTiles([url])}
+  }
+  async function transitionThermal(url){
+    const token=++thermalTransitionToken,front=state.thermalFront,back=thermalBack();
+    state.thermalTransitioning=true;state.thermalTransition=0;
+    thermalLayers.forEach(id=>map.setLayoutProperty(id,'visibility','visible'));setThermalMix(front,1);setThermalMix(back,0);
+    if(thermalUrls[front]===url){state.thermalTransitioning=false;primeNextThermal();return}
+    if(thermalUrls[back]!==url){thermalUrls[back]=url;map.getSource(back).setTiles([url])}
+    if(!await waitForThermalSource(back,token)||token!==thermalTransitionToken){if(token===thermalTransitionToken)state.thermalTransitioning=false;return}
+    const started=performance.now(),duration=900;
+    const step=now=>{
+      if(token!==thermalTransitionToken){state.thermalTransitioning=false;return}
+      const progress=Math.min(1,(now-started)/duration),eased=progress*progress*(3-2*progress);
+      state.thermalTransition=eased;setThermalMix(front,1-eased);setThermalMix(back,eased);
+      if(progress<1)requestAnimationFrame(step);else{
+        state.thermalFront=back;state.thermalTransitioning=false;state.thermalTransition=1;
+        state.thermalSwapCount++;state.thermalLastDuration=performance.now()-started;
+        setThermalMix(front,0);setThermalMix(back,1);primeNextThermal();
+      }
+    };
+    requestAnimationFrame(step);
+  }
+
   function init(){
     map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/dark-v11',projection:'globe',center:[14,18],zoom:1.35,pitch:0,bearing:0,antialias:true,attributionControl:true});
     map.addControl(new mapboxgl.NavigationControl({showCompass:true,visualizePitch:true}),'top-right');
@@ -95,8 +144,10 @@
     map.setFog({'space-color':'#050505','star-intensity':.18,'horizon-blend':.05,'color':'#171716','high-color':'#2c2624'});
     const styleLayers=map.getStyle().layers;baseSymbols=styleLayers.filter(layer=>layer.type==='symbol').map(layer=>layer.id);
     const firstSymbol=baseSymbols[0],firstRoad=styleLayers.find(layer=>layer.type==='line'&&/(road|street|transport)/i.test(layer.id))?.id||firstSymbol;
-    map.addSource('thermal-field',{type:'raster',tiles:['tiles/era5/6/{z}/{x}/{y}.png'],tileSize:256,minzoom:0,maxzoom:2});
-    map.addLayer({id:'thermal-field',type:'raster',source:'thermal-field',paint:{'raster-opacity':['interpolate',['linear'],['zoom'],0,.84,2.6,.76,4.4,.3,6,0],'raster-resampling':'linear','raster-fade-duration':420}},firstSymbol);
+    map.addSource('thermal-field',{type:'raster',tiles:[thermalUrls['thermal-field']],tileSize:256,minzoom:0,maxzoom:2});
+    map.addLayer({id:'thermal-field',type:'raster',source:'thermal-field',paint:{'raster-opacity':thermalOpacity(1),'raster-resampling':'linear','raster-fade-duration':0}},firstSymbol);
+    map.addSource('thermal-field-buffer',{type:'raster',tiles:[thermalUrls['thermal-field-buffer']],tileSize:256,minzoom:0,maxzoom:2});
+    map.addLayer({id:'thermal-field-buffer',type:'raster',source:'thermal-field-buffer',paint:{'raster-opacity':thermalOpacity(.001),'raster-resampling':'linear','raster-fade-duration':0}},firstSymbol);
     map.addSource('modis-field',{type:'raster',tiles:[modisUrl(modisDates.at(-1))],tileSize:256,minzoom:0,maxzoom:7,attribution:'NASA GIBS · MODIS Terra MOD11A1 v6.1'});
     map.addLayer({id:'modis-field',type:'raster',source:'modis-field',layout:{visibility:'none'},paint:{'raster-opacity':['interpolate',['linear'],['zoom'],0,.82,3,.72,5,.18,6,0],'raster-resampling':'linear','raster-fade-duration':420}},firstSymbol);
     map.addSource('cities',{type:'geojson',data:cityFeatures()});
@@ -120,7 +171,7 @@
     ['mousedown','touchstart','wheel','dragstart'].forEach(name=>map.on(name,()=>{state.autoRotate=false}));
     wireUI();populateCityOptions();renderRanks();setField('era5',era5.frames.length-1);updateScale();
     $('#map-loading').classList.add('done');setTimeout(spinGlobe,700);
-    window.__terraHeatMap={map,state,cities,selectCity,setField};
+    window.__terraHeatMap={map,state,cities,selectCity,setField,transitionThermal};
   }
   function modisUrl(date){return `https://gibs.earthdata.nasa.gov/wmts/epsg3857/all/MODIS_Terra_Land_Surface_Temp_Day_v6.1_STD/default/${date}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png`}
   function featureCity(feature){const name=feature?.properties?.name;return cities.find(city=>city.name===name)}
@@ -135,9 +186,9 @@
   }
   function updateFrame(){
     if(!map?.isStyleLoaded())return;const field=state.field,index=state.frame,label=frameLabel(field,index),isModis=field==='modis';
-    map.setLayoutProperty('thermal-field','visibility',isModis?'none':'visible');map.setLayoutProperty('modis-field','visibility',isModis?'visible':'none');
-    if(isModis){map.getSource('modis-field').setTiles([modisUrl(modisDates[index])]);$('#legend-name').textContent='MODIS TERRA LST';$('#time-type').textContent='MODIS TERRA'}
-    else{map.getSource('thermal-field').setTiles([`tiles/${field}/${index}/{z}/{x}/{y}.png`]);const names={era5:'ERA5-LAND TMAX',at:'GFS 2 M AIR',lst:'GFS SKIN LST'};$('#legend-name').textContent=names[field];$('#time-type').textContent=names[field]}
+    thermalLayers.forEach(id=>map.setLayoutProperty(id,'visibility',isModis?'none':'visible'));map.setLayoutProperty('modis-field','visibility',isModis?'visible':'none');
+    if(isModis){cancelThermalTransition();map.getSource('modis-field').setTiles([modisUrl(modisDates[index])]);$('#legend-name').textContent='MODIS TERRA LST';$('#time-type').textContent='MODIS TERRA'}
+    else{transitionThermal(thermalUrl(field,index));const names={era5:'ERA5-LAND TMAX',at:'GFS 2 M AIR',lst:'GFS SKIN LST'};$('#legend-name').textContent=names[field];$('#time-type').textContent=names[field]}
     const tickSets={era5:['−40','−10','10','30','50+'],at:['−40','−10','10','30','50+'],lst:['−20','0','20','40','60+'],modis:['−20','0','20','40','60+']};
     $('#legend').dataset.field=field;$('#legend-ticks').innerHTML=tickSets[field].map(value=>`<span>${value}</span>`).join('');
     $('#legend-date').textContent=label;$('#time-value').textContent=shortDate(label);$('#time-slider').value=index;
