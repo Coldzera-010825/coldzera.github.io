@@ -292,10 +292,6 @@ h2.section-title {
 .research-box:hover {
   box-shadow: 0 14px 40px oklch(0 0 0 / 0.08);
 }
-.research-box--wide {
-  grid-column: 1 / -1;
-  aspect-ratio: 16 / 5;
-}
 .research-box-visual { position: absolute; inset: 0; }
 .research-box-meta {
   position: absolute;
