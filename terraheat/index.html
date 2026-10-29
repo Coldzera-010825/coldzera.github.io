@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="application-version" content="1.1">
   <meta name="theme-color" content="#0f0f0e">
   <title>TerraHeat — Global Heat Observatory</title>
   <link rel="icon" href="data:,">
@@ -29,7 +30,8 @@
         <button type="submit" aria-label="Search">⌕</button>
       </form>
       <div class="mast-actions">
-        <button class="icon-button" id="about-toggle" type="button">ABOUT</button>
+        <button class="icon-button story-button" id="story-toggle" type="button" disabled title="Classic July 2022 heatwave story — coming soon">STORY <small>SOON</small></button>
+        <button class="icon-button" id="about-toggle" type="button">GUIDE</button>
         <button class="icon-button accent" id="layers-toggle" type="button" aria-expanded="false"><span class="layer-glyph"></span>LAYERS</button>
       </div>
     </header>
@@ -38,10 +40,10 @@
       <button class="welcome-close" id="welcome-close" type="button" aria-label="Close introduction">×</button>
       <p class="eyebrow">A PLANET UNDER HEAT</p>
       <h1>Read a warming world<br><em>from orbit to street.</em></h1>
-      <p>Explore global temperature fields, reveal urban observatories as you move closer, and inspect the thermal signature of individual cities.</p>
+      <p>Take a short guided tour of global layers, the hottest-city list, city navigation and the route back to the planetary view.</p>
       <div class="welcome-actions">
         <button class="primary" id="start-explore" type="button">EXPLORE THE MAP</button>
-        <span>Scroll to move through three spatial scales</span>
+        <button class="text-button" id="skip-intro" type="button">SKIP</button>
       </div>
     </section>
 
@@ -59,15 +61,15 @@
         <label class="switch-row"><span><b>City observatories</b><small>Heat-ranked city network</small></span><input id="cities-switch" type="checkbox" checked><i></i></label>
         <label class="switch-row"><span><b>Map labels</b><small>Places and boundaries</small></span><input id="labels-switch" type="checkbox" checked><i></i></label>
       </div>
-      <p class="layer-note">Global fields fade as city and local detail appear. Values shown in the analysis drawer are sampled from the bundled NOAA GFS grid.</p>
+      <p class="layer-note">Global fields fade as city detail appears. Values in the analysis drawer come from the bundled NOAA GFS grid; the current Local Heat surface is an interaction prototype rather than measured street-scale data.</p>
     </aside>
 
     <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small></div>
 
-    <section class="legend" id="legend" aria-label="Temperature legend">
+    <section class="legend" id="legend" data-field="era5" aria-label="Temperature legend">
       <div class="legend-title"><span id="legend-name">ERA5-LAND TMAX</span><b id="legend-date">2022-07-19</b></div>
       <div class="temperature-ramp"></div>
-      <div class="legend-ticks"><span>−40</span><span>−10</span><span>10</span><span>30</span><span>50+</span></div>
+      <div class="legend-ticks" id="legend-ticks"><span>−40</span><span>−10</span><span>10</span><span>30</span><span>50+</span></div>
       <small>°C · DAILY FIELD</small>
     </section>
 
@@ -100,6 +102,18 @@
       <div class="analysis-story"><span id="analysis-status">MODEL SNAPSHOT</span><p id="analysis-story">Select a city to inspect its model-grid thermal signature.</p></div>
       <p class="data-note">Point values use the nearest bundled NOAA GFS model cell. The local urban surface is an interaction prototype, not measured street-scale temperature.</p>
     </aside>
+
+    <section class="tour" id="tour" hidden aria-live="polite">
+      <div class="tour-popover" id="tour-popover" role="dialog" aria-modal="false" aria-labelledby="tour-title">
+        <span class="tour-count" id="tour-count">01 / 06</span>
+        <h2 id="tour-title">Switch global layers</h2>
+        <p id="tour-copy"></p>
+        <div class="tour-actions">
+          <button class="text-button" id="tour-skip" type="button">SKIP</button>
+          <button class="primary" id="tour-next" type="button">NEXT</button>
+        </div>
+      </div>
+    </section>
 
     <div class="map-loading" id="map-loading"><span></span><b>Loading thermal atlas</b><small>Mapbox · ERA5-Land · NOAA GFS</small></div>
     <div class="map-error" id="map-error" hidden><b>Map could not load</b><span>Check the Mapbox token URL restrictions and network connection.</span></div>

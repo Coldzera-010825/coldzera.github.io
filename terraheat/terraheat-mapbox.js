@@ -5,9 +5,17 @@
   const cities = [
     ['Cardiff','United Kingdom',-3.1791,51.4816],['London','United Kingdom',-0.1276,51.5072],['Madrid','Spain',-3.7038,40.4168],['Paris','France',2.3522,48.8566],['Rome','Italy',12.4964,41.9028],['Athens','Greece',23.7275,37.9838],['Cairo','Egypt',31.2357,30.0444],['Lagos','Nigeria',3.3792,6.5244],['Nairobi','Kenya',36.8219,-1.2921],['Cape Town','South Africa',18.4241,-33.9249],['Dubai','UAE',55.2708,25.2048],['Riyadh','Saudi Arabia',46.6753,24.7136],['Delhi','India',77.1025,28.7041],['Karachi','Pakistan',67.0099,24.8615],['Bangkok','Thailand',100.5018,13.7563],['Beijing','China',116.4074,39.9042],['Tokyo','Japan',139.6917,35.6895],['Jakarta','Indonesia',106.8456,-6.2088],['Sydney','Australia',151.2093,-33.8688],['Perth','Australia',115.8605,-31.9505],['Phoenix','United States',-112.074,33.4484],['Houston','United States',-95.3698,29.7604],['New York','United States',-74.006,40.7128],['Mexico City','Mexico',-99.1332,19.4326],['São Paulo','Brazil',-46.6333,-23.5505],['Santiago','Chile',-70.6693,-33.4489]
   ].map(([name,country,lon,lat],index)=>({name,country,lon,lat,index}));
-  const state={field:'era5',frame:6,playing:false,selected:null,autoRotate:true,timer:null};
+  const state={field:'era5',frame:6,playing:false,selected:null,autoRotate:true,timer:null,tourIndex:-1};
   const fieldCache=new Map();
-  let gfs,era5,map,baseSymbols=[];
+  let gfs,era5,map,baseSymbols=[],toggleLayers=()=>{},tourTarget=null;
+  const tourSteps=[
+    {target:'#layers-panel',title:'Switch global data layers',copy:'Use Layers to compare ERA5-Land daily maximum temperature, 2 m air temperature, surface skin temperature and MODIS Terra LST. The legend and timeline update with the selected field.',enter:()=>{resetGlobal(false);toggleLayers(true)}},
+    {target:'#timeline',title:'Move through time',copy:'Drag the timeline or press play to move through every available frame. The valid date is always shown in the legend and beside the slider.',enter:()=>toggleLayers(false)},
+    {target:'#city-rank',title:'Find the hottest cities',copy:'This list ranks the hottest sampled model cells in the current GFS frame. Choose a city here to move directly from the planetary field into its observatory view.',enter:()=>resetGlobal(false)},
+    {target:'#search-form',title:'Enter the city scale',copy:'Search for a city, or zoom toward the city markers and select one. The map changes from the global field to a city observatory as you move closer.',enter:()=>map.easeTo({center:[14,18],zoom:3.2,duration:1100,essential:true})},
+    {target:'#analysis',title:'Inspect local heat carefully',copy:'A selected city opens point metrics and a time-series panel. The current Local Heat surface is only an interaction prototype; a real Landsat-based neighbourhood layer is planned next.',enter:()=>selectCity(cities.find(city=>city.name==='Cardiff'))},
+    {target:'.brand',title:'Return to the planet',copy:'Use the TerraHeat logo at any time to close the city analysis, remove the local layer and return to the rotating global view.',enter:()=>resetGlobal(true)}
+  ];
 
   if(!token||!window.mapboxgl){showFatal('Mapbox token or library is missing.');return}
   mapboxgl.accessToken=token;
@@ -108,6 +116,8 @@
     map.setLayoutProperty('thermal-field','visibility',isModis?'none':'visible');map.setLayoutProperty('modis-field','visibility',isModis?'visible':'none');
     if(isModis){map.getSource('modis-field').setTiles([modisUrl(modisDates[index])]);$('#legend-name').textContent='MODIS TERRA LST';$('#time-type').textContent='MODIS TERRA'}
     else{map.getSource('thermal-field').setTiles([`tiles/${field}/${index}/{z}/{x}/{y}.png`]);const names={era5:'ERA5-LAND TMAX',at:'GFS 2 M AIR',lst:'GFS SKIN LST'};$('#legend-name').textContent=names[field];$('#time-type').textContent=names[field]}
+    const tickSets={era5:['−40','−10','10','30','50+'],at:['−40','−10','10','30','50+'],lst:['−20','0','20','40','60+'],modis:['−20','0','20','40','60+']};
+    $('#legend').dataset.field=field;$('#legend-ticks').innerHTML=tickSets[field].map(value=>`<span>${value}</span>`).join('');
     $('#legend-date').textContent=label;$('#time-value').textContent=shortDate(label);$('#time-slider').value=index;
   }
   function selectCity(city){
@@ -120,6 +130,28 @@
     const current=series.at(-1),delta=Number.isFinite(current.lst)&&Number.isFinite(current.at)?current.lst-current.at:null,hot=series.filter(d=>Number.isFinite(d.at)&&d.at>=35).length;
     $('#analysis-city').textContent=city.name;$('#analysis-place').textContent=`${city.country} · ${city.lat.toFixed(3)}°, ${city.lon.toFixed(3)}°`;$('#metric-at').textContent=Number.isFinite(current.at)?`${current.at.toFixed(1)} °C`:'—';$('#metric-lst').textContent=Number.isFinite(current.lst)?`${current.lst.toFixed(1)} °C`:'—';$('#metric-delta').textContent=Number.isFinite(delta)?`${delta>=0?'+':''}${delta.toFixed(1)} °C`:'—';$('#metric-hot').textContent=`${hot} / ${series.length}`;$('#chart-period').textContent=`${series[0].validIso.slice(5,16).replace('T',' ')} → ${series.at(-1).validIso.slice(5,16).replace('T',' ')}`;
     const status=!Number.isFinite(current.at)?'NO DATA':current.at>=35?'EXTREME HEAT':current.at>=30?'HIGH HEAT':'MODEL SNAPSHOT';$('#analysis-status').textContent=status;$('#analysis-story').textContent=Number.isFinite(delta)?`At the selected model cell, the land surface is ${Math.abs(delta).toFixed(1)} °C ${delta>=0?'warmer':'cooler'} than the air at the latest timestep.`:'The selected model cell does not contain a complete paired observation.';renderChart(series);
+  }
+  function resetGlobal(animate=true,rotate=state.tourIndex<0){
+    state.autoRotate=rotate;state.selected=null;$('#analysis').classList.remove('open');$('#analysis').setAttribute('aria-hidden','true');
+    if(map.getLayer('local-heat'))map.setLayoutProperty('local-heat','visibility','none');map.easeTo({padding:{right:0},duration:350});
+    map.flyTo({center:[14,18],zoom:1.35,pitch:0,bearing:0,duration:animate?1800:700,curve:1.2,essential:true});
+  }
+  function positionTour(){
+    if(state.tourIndex<0||!tourTarget)return;const popover=$('#tour-popover'),rect=tourTarget.getBoundingClientRect(),gap=14,pw=popover.offsetWidth,ph=popover.offsetHeight;
+    let left=rect.right+gap,top=rect.top+rect.height/2-ph/2;if(left+pw>window.innerWidth-12)left=rect.left-pw-gap;if(left<12)left=Math.max(12,Math.min(window.innerWidth-pw-12,rect.left));top=Math.max(12,Math.min(window.innerHeight-ph-12,top));
+    popover.style.left=`${left}px`;popover.style.top=`${top}px`;
+  }
+  function showTourStep(index){
+    if(index<0||index>=tourSteps.length){endTour();return}tourTarget?.classList.remove('tour-focus');state.tourIndex=index;const step=tourSteps[index],popover=$('#tour-popover');popover.classList.remove('is-visible');step.enter?.();
+    $('#tour-count').textContent=`${String(index+1).padStart(2,'0')} / ${String(tourSteps.length).padStart(2,'0')}`;$('#tour-title').textContent=step.title;$('#tour-copy').textContent=step.copy;$('#tour-next').textContent=index===tourSteps.length-1?'FINISH':'NEXT';
+    setTimeout(()=>{tourTarget=$(step.target);if(!tourTarget)return;tourTarget.classList.add('tour-focus');positionTour();popover.classList.add('is-visible')},80);if(index===4||index===5)setTimeout(positionTour,index===4?2300:1900);
+  }
+  function startTour(){
+    $('#tour').hidden=false;state.autoRotate=false;showTourStep(0);window.addEventListener('resize',positionTour);
+  }
+  function endTour(){
+    tourTarget?.classList.remove('tour-focus');tourTarget=null;state.tourIndex=-1;$('#tour-popover').classList.remove('is-visible');$('#tour').hidden=true;toggleLayers(false);window.removeEventListener('resize',positionTour);
+    if(map.getZoom()<2.3){state.autoRotate=true;setTimeout(spinGlobe,500)}
   }
   function renderChart(series){
     const svg=$('#point-chart'),values=series.flatMap(d=>[d.at,d.lst]).filter(Number.isFinite);if(!values.length){svg.innerHTML='';return}let min=Math.floor(Math.min(...values)-3),max=Math.ceil(Math.max(...values)+3);if(max-min<10){min-=5;max+=5}const x=i=>28+i*286/Math.max(1,series.length-1),y=v=>126-(v-min)/(max-min)*102,path=key=>series.map((d,i)=>Number.isFinite(d[key])?`${i?'L':'M'}${x(i).toFixed(1)},${y(d[key]).toFixed(1)}`:'').join(' '),grid=[0,.5,1].map(t=>{const yy=24+t*102,value=Math.round(max-t*(max-min));return `<line class="chart-grid" x1="28" y1="${yy}" x2="314" y2="${yy}"/><text x="0" y="${yy+3}" fill="#716c65" font-size="8">${value}°</text>`}).join(''),dots=key=>series.map((d,i)=>Number.isFinite(d[key])?`<circle class="chart-${key}-dot" cx="${x(i)}" cy="${y(d[key])}" r="2.5"/>`:'').join('');svg.innerHTML=`${grid}<path class="chart-lst" d="${path('lst')}"/><path class="chart-at" d="${path('at')}"/>${dots('lst')}${dots('at')}`;
@@ -137,10 +169,11 @@
   }
   function populateCityOptions(){const list=$('#city-options');cities.forEach(city=>{const option=document.createElement('option');option.value=city.name;option.label=city.country;list.appendChild(option)})}
   function wireUI(){
-    const welcome=$('#welcome'),layers=$('#layers-panel'),layersToggle=$('#layers-toggle');const dismiss=()=>welcome.classList.add('dismissed');$('#welcome-close').addEventListener('click',dismiss);$('#start-explore').addEventListener('click',()=>{dismiss();state.autoRotate=false;map.easeTo({zoom:2.8,duration:1600})});$('#about-toggle').addEventListener('click',()=>welcome.classList.toggle('dismissed'));$('.brand').addEventListener('click',event=>{event.preventDefault();state.autoRotate=true;state.selected=null;$('#analysis').classList.remove('open');map.setLayoutProperty('local-heat','visibility','none');map.flyTo({center:[14,18],zoom:1.35,pitch:0,bearing:0,duration:1800})});
-    const toggleLayers=force=>{const open=force??layers.hidden;layers.hidden=!open;layersToggle.setAttribute('aria-expanded',String(open))};layersToggle.addEventListener('click',()=>toggleLayers());$('#layers-close').addEventListener('click',()=>toggleLayers(false));
+    const welcome=$('#welcome'),layers=$('#layers-panel'),layersToggle=$('#layers-toggle');const dismiss=()=>welcome.classList.add('dismissed');$('#welcome-close').addEventListener('click',dismiss);$('#skip-intro').addEventListener('click',dismiss);$('#start-explore').addEventListener('click',()=>{dismiss();startTour()});$('#about-toggle').addEventListener('click',()=>{if(state.tourIndex>=0)endTour();welcome.classList.toggle('dismissed')});$('.brand').addEventListener('click',event=>{event.preventDefault();if(state.tourIndex>=0)endTour();resetGlobal(true,true);setTimeout(spinGlobe,1900)});
+    toggleLayers=force=>{const open=force??layers.hidden;layers.hidden=!open;layersToggle.setAttribute('aria-expanded',String(open))};layersToggle.addEventListener('click',()=>toggleLayers());$('#layers-close').addEventListener('click',()=>toggleLayers(false));
     document.querySelectorAll('input[name=field]').forEach(input=>input.addEventListener('change',()=>setField(input.value,framesFor(input.value).length-1)));$('#cities-switch').addEventListener('change',event=>['city-halo','city-points','city-labels'].forEach(id=>map.setLayoutProperty(id,'visibility',event.target.checked?'visible':'none')));$('#labels-switch').addEventListener('change',event=>baseSymbols.forEach(id=>{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',event.target.checked?'visible':'none')}));
     $('#time-slider').addEventListener('input',event=>{state.frame=+event.target.value;updateFrame()});$('#play').addEventListener('click',()=>{state.playing=!state.playing;$('#play').classList.toggle('playing',state.playing);clearInterval(state.timer);if(state.playing)state.timer=setInterval(()=>{const frames=framesFor(state.field);state.frame=(state.frame+1)%frames.length;updateFrame()},1250)});
     $('#analysis-close').addEventListener('click',()=>{$('#analysis').classList.remove('open');$('#analysis').setAttribute('aria-hidden','true');map.easeTo({padding:{right:0},duration:600})});$('#search-form').addEventListener('submit',event=>{event.preventDefault();const input=$('#place-search'),query=input.value.trim().toLowerCase(),city=cities.find(c=>c.name.toLowerCase()===query)||cities.find(c=>c.name.toLowerCase().startsWith(query));input.blur();if(city)selectCity(city)});
+    $('#tour-next').addEventListener('click',()=>showTourStep(state.tourIndex+1));$('#tour-skip').addEventListener('click',endTour);
   }
 })();
