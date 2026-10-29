@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-29T16:31:21.560Z",
+  "timezone": "UTC",
+  "modis": {
+    "dataset": "NASA GIBS MODIS Terra MOD11A1 v6.1 daytime LST",
+    "latestAvailable": "2026-10-26",
+    "dates": [
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22",
+      "2026-10-23",
+      "2026-10-24",
+      "2026-10-25",
+      "2026-10-26"
+    ],
+    "source": "https://gibs.earthdata.nasa.gov/"
+  },
+  "landsatLondon": {
+    "dataset": "USGS Landsat Collection 2 Level-2 Surface Temperature",
+    "outputGridMetres": 30,
+    "displayInterpolation": "linear",
+    "event": {
+      "id": "LC09_L2SP_201024_20220718_02_T1",
+      "date": "2022-07-18",
+      "platform": "Landsat 9",
+      "cloudCover": 0.72,
+      "rescale": [
+        15,
+        45
+      ],
+      "bbox": [
+        -1.38519166,
+        50.53975541,
+        2.24265214,
+        52.81344459
+      ]
+    },
+    "latest": {
+      "id": "LC09_L2SP_201024_20261017_02_T1",
+      "date": "2026-10-17",
+      "platform": "Landsat 9",
+      "cloudCover": 12.02,
+      "rescale": [
+        3,
+        32
+      ],
+      "bbox": [
+        -1.4164716547162373,
+        50.53869541605879,
+        2.21297215032386,
+        52.81593458394121
+      ]
+    },
+    "searchBbox": [
+      -0.55,
+      51.25,
+      0.35,
+      51.72
+    ],
+    "source": "https://planetarycomputer.microsoft.com/api/stac/v1"
+  },
+  "gfs": {
+    "status": "bundled-snapshot",
+    "automaticUpdate": false,
+    "note": "The current GFS JSON is not relabelled as live. A GRIB processing stage is required before automatic replacement."
+  },
+  "pipeline": {
+    "schedule": "daily at 03:20 UTC / 11:20 Asia/Shanghai",
+    "checks": [
+      "GIBS advertised latest date",
+      "latest London Landsat 8/9 scene below 20% scene cloud",
+      "presence of ST_B10/lwir11 asset"
+    ]
+  }
+}

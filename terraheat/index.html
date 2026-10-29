@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="application-version" content="1.1">
+  <meta name="application-version" content="1.2">
   <meta name="theme-color" content="#0f0f0e">
   <title>TerraHeat — Global Heat Observatory</title>
   <link rel="icon" href="data:,">
@@ -61,7 +61,11 @@
         <label class="switch-row"><span><b>City observatories</b><small>Heat-ranked city network</small></span><input id="cities-switch" type="checkbox" checked><i></i></label>
         <label class="switch-row"><span><b>Map labels</b><small>Places and boundaries</small></span><input id="labels-switch" type="checkbox" checked><i></i></label>
       </div>
-      <p class="layer-note">Global fields fade as city detail appears. Values in the analysis drawer come from the bundled NOAA GFS grid; the current Local Heat surface is an interaction prototype rather than measured street-scale data.</p>
+      <div class="city-data-callout">
+        <span>NEW · CITY SCALE</span><b>London Landsat LST</b><small>30 m output grid · event + latest clear scene</small>
+        <button type="button" id="open-london">OPEN LONDON</button>
+      </div>
+      <p class="layer-note">London now uses real Landsat Collection 2 LST. Other cities retain the interaction prototype until equivalent city rasters are processed. Point metrics still come from the bundled NOAA GFS grid.</p>
     </aside>
 
     <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small></div>
@@ -100,7 +104,14 @@
       <svg id="point-chart" viewBox="0 0 328 148" role="img" aria-label="Point temperature time series"></svg>
       <div class="chart-key"><span><i class="lst-line"></i>Surface skin</span><span><i class="at-line"></i>2 m air</span></div>
       <div class="analysis-story"><span id="analysis-status">MODEL SNAPSHOT</span><p id="analysis-story">Select a city to inspect its model-grid thermal signature.</p></div>
-      <p class="data-note">Point values use the nearest bundled NOAA GFS model cell. The local urban surface is an interaction prototype, not measured street-scale temperature.</p>
+      <div class="urban-raster" id="urban-raster" hidden>
+        <span>LOCAL RASTER</span><b id="urban-raster-name">LANDSAT 9 LST</b><small id="urban-raster-meta">30 m output grid</small>
+        <div class="scene-switch" role="group" aria-label="London Landsat scene">
+          <button type="button" id="landsat-event" class="active">18 JUL 2022 EVENT</button>
+          <button type="button" id="landsat-latest">LATEST CLEAR</button>
+        </div>
+      </div>
+      <p class="data-note" id="analysis-note">Point values use the nearest bundled NOAA GFS model cell. The local urban surface is an interaction prototype, not measured street-scale temperature.</p>
     </aside>
 
     <section class="tour" id="tour" hidden aria-live="polite">

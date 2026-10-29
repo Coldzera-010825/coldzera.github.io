@@ -1,0 +1,37 @@
+name: Update TerraHeat live data
+
+on:
+  schedule:
+    - cron: "20 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: terraheat-live-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Discover latest public thermal data
+        run: node terraheat/tools/update-live-data.mjs terraheat/data/live-manifest.json
+      - name: Commit changed manifest
+        shell: bash
+        run: |
+          if git diff --quiet -- terraheat/data/live-manifest.json; then
+            echo "No manifest change"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add terraheat/data/live-manifest.json
+          git commit -m "chore(terraheat): refresh live thermal manifest"
+          git push
