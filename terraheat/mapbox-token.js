@@ -1,0 +1,1 @@
+window.TERRAHEAT_MAPBOX_TOKEN = "pk.eyJ1IjoiY29sZHplcmFhYWExMSIsImEiOiJjbXZza3ByN3IwMW5uMnlzNGx5OHdtbDBiIn0.1tQ6kual6s7xX2rqAurXNg";

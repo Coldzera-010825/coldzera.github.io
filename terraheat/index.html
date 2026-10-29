@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f0f0e">
+  <title>TerraHeat — Global Heat Observatory</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="terraheat-mapbox.css">
+</head>
+<body>
+  <main id="app">
+    <div id="map" aria-label="Interactive global heat map"></div>
+    <div class="map-vignette" aria-hidden="true"></div>
+
+    <header class="masthead">
+      <a class="brand" href="#" aria-label="Reset TerraHeat to global view">
+        <span class="brand-mark"><i></i></span>
+        <span><b>TerraHeat</b><small>Global heat observatory</small></span>
+      </a>
+      <form class="search" id="search-form" role="search">
+        <label class="sr-only" for="place-search">Search a city</label>
+        <input id="place-search" list="city-options" autocomplete="off" placeholder="Search a city or observatory…">
+        <datalist id="city-options"></datalist>
+        <button type="submit" aria-label="Search">⌕</button>
+      </form>
+      <div class="mast-actions">
+        <button class="icon-button" id="about-toggle" type="button">ABOUT</button>
+        <button class="icon-button accent" id="layers-toggle" type="button" aria-expanded="false"><span class="layer-glyph"></span>LAYERS</button>
+      </div>
+    </header>
+
+    <section class="welcome" id="welcome" aria-label="Introduction">
+      <button class="welcome-close" id="welcome-close" type="button" aria-label="Close introduction">×</button>
+      <p class="eyebrow">A PLANET UNDER HEAT</p>
+      <h1>Read a warming world<br><em>from orbit to street.</em></h1>
+      <p>Explore global temperature fields, reveal urban observatories as you move closer, and inspect the thermal signature of individual cities.</p>
+      <div class="welcome-actions">
+        <button class="primary" id="start-explore" type="button">EXPLORE THE MAP</button>
+        <span>Scroll to move through three spatial scales</span>
+      </div>
+    </section>
+
+    <aside class="layers-panel" id="layers-panel" aria-label="Map layers" hidden>
+      <div class="panel-heading"><div><span>DATA LAYERS</span><b>Thermal fields</b></div><button id="layers-close" type="button">×</button></div>
+      <fieldset class="layer-options">
+        <legend>Primary temperature field</legend>
+        <label><input type="radio" name="field" value="era5" checked><i class="swatch heatwave"></i><span><b>ERA5-Land Tmax</b><small>July 2022 heatwave · daily</small></span><em>0.1°</em></label>
+        <label><input type="radio" name="field" value="at"><i class="swatch air"></i><span><b>2 m air temperature</b><small>NOAA GFS · model field</small></span><em>2.5°</em></label>
+        <label><input type="radio" name="field" value="lst"><i class="swatch surface"></i><span><b>Surface skin temperature</b><small>NOAA GFS · land surface</small></span><em>2.5°</em></label>
+        <label><input type="radio" name="field" value="modis"><i class="swatch modis"></i><span><b>MODIS Terra LST</b><small>NASA GIBS · daytime</small></span><em>1 km</em></label>
+      </fieldset>
+      <div class="layer-section">
+        <span>REFERENCE</span>
+        <label class="switch-row"><span><b>City observatories</b><small>Heat-ranked city network</small></span><input id="cities-switch" type="checkbox" checked><i></i></label>
+        <label class="switch-row"><span><b>Map labels</b><small>Places and boundaries</small></span><input id="labels-switch" type="checkbox" checked><i></i></label>
+      </div>
+      <p class="layer-note">Global fields fade as city and local detail appear. Values shown in the analysis drawer are sampled from the bundled NOAA GFS grid.</p>
+    </aside>
+
+    <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small></div>
+
+    <section class="legend" id="legend" aria-label="Temperature legend">
+      <div class="legend-title"><span id="legend-name">ERA5-LAND TMAX</span><b id="legend-date">2022-07-19</b></div>
+      <div class="temperature-ramp"></div>
+      <div class="legend-ticks"><span>−40</span><span>−10</span><span>10</span><span>30</span><span>50+</span></div>
+      <small>°C · DAILY FIELD</small>
+    </section>
+
+    <section class="city-rank" id="city-rank" aria-label="Hottest city samples">
+      <div class="rank-head"><span>HOTTEST MODEL CELLS</span><small>Current GFS frame</small></div>
+      <div id="rank-list"></div>
+    </section>
+
+    <section class="timeline" id="timeline" aria-label="Temperature time control">
+      <button class="play" id="play" type="button" aria-label="Play temperature sequence"><span>▶</span></button>
+      <div class="time-copy"><span id="time-type">ERA5-LAND</span><b id="time-value">19 JUL 2022</b></div>
+      <input id="time-slider" type="range" min="0" max="6" value="6" step="1" aria-label="Temperature date">
+      <div class="time-ends"><span id="time-start">13 JUL</span><span id="time-end">19 JUL</span></div>
+    </section>
+
+    <aside class="analysis" id="analysis" aria-label="City heat analysis" aria-hidden="true">
+      <button class="analysis-close" id="analysis-close" type="button" aria-label="Close city analysis">×</button>
+      <p class="eyebrow">CITY OBSERVATORY</p>
+      <h2 id="analysis-city">Cardiff</h2>
+      <p class="analysis-place" id="analysis-place">United Kingdom · 51.482°, −3.179°</p>
+      <div class="metric-grid">
+        <div><span>2 M AIR</span><b id="metric-at">—</b></div>
+        <div><span>SKIN LST</span><b id="metric-lst">—</b></div>
+        <div><span>SURFACE EXCESS</span><b id="metric-delta">—</b></div>
+        <div><span>HOT STEPS ≥35°C</span><b id="metric-hot">—</b></div>
+      </div>
+      <div class="chart-title"><b>Point temperature</b><span id="chart-period">—</span></div>
+      <svg id="point-chart" viewBox="0 0 328 148" role="img" aria-label="Point temperature time series"></svg>
+      <div class="chart-key"><span><i class="lst-line"></i>Surface skin</span><span><i class="at-line"></i>2 m air</span></div>
+      <div class="analysis-story"><span id="analysis-status">MODEL SNAPSHOT</span><p id="analysis-story">Select a city to inspect its model-grid thermal signature.</p></div>
+      <p class="data-note">Point values use the nearest bundled NOAA GFS model cell. The local urban surface is an interaction prototype, not measured street-scale temperature.</p>
+    </aside>
+
+    <div class="map-loading" id="map-loading"><span></span><b>Loading thermal atlas</b><small>Mapbox · ERA5-Land · NOAA GFS</small></div>
+    <div class="map-error" id="map-error" hidden><b>Map could not load</b><span>Check the Mapbox token URL restrictions and network connection.</span></div>
+  </main>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
+  <script src="mapbox-token.js"></script>
+  <script src="terraheat-mapbox.js"></script>
+</body>
+</html>
