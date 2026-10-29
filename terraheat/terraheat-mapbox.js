@@ -87,8 +87,8 @@
   }
   function setupMap(){
     map.setFog({'space-color':'#050505','star-intensity':.18,'horizon-blend':.05,'color':'#171716','high-color':'#2c2624'});
-    baseSymbols=map.getStyle().layers.filter(layer=>layer.type==='symbol').map(layer=>layer.id);
-    const firstSymbol=baseSymbols[0];
+    const styleLayers=map.getStyle().layers;baseSymbols=styleLayers.filter(layer=>layer.type==='symbol').map(layer=>layer.id);
+    const firstSymbol=baseSymbols[0],firstRoad=styleLayers.find(layer=>layer.type==='line'&&/(road|street|transport)/i.test(layer.id))?.id||firstSymbol;
     map.addSource('thermal-field',{type:'raster',tiles:['tiles/era5/6/{z}/{x}/{y}.png'],tileSize:256,minzoom:0,maxzoom:2});
     map.addLayer({id:'thermal-field',type:'raster',source:'thermal-field',paint:{'raster-opacity':['interpolate',['linear'],['zoom'],0,.84,2.6,.76,4.4,.3,6,0],'raster-resampling':'linear','raster-fade-duration':420}},firstSymbol);
     map.addSource('modis-field',{type:'raster',tiles:[modisUrl(modisDates.at(-1))],tileSize:256,minzoom:0,maxzoom:7,attribution:'NASA GIBS · MODIS Terra MOD11A1 v6.1'});
@@ -101,7 +101,7 @@
     map.addLayer({id:'local-heat',type:'raster',source:'local-heat',minzoom:5.8,layout:{visibility:'none'},paint:{'raster-opacity':['interpolate',['linear'],['zoom'],5.8,0,7.2,.88,11,.7,13,.25],'raster-resampling':'linear','raster-fade-duration':600}},firstSymbol);
     const londonEvent=londonScenes().event;
     map.addSource('london-landsat',{type:'raster',tiles:[landsatTile(londonEvent)],tileSize:256,minzoom:7,maxzoom:15,attribution:'USGS Landsat Collection 2 Level-2 · Microsoft Planetary Computer'});
-    map.addLayer({id:'london-landsat',type:'raster',source:'london-landsat',minzoom:7,layout:{visibility:'none'},paint:{'raster-opacity':['interpolate',['linear'],['zoom'],7,0,8.5,.82,11,.88,14,.72],'raster-resampling':'linear','raster-fade-duration':650}},firstSymbol);
+    map.addLayer({id:'london-landsat',type:'raster',source:'london-landsat',minzoom:7,layout:{visibility:'none'},paint:{'raster-opacity':['interpolate',['linear'],['zoom'],7,0,8.5,.68,11,.62,13,.56,15,.48],'raster-resampling':'linear','raster-fade-duration':650,'raster-saturation':-.08,'raster-contrast':.08,'raster-brightness-max':.92}},firstRoad);
     map.addSource('city-boundary',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
     map.addLayer({id:'city-boundary',type:'line',source:'city-boundary',minzoom:6,paint:{'line-color':'rgba(255,233,211,.68)','line-width':['interpolate',['linear'],['zoom'],6,.7,12,1.5],'line-dasharray':[2,2],'line-opacity':['interpolate',['linear'],['zoom'],6,0,7,.7]}});
     map.on('click','city-points',event=>selectCity(featureCity(event.features[0])));

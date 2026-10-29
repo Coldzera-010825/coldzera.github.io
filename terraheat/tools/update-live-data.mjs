@@ -8,7 +8,7 @@ const eventId='LC09_L2SP_201024_20220718_02_T1';
 const gibsLayer='MODIS_Terra_Land_Surface_Temp_Day_v6.1_STD';
 
 async function json(url,options={}){
-  const response=await fetch(url,{...options,headers:{'user-agent':'TerraHeat-live-pipeline/1.2',...(options.headers||{})}});
+  const response=await fetch(url,{...options,headers:{'user-agent':'TerraHeat-live-pipeline/1.3',...(options.headers||{})}});
   if(!response.ok)throw new Error(`${response.status} ${response.statusText}: ${url}`);
   return response.json();
 }
@@ -20,7 +20,7 @@ function scene(item,rescale){
   return {id:item.id,date:isoDate(item.properties.datetime),platform:displayPlatform(item.properties.platform),cloudCover:Number(item.properties['eo:cloud_cover']),rescale,bbox:item.bbox};
 }
 async function latestModisDate(){
-  const response=await fetch('https://gibs.earthdata.nasa.gov/wmts/epsg3857/all/1.0.0/WMTSCapabilities.xml',{headers:{'user-agent':'TerraHeat-live-pipeline/1.2'}});
+  const response=await fetch('https://gibs.earthdata.nasa.gov/wmts/epsg3857/all/1.0.0/WMTSCapabilities.xml',{headers:{'user-agent':'TerraHeat-live-pipeline/1.3'}});
   if(!response.ok)throw new Error(`GIBS capabilities ${response.status}`);
   const xml=await response.text(),start=xml.indexOf(`<ows:Identifier>${gibsLayer}</ows:Identifier>`);
   if(start<0)throw new Error('MODIS LST layer missing from GIBS capabilities');
