@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="application-version" content="1.7">
+  <meta name="application-version" content="1.8">
   <meta name="theme-color" content="#0f0f0e">
   <title>TerraHeat — Global Heat Observatory</title>
   <link rel="icon" href="data:,">
@@ -30,7 +30,7 @@
         <button type="submit" aria-label="Search">⌕</button>
       </form>
       <div class="mast-actions">
-        <button class="icon-button story-button" id="story-toggle" type="button" disabled title="Classic July 2022 heatwave story — coming soon">STORY <small>SOON</small></button>
+        <button class="icon-button story-button" id="story-toggle" type="button" aria-expanded="false" title="Play the July 2022 London heat story">STORY <small>2022</small></button>
         <button class="icon-button" id="about-toggle" type="button">GUIDE</button>
         <button class="icon-button accent" id="layers-toggle" type="button" aria-expanded="false"><span class="layer-glyph"></span>LAYERS</button>
       </div>
@@ -111,8 +111,43 @@
           <button type="button" id="landsat-latest">LATEST CLEAR</button>
         </div>
       </div>
+      <section class="london-research" id="london-research" hidden aria-label="London research layers">
+        <div class="research-heading"><span>AEF RESEARCH DEMONSTRATOR</span><b>London · summer 2022</b><small>Choose one environmental layer. Roads, labels and the GLA boundary stay visible for orientation.</small></div>
+        <div class="research-layers" role="group" aria-label="London environmental layer">
+          <button type="button" data-research-layer="lst-summer"><i class="research-swatch lst-summer"></i><span><b>Summer LST</b><small>MODIS · 1 km</small></span></button>
+          <button type="button" data-research-layer="ndvi"><i class="research-swatch ndvi"></i><span><b>Vegetation</b><small>NDVI · 500 m</small></span></button>
+          <button type="button" data-research-layer="ndwi"><i class="research-swatch ndwi"></i><span><b>Water signal</b><small>NDWI · 30 m</small></span></button>
+          <button type="button" data-research-layer="elevation"><i class="research-swatch elevation"></i><span><b>Elevation</b><small>NASADEM · 30 m</small></span></button>
+          <button type="button" data-research-layer="aef"><i class="research-swatch aef"></i><span><b>AEF embedding</b><small>64D projection · 100 m</small></span></button>
+          <button type="button" data-research-layer="none"><i class="research-swatch none"></i><span><b>Event LST</b><small>Return to Landsat</small></span></button>
+        </div>
+        <label class="research-stations"><span><b>WOW station network</b><small><em id="wow-station-count">—</em> registered sites in the London extract</small></span><input id="research-stations-switch" type="checkbox"><i></i></label>
+        <div class="research-layer-note" id="research-layer-note">Select a research layer to compare environmental context with the July 2022 heat surface.</div>
+        <div class="research-weather">
+          <div class="research-chart-head"><span>13–19 JUL 2022</span><b>Heat building across London</b></div>
+          <svg id="research-weather-chart" viewBox="0 0 328 154" role="img" aria-label="ERA5-Land daily maximum air temperature across London"></svg>
+          <div class="research-chart-key"><span><i></i>London grid mean Tmax</span><span><i></i>Hottest grid cell</span></div>
+        </div>
+        <div class="research-pipeline" id="research-pipeline" aria-label="Future research modules"></div>
+        <p class="research-source">Derived for web display from the local AEF research archive. Raw analytical files remain outside the website; units, resolution and limitations are preserved in the layer notes.</p>
+      </section>
       <p class="data-note" id="analysis-note">Point values use the nearest bundled NOAA GFS model cell. The local urban surface is an interaction prototype, not measured street-scale temperature.</p>
     </aside>
+
+    <section class="heat-story" id="heat-story" hidden aria-live="polite">
+      <div class="story-card" role="dialog" aria-modal="false" aria-labelledby="story-title">
+        <div class="story-kicker"><span id="story-count">01 / 06</span><button id="story-close" type="button" aria-label="Close story">×</button></div>
+        <div class="story-progress" aria-hidden="true"><i id="story-progress"></i></div>
+        <p class="eyebrow" id="story-eyebrow">SEVEN DAYS OF EXTREME HEAT</p>
+        <h2 id="story-title">London, July 2022</h2>
+        <p id="story-copy"></p>
+        <div class="story-fact" id="story-fact"></div>
+        <div class="story-actions">
+          <button class="text-button" id="story-prev" type="button">BACK</button>
+          <button class="primary" id="story-next" type="button">BEGIN</button>
+        </div>
+      </div>
+    </section>
 
     <section class="tour" id="tour" hidden aria-live="polite">
       <div class="tour-popover" id="tour-popover" role="dialog" aria-modal="false" aria-labelledby="tour-title">
