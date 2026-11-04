@@ -206,6 +206,7 @@
     document.querySelector(`input[name=field][value=${field}]`).checked=true;updateFrame();
   }
   function updateFrame(){
+    $('#legend .temperature-ramp').style.background='';$('#legend>small').textContent='°C · DAILY FIELD';
     const field=state.field,index=state.frame,label=frameLabel(field,index),isModis=field==='modis',styleReady=map?.isStyleLoaded();
     if(styleReady){thermalLayers.forEach(id=>map.setLayoutProperty(id,'visibility',isModis?'none':'visible'));map.setLayoutProperty('modis-field','visibility',isModis?'visible':'none')}
     if(isModis){if(styleReady){cancelThermalTransition();map.getSource('modis-field').setTiles([modisUrl(modisDates[index])])}$('#legend-name').textContent='MODIS TERRA LST';$('#time-type').textContent='MODIS TERRA'}
@@ -225,6 +226,7 @@
     populateAnalysis(city,series);$('#analysis').classList.add('open');$('#analysis').setAttribute('aria-hidden','false');$('#welcome').classList.add('dismissed');
   }
   function activateLondonScene(mode){
+    $('#legend .temperature-ramp').style.background='';$('#legend>small').textContent='°C · SCENE';
     const scenes=londonScenes(),scene=scenes[mode]||scenes.event;state.landsatMode=mode;map.getSource('london-landsat').setTiles([landsatTile(scene)]);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
     state.researchLayer='none';map.setLayoutProperty('london-research','visibility','none');document.querySelectorAll('[data-research-layer]').forEach(button=>button.classList.toggle('active',button.dataset.researchLayer==='none'));
     $('#urban-raster').hidden=false;$('#urban-raster-name').textContent=`${String(scene.platform||'Landsat').toUpperCase()} LST`;$('#urban-raster-meta').textContent=`${shortDate(scene.date)} · 30 m output grid · ${Number(scene.cloudCover).toFixed(2)}% scene cloud · GLA boundary clip`;
@@ -249,7 +251,10 @@
       ndwi:{name:'SUMMER NDWI',ticks:['−0.5','−0.1','0','0.2','0.6']},
       elevation:{name:'ELEVATION',ticks:['0','25','60','120','220 m']},
       aef:{name:'ALPHAEARTH EMBEDDING',ticks:['64D','→','RGB','→','VIEW']}
-    },legend=legends[id];$('#legend').dataset.field=id;$('#legend-name').textContent=legend.name;$('#legend-date').textContent=id==='elevation'?'STATIC':'2022';$('#legend-ticks').innerHTML=legend.ticks.map(value=>`<span>${value}</span>`).join('');
+    },legend=legends[id]||{name:layer.title.toUpperCase()};
+    const ramp=$('#legend .temperature-ramp');ramp.style.background=layer.colors?`linear-gradient(90deg,${layer.colors.join(',')})`:'';
+    const ticks=layer.range?Array.from({length:5},(_,i)=>{const value=layer.range[0]+(layer.range[1]-layer.range[0])*i/4;return value.toFixed(id==='emissivity'?3:layer.unit==='unitless'?2:1)}):legend.ticks;
+    $('#legend').dataset.field=id;$('#legend-name').textContent=legend.name;$('#legend-date').textContent=id==='elevation'?'STATIC':'JJA 2022';$('#legend-ticks').innerHTML=ticks.map(value=>`<span>${value}</span>`).join('');$('#legend>small').textContent=layer.unit?`${layer.unit} · 2–98% DISPLAY RANGE`:'64D EMBEDDING · RGB VIEW';
     $('#analysis-status').textContent='RESEARCH CONTEXT';$('#analysis-story').textContent=layer.note;$('#analysis-note').textContent='Environmental layers are descriptive research inputs. Comparisons with heat do not establish causation; modelling outputs require validation and uncertainty reporting.';
   }
   function resetMetricLabels(){
