@@ -39,7 +39,7 @@
     fetch('data/live-manifest.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null),
     fetch('data/greater-london-boundary.geojson').then(r=>{if(!r.ok)throw new Error('Greater London boundary unavailable');return r.json()}),
     fetch('data/city-boundaries.geojson').then(r=>{if(!r.ok)throw new Error('City boundaries unavailable');return r.json()}),
-    fetch('data/london-research/manifest.json').then(r=>{if(!r.ok)throw new Error('London research manifest unavailable');return r.json()}),
+    fetch('data/london-research/manifest.json?v=london-layers-20261104-2',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('London research manifest unavailable');return r.json()}),
     fetch('data/london-research/wow-stations.geojson').then(r=>{if(!r.ok)throw new Error('London WOW sites unavailable');return r.json()})
   ]).then(([gfsData,era5Data,liveData,boundaryData,cityBoundaryData,researchData,stationData])=>{gfs=gfsData;era5=era5Data;live=liveData;londonBoundary=boundaryData;cityBoundaries=cityBoundaryData;londonResearch=researchData;wowStations=stationData;cityBoundaryIndex=new Map(cityBoundaries.features.map(feature=>[feature.properties.name,feature]));if(live?.modis?.dates?.length)modisDates=live.modis.dates;init()}).catch(error=>showFatal(error.message));
 
@@ -241,7 +241,7 @@
     if(!map?.getLayer('london-research')||state.selected?.name!=='London')return;
     if(id==='none'){activateLondonScene(state.landsatMode||'event');$('#research-layer-note').textContent='Landsat Collection 2 Level-2 surface temperature for 18 July 2022. Output grid 30 m; native thermal sensing is coarser.';return}
     const layer=londonResearch.layers.find(item=>item.id===id);if(!layer)return;state.researchLayer=id;
-    map.getSource('london-research').updateImage({url:layer.image,coordinates:layer.coordinates});map.setLayoutProperty('london-research','visibility','visible');map.setLayoutProperty('london-landsat','visibility','none');['london-mask','london-outline'].forEach(layerId=>map.setLayoutProperty(layerId,'visibility','visible'));
+    map.getSource('london-research').updateImage({url:`${layer.image}?v=${encodeURIComponent(londonResearch.generated)}`,coordinates:layer.coordinates});map.setLayoutProperty('london-research','visibility','visible');map.setLayoutProperty('london-landsat','visibility','none');['london-mask','london-outline'].forEach(layerId=>map.setLayoutProperty(layerId,'visibility','visible'));
     document.querySelectorAll('[data-research-layer]').forEach(button=>button.classList.toggle('active',button.dataset.researchLayer===id));
     $('#landsat-event').classList.remove('active');$('#landsat-latest').classList.remove('active');
     $('#urban-raster-name').textContent=layer.title.toUpperCase();$('#urban-raster-meta').textContent=`${layer.resolution} · GLA boundary clip`;$('#research-layer-note').textContent=`${layer.note} Source: ${layer.attribution}.`;
@@ -267,6 +267,7 @@
     $('#analysis-note').textContent='Weather values use the Open-Meteo seamless historical archive at the documented target cells. Landsat and MODIS measure land-surface temperature under clear-sky conditions, not 2 m air temperature. Each layer preserves its own date, resolution and limitation.';
   }
   function renderLondonResearch(){
+    document.querySelectorAll('[data-research-layer]').forEach(button=>{const layer=londonResearch.layers.find(item=>item.id===button.dataset.researchLayer);if(layer?.colors)button.querySelector('.research-swatch').style.background=`linear-gradient(0deg,${layer.colors.join(',')})`});
     $('#wow-station-count').textContent=londonResearch.stations.count;
     const series=londonResearch.weather.event,svg=$('#research-weather-chart'),min=Math.floor(Math.min(...series.map(day=>day.meanTmin))-2),max=Math.ceil(Math.max(...series.map(day=>day.spatialMax))+2),x=index=>28+index*286/(series.length-1),y=value=>126-(value-min)/(max-min)*100,path=key=>series.map((day,index)=>`${index?'L':'M'}${x(index).toFixed(1)},${y(day[key]).toFixed(1)}`).join(' '),area=`M${x(0)},126 ${series.map((day,index)=>`L${x(index).toFixed(1)},${y(day.meanTmax).toFixed(1)}`).join(' ')} L${x(series.length-1)},126 Z`,grid=[0,.5,1].map(t=>{const yy=26+t*100,value=Math.round(max-t*(max-min));return `<line class="weather-grid" x1="28" y1="${yy}" x2="314" y2="${yy}"/><text x="0" y="${yy+3}" fill="#716c65" font-size="8">${value}°</text>`}).join(''),dates=series.map((day,index)=>`<text x="${x(index)}" y="146" fill="#716c65" font-size="7" text-anchor="middle">${day.date.slice(8)}</text>`).join(''),dots=series.map((day,index)=>`<circle class="weather-dot" cx="${x(index)}" cy="${y(day.meanTmax)}" r="2.3"/>`).join('');
     svg.innerHTML=`<defs><linearGradient id="weather-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ef6548" stop-opacity=".28"/><stop offset="1" stop-color="#ef6548" stop-opacity="0"/></linearGradient></defs>${grid}<path class="weather-area" d="${area}"/><path class="weather-max" d="${path('spatialMax')}"/><path class="weather-mean" d="${path('meanTmax')}"/>${dots}${dates}`;
