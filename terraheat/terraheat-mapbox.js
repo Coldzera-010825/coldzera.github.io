@@ -147,6 +147,7 @@
   }
 
   function init(){
+    setupMapFloats();
     map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/dark-v11',projection:'globe',center:[14,18],zoom:1.35,pitch:0,bearing:0,antialias:true,attributionControl:true});
     map.addControl(new mapboxgl.NavigationControl({showCompass:true,visualizePitch:true}),'top-right');
     map.on('error',event=>{const text=String(event.error?.message||'');if(/401|403|access token|style/i.test(text))showFatal('Mapbox rejected the token. Check its URL restrictions for localhost.')});
@@ -220,9 +221,9 @@
     const isLondon=city.name==='London',boundary=cityBoundaryIndex.get(city.name);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility',isLondon?'visible':'none'));if(!isLondon)hideLondonResearch();map.setLayoutProperty('local-heat','visibility','none');
     if(isLondon){state.landsatMode='event';state.researchLayer='none';activateLondonScene('event');map.getSource('city-boundary').setData({type:'FeatureCollection',features:[]})}
     else map.getSource('city-boundary').setData(boundary||{type:'FeatureCollection',features:[]});
-    if(isLondon)map.flyTo({center:[city.lon,city.lat],zoom:10.15,pitch:10,bearing:-8,duration:2700,curve:1.25,essential:true,padding:{right:window.innerWidth>700?350:0}});
-    else if(boundary?.bbox)map.fitBounds([[boundary.bbox[0],boundary.bbox[1]],[boundary.bbox[2],boundary.bbox[3]]],{padding:{top:100,bottom:90,left:45,right:window.innerWidth>700?430:45},maxZoom:10.8,pitch:24,bearing:-8,duration:2400,essential:true});
-    else map.flyTo({center:[city.lon,city.lat],zoom:8.3,pitch:34,bearing:-8,duration:2200,curve:1.25,essential:true,padding:{right:window.innerWidth>700?350:0}});
+    if(isLondon)map.flyTo({center:[city.lon,city.lat],zoom:9.7,pitch:10,bearing:-8,duration:2700,curve:1.25,essential:true,padding:{right:0}});
+    else if(boundary?.bbox)map.fitBounds([[boundary.bbox[0],boundary.bbox[1]],[boundary.bbox[2],boundary.bbox[3]]],{padding:{top:100,bottom:90,left:45,right:45},maxZoom:10.8,pitch:24,bearing:-8,duration:2400,essential:true});
+    else map.flyTo({center:[city.lon,city.lat],zoom:8.3,pitch:34,bearing:-8,duration:2200,curve:1.25,essential:true,padding:{right:0}});
     populateAnalysis(city,series);$('#analysis').classList.add('open');$('#analysis').setAttribute('aria-hidden','false');$('#welcome').classList.add('dismissed');
   }
   function activateLondonScene(mode){
@@ -263,8 +264,18 @@
     const labels=['2 M AIR','SKIN LST','SURFACE EXCESS','HOT STEPS ≥35°C'];document.querySelectorAll('.metric-grid span').forEach((node,index)=>node.textContent=labels[index]);
   }
   let wowData=null,wowRequest=0;
+  function setupMapFloats(){
+    const panel=$('#analysis'),station=$('#wow-panel');$('#app').append(station);
+    const makeDetails=(title,nodes,open=false)=>{const details=document.createElement('details');details.className='map-float-details';details.open=open;const summary=document.createElement('summary');summary.textContent=title;details.append(summary);nodes.filter(Boolean).forEach(node=>details.append(node));panel.append(details);return details};
+    const research=$('#london-research');
+    makeDetails('MAP LAYERS',[$('#urban-raster'),research],true);
+    const context=makeDetails('CITY CONTEXT & RESEARCH',[$('.metric-grid'),$('.chart-title'),$('#point-chart'),$('.chart-key'),$('.analysis-story'),$('.research-weather'),$('#research-pipeline'),$('.research-source'),$('#analysis-note')]);
+    context.id='city-context';
+    const toggle=document.createElement('button');toggle.type='button';toggle.className='float-collapse';toggle.textContent='−';toggle.setAttribute('aria-label','Collapse map controls');panel.prepend(toggle);toggle.onclick=()=>{const collapsed=panel.classList.toggle('compact');toggle.textContent=collapsed?'+':'−';toggle.setAttribute('aria-label',collapsed?'Expand map controls':'Collapse map controls')};
+    const header=station.querySelector('header');header.title='Drag to move station window';header.addEventListener('pointerdown',event=>{if(event.target.closest('button')||window.innerWidth<701)return;const rect=station.getBoundingClientRect(),dx=event.clientX-rect.left,dy=event.clientY-rect.top;header.setPointerCapture(event.pointerId);station.style.transform='none';const move=e=>{station.style.left=`${Math.max(8,Math.min(window.innerWidth-station.offsetWidth-8,e.clientX-dx))}px`;station.style.top=`${Math.max(75,Math.min(window.innerHeight-90,e.clientY-dy))}px`};move(event);header.onpointermove=move;header.onpointerup=()=>{header.onpointermove=null};header.onpointercancel=()=>{header.onpointermove=null}});
+  }
   async function openWowStation(feature){
-    const request=++wowRequest;wowData=null;$('#wow-panel').hidden=false;$('#wow-name').textContent=feature.properties.name;$('#wow-status').textContent='Loading station observations…';$('#wow-fields').replaceChildren();$('#wow-charts').replaceChildren();$('#wow-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+    const request=++wowRequest;wowData=null;$('#wow-panel').hidden=false;$('#wow-panel').scrollTop=0;$('#wow-name').textContent=feature.properties.name;$('#wow-status').textContent='Loading station observations…';$('#wow-fields').replaceChildren();$('#wow-charts').replaceChildren();
     try{const response=await fetch(feature.properties.series+'?v=wow-20261104');if(!response.ok)throw new Error('unavailable');const data=await response.json();if(request!==wowRequest)return;wowData=data;$('#wow-status').textContent=`${data.rows.length.toLocaleString()} hourly records · ${data.coordinates.map(v=>v.toFixed(4)).join(', ')} · screened JJA 2022`;
       data.fields.forEach((field,index)=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=field.id;input.checked=index<2;input.addEventListener('change',renderWowCharts);label.append(input,document.createTextNode(`${field.label} (${field.unit})`));$('#wow-fields').append(label)});renderWowCharts();
     }catch(error){if(request===wowRequest)$('#wow-status').textContent='Station data could not be loaded. Select the station again to retry.'}
