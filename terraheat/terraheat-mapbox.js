@@ -275,10 +275,11 @@
     const header=station.querySelector('header');header.title='Drag to move station window';header.addEventListener('pointerdown',event=>{if(event.target.closest('button')||window.innerWidth<701)return;const rect=station.getBoundingClientRect(),dx=event.clientX-rect.left,dy=event.clientY-rect.top;header.setPointerCapture(event.pointerId);station.style.transform='none';const move=e=>{station.style.left=`${Math.max(8,Math.min(window.innerWidth-station.offsetWidth-8,e.clientX-dx))}px`;station.style.top=`${Math.max(75,Math.min(window.innerHeight-90,e.clientY-dy))}px`};move(event);header.onpointermove=move;header.onpointerup=()=>{header.onpointermove=null};header.onpointercancel=()=>{header.onpointermove=null}});
   }
   async function openWowStation(feature){
+    $('#wow-panel').setAttribute('aria-busy','true');
     const request=++wowRequest;wowData=null;$('#wow-panel').hidden=false;$('#wow-panel').scrollTop=0;$('#wow-name').textContent=feature.properties.name;$('#wow-status').textContent='Loading station observations…';$('#wow-fields').replaceChildren();$('#wow-charts').replaceChildren();
     try{const response=await fetch(feature.properties.series+'?v=wow-20261104');if(!response.ok)throw new Error('unavailable');const data=await response.json();if(request!==wowRequest)return;wowData=data;$('#wow-status').textContent=`${data.rows.length.toLocaleString()} hourly records · ${data.coordinates.map(v=>v.toFixed(4)).join(', ')} · screened JJA 2022`;
       data.fields.forEach((field,index)=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=field.id;input.checked=index<2;input.addEventListener('change',renderWowCharts);label.append(input,document.createTextNode(`${field.label} (${field.unit})`));$('#wow-fields').append(label)});renderWowCharts();
-    }catch(error){if(request===wowRequest)$('#wow-status').textContent='Station data could not be loaded. Select the station again to retry.'}
+    }catch(error){if(request===wowRequest)$('#wow-status').textContent='Station data could not be loaded. Select the station again to retry.'}finally{if(request===wowRequest)$('#wow-panel').setAttribute('aria-busy','false')}
   }
   function renderWowCharts(){
     if(!wowData)return;const target=$('#wow-charts');target.replaceChildren();const chosen=new Set([...$('#wow-fields').querySelectorAll('input:checked')].map(input=>input.value));const rows=wowData.rows.filter(row=>$('#wow-period').value==='summer'||(row[0]>='2022-07-13'&&row[0]<'2022-07-20'));
