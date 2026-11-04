@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="terraheat-mapbox.css?v=london-layers-20261104-2">
+  <link rel="stylesheet" href="terraheat-mapbox.css?v=wow-series-20261104">
 </head>
 <body>
   <main id="app">
@@ -109,6 +109,7 @@
         <div class="scene-switch" role="group" aria-label="London Landsat scene">
           <button type="button" id="landsat-event" class="active">18 JUL 2022 EVENT</button>
           <button type="button" id="landsat-latest">LATEST CLEAR</button>
+          <button type="button" id="landsat-summer">SUMMER 2022 MEDIAN</button>
         </div>
       </div>
       <section class="london-research" id="london-research" hidden aria-label="London research layers">
@@ -118,13 +119,13 @@
           <button type="button" data-research-layer="ndvi"><i class="research-swatch ndvi"></i><span><b>Vegetation</b><small>Landsat 8 NDVI · 30 m</small></span></button>
           <button type="button" data-research-layer="emissivity"><i class="research-swatch emissivity"></i><span><b>Surface emissivity</b><small>MODIS · 1 km</small></span></button>
           <button type="button" data-research-layer="mndwi"><i class="research-swatch mndwi"></i><span><b>Modified water index</b><small>MNDWI · 30 m</small></span></button>
-          <button type="button" data-research-layer="lst-landsat"><i class="research-swatch lst-landsat"></i><span><b>Summer LST</b><small>Landsat 8 · 30 m grid</small></span></button>
           <button type="button" data-research-layer="ndwi"><i class="research-swatch ndwi"></i><span><b>Water signal</b><small>NDWI · 30 m</small></span></button>
           <button type="button" data-research-layer="elevation"><i class="research-swatch elevation"></i><span><b>Elevation</b><small>NASADEM · 30 m</small></span></button>
           <button type="button" data-research-layer="aef"><i class="research-swatch aef"></i><span><b>AEF embedding</b><small>64D projection · 10 m source</small></span></button>
-          <button type="button" data-research-layer="none"><i class="research-swatch none"></i><span><b>Event LST</b><small>Return to Landsat</small></span></button>
+          <button type="button" data-research-layer="none"><i class="research-swatch none"></i><span><b>Landsat temperature</b><small>Event / summer / latest</small></span></button>
         </div>
         <label class="research-stations"><span><b>WOW station network</b><small><em id="wow-station-count">—</em> registered sites in the London extract</small></span><input id="research-stations-switch" type="checkbox"><i></i></label>
+        <section id="wow-panel" class="wow-panel" hidden aria-label="Station observations"><header><span>STATION OBSERVATORY · JJA 2022</span><button id="wow-close" aria-label="Close station observations">×</button></header><h3 id="wow-name"></h3><p id="wow-status">Click a station to inspect observations.</p><label>Period <select id="wow-period"><option value="event">13–19 July heatwave</option><option value="summer">Full summer</option></select></label><div id="wow-fields" class="wow-fields"></div><div id="wow-charts"></div><small>UTC hourly means · gust: hourly maximum · gaps preserved. Rain shows mean reported amount, not accumulated rainfall. Basic screening; unvalidated citizen observations.</small></section>
         <div class="research-layer-note" id="research-layer-note">Select a research layer to compare environmental context with the July 2022 heat surface.</div>
         <div class="research-weather">
           <div class="research-chart-head"><span>13–19 JUL 2022</span><b>Heat building across London</b></div>
@@ -170,6 +171,6 @@
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
   <script src="mapbox-token.js"></script>
-  <script src="terraheat-mapbox.js?v=london-layers-20261104-2"></script>
+  <script src="terraheat-mapbox.js?v=wow-series-20261104"></script>
 </body>
 </html>

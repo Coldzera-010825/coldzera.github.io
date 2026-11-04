@@ -1,0 +1,300 @@
+{
+  "period": "JJA 2022",
+  "stations": [
+    {
+      "station": "7 Washington Road, London, SW13, UK",
+      "siteId": "6df44f9f-0016-ec11-b76a-0003ff599499",
+      "hours": 2203,
+      "excluded": {}
+    },
+    {
+      "station": "Barnehurst Weather",
+      "siteId": "192316",
+      "hours": 2207,
+      "excluded": {
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "Berrylands",
+      "siteId": "555306018",
+      "hours": 2162,
+      "excluded": {
+        "outside_period": 1,
+        "invalid_gust": 23
+      }
+    },
+    {
+      "station": "BrentfordTW8",
+      "siteId": "b31589ed-03f9-eb11-ba5e-0003ff5986e4",
+      "hours": 2208,
+      "excluded": {}
+    },
+    {
+      "station": "Brockley",
+      "siteId": "885496003",
+      "hours": 2207,
+      "excluded": {
+        "coordinate_or_site": 1
+      }
+    },
+    {
+      "station": "Bush Hill Park",
+      "siteId": "2e324be8-600b-e811-90cf-0003ff5997e7",
+      "hours": 2203,
+      "excluded": {}
+    },
+    {
+      "station": "Butchers RD, Canning Town",
+      "siteId": "e358935f-bfbc-e911-b083-0003ff598cc1",
+      "hours": 315,
+      "excluded": {
+        "coordinate_or_site": 19732
+      }
+    },
+    {
+      "station": "Cave Weather",
+      "siteId": "143b6927-6d50-e911-b048-0003ff596eab",
+      "hours": 2208,
+      "excluded": {}
+    },
+    {
+      "station": "Chessington",
+      "siteId": "23436202",
+      "hours": 2205,
+      "excluded": {}
+    },
+    {
+      "station": "Clarendon Drive",
+      "siteId": "8a9400fa-2748-e611-9401-0003ff5987fd",
+      "hours": 1932,
+      "excluded": {
+        "coordinate_or_site": 1982,
+        "invalid_rain": 143
+      }
+    },
+    {
+      "station": "Erith, Kent - G4MHJ",
+      "siteId": "147933",
+      "hours": 2187,
+      "excluded": {
+        "coordinate_or_site": 6
+      }
+    },
+    {
+      "station": "Foresters",
+      "siteId": "40305856",
+      "hours": 2140,
+      "excluded": {
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "Frithwood Weather",
+      "siteId": "20483485",
+      "hours": 2015,
+      "excluded": {}
+    },
+    {
+      "station": "G8XQB",
+      "siteId": "b55d216f-d6cd-eb11-ba5e-0003ff5986e4",
+      "hours": 2157,
+      "excluded": {
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "Godley Garden",
+      "siteId": "bfd197c1-ca4d-eb11-8fed-0003ff5982ed",
+      "hours": 2208,
+      "excluded": {}
+    },
+    {
+      "station": "Hanworth51.4",
+      "siteId": "5284a5ca-6052-e911-b048-0003ff59ad54",
+      "hours": 2191,
+      "excluded": {
+        "coordinate_or_site": 351
+      }
+    },
+    {
+      "station": "Harold Hill, Essex",
+      "siteId": "53658882",
+      "hours": 1932,
+      "excluded": {
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "Hillingdon",
+      "siteId": "f11572fc-65d7-eb11-ba5e-0003ff599e28",
+      "hours": 2061,
+      "excluded": {
+        "coordinate_or_site": 501
+      }
+    },
+    {
+      "station": "Hornchurch",
+      "siteId": "33c30729-ac14-eb11-8441-0003ff597a64",
+      "hours": 2207,
+      "excluded": {
+        "coordinate_or_site": 3
+      }
+    },
+    {
+      "station": "ILONDO188",
+      "siteId": "95466f1a-fcfd-eb11-b76a-0003ff599499",
+      "hours": 2046,
+      "excluded": {
+        "coordinate_or_site": 5849
+      }
+    },
+    {
+      "station": "Kingston upon Thames weather",
+      "siteId": "354239164",
+      "hours": 2104,
+      "excluded": {}
+    },
+    {
+      "station": "LIMBO",
+      "siteId": "16ef4fbb-3820-e911-9461-0003ff5986c6",
+      "hours": 2207,
+      "excluded": {
+        "coordinate_or_site": 4
+      }
+    },
+    {
+      "station": "London Borough of Newham, Upton Park",
+      "siteId": "33055520",
+      "hours": 2130,
+      "excluded": {
+        "coordinate_or_site": 2
+      }
+    },
+    {
+      "station": "Malwood Road, Balham",
+      "siteId": "691226014",
+      "hours": 2094,
+      "excluded": {
+        "coordinate_or_site": 283
+      }
+    },
+    {
+      "station": "Ministry Way Weather",
+      "siteId": "50050120",
+      "hours": 2208,
+      "excluded": {}
+    },
+    {
+      "station": "N15Weather",
+      "siteId": "949096001",
+      "hours": 2202,
+      "excluded": {
+        "coordinate_or_site": 518
+      }
+    },
+    {
+      "station": "New Malden, UK",
+      "siteId": "427326003",
+      "hours": 2200,
+      "excluded": {
+        "coordinate_or_site": 117,
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "PagesHillAllotment",
+      "siteId": "208e05df-c50d-e711-9403-000d3ab1cde0",
+      "hours": 74,
+      "excluded": {
+        "coordinate_or_site": 9457
+      }
+    },
+    {
+      "station": "Petts Wood, Kent",
+      "siteId": "3a05a46d-f15b-e711-9401-0003ff59ace8",
+      "hours": 973,
+      "excluded": {
+        "coordinate_or_site": 18721
+      }
+    },
+    {
+      "station": "Providence Square",
+      "siteId": "919766001",
+      "hours": 2144,
+      "excluded": {}
+    },
+    {
+      "station": "Ranelagh Sailing Club",
+      "siteId": "fbec19c7-4063-e711-9401-000d3ab1c16d",
+      "hours": 1232,
+      "excluded": {
+        "coordinate_or_site": 5331
+      }
+    },
+    {
+      "station": "Ratlands",
+      "siteId": "901726001",
+      "hours": 2204,
+      "excluded": {
+        "coordinate_or_site": 1
+      }
+    },
+    {
+      "station": "Shepherds Bush - Askew",
+      "siteId": "54ca737e-05b2-e911-b083-0003ff598cc1",
+      "hours": 2183,
+      "excluded": {}
+    },
+    {
+      "station": "Southgate Weather",
+      "siteId": "a0e7b309-f8b5-ec11-bea1-0003ff597300",
+      "hours": 2201,
+      "excluded": {
+        "coordinate_or_site": 45,
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "The Hyde Weather Station",
+      "siteId": "8e9b7768-3fff-e911-b862-0003ff59ab13",
+      "hours": 2163,
+      "excluded": {
+        "outside_period": 1
+      }
+    },
+    {
+      "station": "Tottenham, London",
+      "siteId": "23853576",
+      "hours": 2073,
+      "excluded": {}
+    },
+    {
+      "station": "Upminster",
+      "siteId": "786072",
+      "hours": 2206,
+      "excluded": {}
+    },
+    {
+      "station": "wanstead_meteo",
+      "siteId": "39043856",
+      "hours": 2110,
+      "excluded": {}
+    },
+    {
+      "station": "WELLING-WXDA",
+      "siteId": "7273698e-0ebd-ea11-bf21-0003ff59a56f",
+      "hours": 2207,
+      "excluded": {
+        "coordinate_or_site": 4
+      }
+    },
+    {
+      "station": "Worlds End Weather",
+      "siteId": "951836001",
+      "hours": 656,
+      "excluded": {}
+    }
+  ],
+  "method": "GLA audit inclusion; dominant site ID and modal coordinate within 0.005 degrees; valid timestamps; latest versions; timestamp deduplication; broad physical ranges. Not research-grade QC."
+}
