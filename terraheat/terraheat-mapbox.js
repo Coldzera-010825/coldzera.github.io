@@ -306,6 +306,7 @@
     const labels=['2 M AIR','SKIN LST','SURFACE EXCESS','HOT STEPS ≥35°C'];document.querySelectorAll('.metric-grid span').forEach((node,index)=>node.textContent=labels[index]);
   }
   let wowData=null,wowRequest=0;
+  const wowColors={temperature:'#ee9d86',humidity:'#70dce8',dewpoint:'#bba4ff',wind:'#8ce6a5',gust:'#f6cd73',direction:'#b9cee0',pressure:'#ff99c6',rain:'#74aaff'};
   let curveTooltip;
   function bindCurveTooltip(svg,pick){
     if(!curveTooltip){curveTooltip=document.createElement('div');curveTooltip.className='curve-tooltip';curveTooltip.hidden=true;curveTooltip.setAttribute('role','tooltip');document.body.append(curveTooltip);document.addEventListener('scroll',()=>curveTooltip.hidden=true,true)}
@@ -329,18 +330,91 @@
     $('#wow-panel').setAttribute('aria-busy','true');
     const request=++wowRequest;wowData=null;$('#wow-panel').hidden=false;$('#wow-panel').scrollTop=0;$('#wow-name').textContent=feature.properties.name;$('#wow-status').textContent='Loading station observations…';$('#wow-fields').replaceChildren();$('#wow-charts').replaceChildren();
     try{const response=await fetch(feature.properties.series+'?v=wow-20261104');if(!response.ok)throw new Error('unavailable');const data=await response.json();if(request!==wowRequest)return;wowData=data;$('#wow-status').textContent=`${data.rows.length.toLocaleString()} hourly records · ${data.coordinates.map(v=>v.toFixed(4)).join(', ')} · screened JJA 2022`;
-      data.fields.forEach((field,index)=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=field.id;input.checked=index<2;input.addEventListener('change',renderWowCharts);label.append(input,document.createTextNode(`${field.label} (${field.unit})`));$('#wow-fields').append(label)});renderWowCharts();
+      data.fields.forEach((field,index)=>{
+        const button=document.createElement('button');
+        button.type='button';
+        button.textContent=`${field.label} (${field.unit})`;
+        button.style.setProperty('--series-color',wowColors[field.id]||'#c3e4e9');
+        button.setAttribute('aria-pressed',String(index<2));
+        button.onclick=()=>{button.setAttribute('aria-pressed',String(button.getAttribute('aria-pressed')!=='true'));renderWowCharts()};
+        $('#wow-fields').append(button);
+      });
+      renderWowCharts();
     }catch(error){if(request===wowRequest)$('#wow-status').textContent='Station data could not be loaded. Select the station again to retry.'}finally{if(request===wowRequest)$('#wow-panel').setAttribute('aria-busy','false')}
   }
   function renderWowCharts(){
-    if(!wowData)return;const target=$('#wow-charts');target.replaceChildren();const chosen=new Set([...$('#wow-fields').querySelectorAll('input:checked')].map(input=>input.value));const rows=wowData.rows.filter(row=>$('#wow-period').value==='summer'||(row[0]>='2022-07-13'&&row[0]<'2022-07-20'));
-    wowData.fields.forEach((field,index)=>{if(!chosen.has(field.id))return;const points=rows.filter(row=>Number.isFinite(row[index+1]));const details=document.createElement('details');details.open=true;const summary=document.createElement('summary');summary.textContent=`${field.label} · ${field.unit} · ${points.length} hours`;details.append(summary);target.append(details);if(!points.length){details.append(document.createTextNode('No valid observations in this period.'));return}
-      const values=points.map(row=>row[index+1]),lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*.08,.5),min=lo-pad,max=hi+pad,start=Date.parse(rows[0][0]),end=Date.parse(rows.at(-1)[0]),x=t=>35+(Date.parse(t)-start)/Math.max(1,end-start)*270,y=v=>111-(v-min)/(max-min)*86;let path='',previous=0;
-      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 328 144');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${field.label} time series in ${field.unit}, UTC`);
-      for(const row of rows){const v=row[index+1],t=Date.parse(row[0]);if(!Number.isFinite(v)){previous=0;continue}path+=`${!previous||t-previous>5400000?'M':'L'}${x(row[0]).toFixed(1)},${y(v).toFixed(1)} `;previous=t}
-      svg.innerHTML=`<line x1="35" x2="305" y1="111" y2="111" stroke="#38434b"/><text x="2" y="28">${max.toFixed(1)}</text><text x="2" y="111">${min.toFixed(1)}</text><path d="${path}" fill="none" stroke="${field.id==='temperature'?'#ee9d86':'#70dce8'}" stroke-width="1.5"/><text x="35" y="134">${rows[0][0].slice(5,10)}</text><text x="265" y="134">${rows.at(-1)[0].slice(5,10)}</text>`;
-      bindCurveTooltip(svg,px=>{const time=start+(px-35)/270*(end-start);const nearest=points.reduce((best,row)=>Math.abs(Date.parse(row[0])-time)<Math.abs(Date.parse(best[0])-time)?row:best,points[0]);if(Math.abs(Date.parse(nearest[0])-time)>5400000)return null;return {x:x(nearest[0]),y:y(nearest[index+1]),text:`${field.label}\n${nearest[index+1]} ${field.unit}\n${nearest[0].replace('T',' ').replace('Z',' UTC')}`}});details.append(svg);
-    });if(!chosen.size)target.textContent='Select fields above to display their time series.';
+    if(!wowData)return;
+    if(curveTooltip)curveTooltip.hidden=true;
+    const target=$('#wow-charts');
+    target.replaceChildren();
+    const summer=$('#wow-period [aria-pressed=true]').dataset.period==='summer';
+    const start=Date.parse(summer?'2022-06-01':'2022-07-13');
+    const end=Date.parse(summer?'2022-09-01':'2022-07-20');
+    const rows=wowData.rows.filter(row=>Date.parse(row[0])>=start&&Date.parse(row[0])<end);
+    const fields=wowData.fields.map((field,index)=>({...field,index:index+1}));
+    const selected=fields.filter(field=>$('#wow-fields').children[field.index-1].getAttribute('aria-pressed')==='true');
+    const visible=selected.filter(field=>rows.some(row=>Number.isFinite(row[field.index])));
+    if(!visible.length){
+      target.textContent=selected.length?'No valid observations in this period.':'Select a variable to show its curve.';
+      return;
+    }
+    const units=[...new Set(visible.map(field=>field.unit))];
+    const ranges=new Map(units.map(unit=>{
+      const values=fields.filter(field=>field.unit===unit).flatMap(field=>rows.map(row=>row[field.index]).filter(Number.isFinite));
+      const low=Math.min(...values),high=Math.max(...values);
+      const padding=high===low?0.5:0;
+      return [unit,unit==='°'?[0,360]:[low-padding,high+padding]];
+    }));
+    const x=time=>48+(time-start)/(end-start)*346;
+    const y=(value,unit)=>{
+      const [low,high]=ranges.get(unit);
+      return 166-(value-low)/(high-low)*142;
+    };
+    const mixed=units.length>1;
+    const axis=Array.from({length:5},(_,i)=>{
+      const pos=166-i*35.5;
+      const [low,high]=ranges.get(units[0]);
+      const label=mixed?i*25:Number((low+(high-low)*i/4).toFixed(2));
+      return `<path d="M48 ${pos}H394" stroke="#38434b"/><text x="42" y="${pos+3}" text-anchor="end">${label}</text>`;
+    }).join('');
+    const dates=Array.from({length:5},(_,i)=>{
+      const time=start+(end-start)*i/4;
+      return `<text x="${x(time)}" y="185" text-anchor="${i===0?'start':i===4?'end':'middle'}">${new Date(time).toISOString().slice(5,10)}</text>`;
+    }).join('');
+    const curves=visible.map(field=>{
+      let path='',previousTime=NaN,previousValue=NaN;
+      for(const row of rows){
+        const value=row[field.index],time=Date.parse(row[0]);
+        if(!Number.isFinite(value)){previousTime=NaN;continue}
+        const connect=Number.isFinite(previousTime)&&time-previousTime<=5400000&&(field.id!=='direction'||Math.abs(value-previousValue)<=180);
+        const px=x(time).toFixed(2),py=y(value,field.unit).toFixed(2);
+        path+=connect?`L${px},${py}`:`M${px},${py}h0.01`;
+        previousTime=time;
+        previousValue=value;
+      }
+      return `<path d="${path}" fill="none" stroke="${wowColors[field.id]||'#c3e4e9'}" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }).join('');
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 410 192');
+    svg.setAttribute('role','img');
+    svg.setAttribute('aria-label','Selected station observations on a shared UTC time axis');
+    svg.innerHTML=`${axis}${dates}${curves}`;
+    target.append(svg);
+    const note=document.createElement('small');
+    note.textContent=mixed?'Y axis: relative scale (0–100 per unit). Hover for original values.':`Y axis: ${units[0]} · Dates in UTC.`;
+    const empty=selected.filter(field=>!visible.includes(field));
+    if(empty.length)note.textContent+=' No data in this period: '+empty.map(field=>field.label).join(', ')+'.';
+    target.append(note);
+    bindCurveTooltip(svg,(px,py)=>{
+      if(px<48||px>394||py<12||py>176)return null;
+      const time=start+(px-48)/346*(end-start);
+      const nearest=rows.reduce((best,row)=>Math.abs(Date.parse(row[0])-time)<Math.abs(Date.parse(best[0])-time)?row:best);
+      if(Math.abs(Date.parse(nearest[0])-time)>1800000)return null;
+      const readings=visible.filter(field=>Number.isFinite(nearest[field.index]));
+      if(!readings.length)return null;
+      const anchor=readings.reduce((best,field)=>Math.abs(y(nearest[field.index],field.unit)-py)<Math.abs(y(nearest[best.index],best.unit)-py)?field:best);
+      return {x:x(Date.parse(nearest[0])),y:y(nearest[anchor.index],anchor.unit),text:[utcStamp(nearest[0]),...readings.map(field=>`${field.label}: ${nearest[field.index]} ${field.unit}`)].join('\n')};
+    });
   }
   function populateLondonResearch(){
     const event=londonResearch.weather.event,last=event.at(-1),labels=['GRID MEAN TMAX','HOTTEST GRID CELL','MEAN WIND','DAILY RAIN'],values=[`${last.meanTmax.toFixed(1)} °C`,`${last.spatialMax.toFixed(1)} °C`,`${last.windSpeed.toFixed(1)} km/h`,`${last.precipitation.toFixed(1)} mm`];
@@ -349,7 +423,13 @@
     $('#analysis-note').textContent='Weather values use the Open-Meteo seamless historical archive at the documented target cells. Landsat and MODIS measure land-surface temperature under clear-sky conditions, not 2 m air temperature. Each layer preserves its own date, resolution and limitation.';
   }
   function renderLondonResearch(){
-    $('#wow-close').onclick=closeWowStation;$('#wow-period').onchange=renderWowCharts;
+    $('#wow-close').onclick=closeWowStation;
+    $('#wow-period').onclick=event=>{
+      const button=event.target.closest('[data-period]');
+      if(!button)return;
+      $('#wow-period').querySelectorAll('button').forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
+      renderWowCharts();
+    };
     document.querySelectorAll('[data-research-layer]').forEach(button=>{const layer=londonResearch.layers.find(item=>item.id===button.dataset.researchLayer);if(layer?.colors)button.querySelector('.research-swatch').style.background=`linear-gradient(0deg,${layer.colors.join(',')})`});
     $('#wow-station-count').textContent=londonResearch.stations.count;
     document.querySelector('.research-stations small').lastChild.textContent=' screened stations · click to explore';

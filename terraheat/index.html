@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.css" rel="stylesheet">
   <link rel="stylesheet" href="terraheat-mapbox.css?v=map-floats-20261104">
-  <link rel="stylesheet" href="terraheat-floats.css?v=layer-provenance-20261106">
+  <link rel="stylesheet" href="terraheat-floats.css?v=wow-overlay-20261106">
   <link rel="stylesheet" href="terraheat-motion.css?v=curve-tooltips-20261104">
 </head>
 <body>
@@ -138,7 +138,7 @@
           <button type="button" data-research-layer="none"><i class="research-swatch none"></i><span><b>Landsat temperature</b><small>Event / summer / latest</small></span></button>
         </div>
         <label class="research-stations"><span><b>WOW station network</b><small><em id="wow-station-count">—</em> registered sites in the London extract</small></span><input id="research-stations-switch" type="checkbox"><i></i></label>
-        <section id="wow-panel" class="wow-panel" hidden aria-label="Station observations"><header><span>STATION OBSERVATORY · JJA 2022</span><button id="wow-close" aria-label="Close station observations">×</button></header><h3 id="wow-name"></h3><p id="wow-status">Click a station to inspect observations.</p><label>Period <select id="wow-period"><option value="event">13–19 July heatwave</option><option value="summer">Full summer</option></select></label><div id="wow-fields" class="wow-fields"></div><div id="wow-charts"></div><small>UTC hourly means · gust: hourly maximum · gaps preserved. Rain shows mean reported amount, not accumulated rainfall. Basic screening; unvalidated citizen observations.</small></section>
+        <section id="wow-panel" class="wow-panel" hidden aria-label="Station observations"><header><span>STATION OBSERVATORY · JJA 2022</span><button id="wow-close" aria-label="Close station observations">×</button></header><h3 id="wow-name"></h3><p id="wow-status">Click a station to inspect observations.</p><div id="wow-period" class="wow-period" role="group" aria-label="Observation period"><button type="button" data-period="event" aria-pressed="true">13–19 July</button><button type="button" data-period="summer" aria-pressed="false">Full summer</button></div><div id="wow-fields" class="wow-fields" role="group" aria-label="Toggle chart variables"></div><div id="wow-charts"></div><small>UTC hourly means · gust: hourly maximum · gaps preserved. Rain shows mean reported amount, not accumulated rainfall. Basic screening; unvalidated citizen observations.</small></section>
         <div class="research-layer-note" id="research-layer-note">Select a research layer to compare environmental context with the July 2022 heat surface.</div>
         <div class="research-weather">
           <div class="research-chart-head"><span>13–19 JUL 2022</span><b>Heat building across London</b></div>
@@ -184,7 +184,7 @@
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
   <script src="mapbox-token.js"></script>
-  <script src="terraheat-mapbox.js?v=layer-provenance-20261106"></script>
+  <script src="terraheat-mapbox.js?v=wow-overlay-20261106"></script>
   <script src="terraheat-motion.js?v=motion-20261104"></script>
 </body>
 </html>

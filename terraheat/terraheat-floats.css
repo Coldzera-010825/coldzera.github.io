@@ -1,4 +1,10 @@
 /* Map-first workspace: independent glass instruments above the scene. */
+#wow-panel .wow-period,#wow-panel .wow-fields{display:flex;flex-wrap:wrap;gap:6px}
+#wow-panel .wow-period button,#wow-panel .wow-fields button{font:inherit;font-size:10px;padding:5px 8px;border:1px solid #40636b;border-radius:5px;background:#10262a;color:#b6c7c9}
+#wow-panel .wow-fields button::before{content:'';display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:var(--series-color)}
+#wow-panel .wow-fields button[aria-pressed=false]::before{opacity:.35}
+#wow-panel :is(.wow-period,.wow-fields) button[aria-pressed=true]{border-color:var(--series-color,#76d1dd);background:#1c3b42;color:#eefbfc}
+#wow-charts>small{display:block;color:#b6c7c9;margin-top:4px;line-height:1.45}
 .layer-category{margin:12px 8px 4px;color:#bfb5a6;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
 .layer-provenance{margin-top:9px;padding-top:7px;border-top:1px solid var(--line);font-size:9px;line-height:1.45}
 .layer-provenance summary{color:#d5c5a9;cursor:pointer}
