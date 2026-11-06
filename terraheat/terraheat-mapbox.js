@@ -199,6 +199,31 @@
   function featureCity(feature){const name=feature?.properties?.name;return cities.find(city=>city.name===name)}
   function framesFor(field){return field==='era5'?era5.frames:field==='modis'?modisDates.map(date=>({date})):gfs.frames}
   function frameLabel(field,index){const item=framesFor(field)[index];return field==='era5'||field==='modis'?item.date:new Date(item.validIso).toISOString().slice(0,16).replace('T',' ')}
+  function utcStamp(value){
+    if(!value||!Number.isFinite(Date.parse(value)))return 'Not recorded';
+    return new Date(value).toISOString().slice(0,16).replace('T',' ')+' UTC';
+  }
+  function showLayerProvenance({kind,valid,updateLabel='Updated',updated,missing}){
+    $('#layer-kind').textContent=kind;
+    $('#layer-valid').textContent=valid;
+    $('#layer-update-label').textContent=updateLabel;
+    $('#layer-updated').textContent=updated;
+    $('#layer-missing').textContent=missing;
+  }
+  function showGlobalProvenance(field,index){
+    const frame=framesFor(field)[index];
+    if(field==='era5'){
+      showLayerProvenance({kind:'Historical replay · reanalysis',valid:frame.date+' · daily maximum (UTC)',updated:'Fixed July 2022 archive · build time not recorded',missing:'Pixel coverage not quantified in this archive'});
+      return;
+    }
+    if(field==='modis'){
+      showLayerProvenance({kind:live?.modis?.dates?.length?'Recent satellite · daytime LST':'Bundled satellite dates · fallback',valid:frame.date+' · daytime acquisition',updateLabel:'Catalog checked',updated:utcStamp(live?.modis?.dates?.length?live.generatedAt:null),missing:'Clouds and unavailable swaths can leave gaps. Coverage is not quantified.'});
+      return;
+    }
+    const values=frame[field];
+    const missing=values.reduce((count,value)=>count+Number(!Number.isFinite(value)),0);
+    showLayerProvenance({kind:'Fixed model snapshot · NOAA GFS',valid:utcStamp(frame.validIso),updateLabel:'Packaged',updated:utcStamp(gfs.generatedIso),missing:`${missing.toLocaleString()} of ${values.length.toLocaleString()} grid cells missing`});
+  }
   function shortDate(value){const date=new Date(value.length===10?`${value}T00:00:00Z`:value+'Z');return date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:value.length===10?'numeric':undefined,timeZone:'UTC'}).toUpperCase()+(value.length>10?` ${value.slice(11,16)}Z`:'')}
   function setField(field,index){
     state.field=field;const frames=framesFor(field);state.frame=Math.max(0,Math.min(frames.length-1,index??frames.length-1));
@@ -215,6 +240,7 @@
     const tickSets={era5:['−40','−10','10','30','50+'],at:['−40','−10','10','30','50+'],lst:['−20','0','20','40','60+'],modis:['−20','0','20','40','60+']};
     $('#legend').dataset.field=field;$('#legend-ticks').innerHTML=tickSets[field].map(value=>`<span>${value}</span>`).join('');
     $('#legend-date').textContent=label;$('#time-value').textContent=shortDate(label);$('#time-slider').value=index;
+    showGlobalProvenance(field,index);
   }
   function selectCity(city){
     if(!city)return;pausePlayback();state.selected=city;state.autoRotate=false;const series=nearestSeries(city);
@@ -230,6 +256,14 @@
     $('#landsat-summer').classList.remove('active');
     $('#legend .temperature-ramp').style.background='';$('#legend>small').textContent='°C · SCENE';
     const scenes=londonScenes(),scene=scenes[mode]||scenes.event;state.landsatMode=mode;map.getSource('london-landsat').setTiles([landsatTile(scene)]);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
+    const fromCatalog=Boolean(live?.landsatLondon?.[mode]?.id===scene.id);
+    showLayerProvenance({
+      kind:mode==='event'?'Historical scene · satellite LST':fromCatalog?'Recent satellite · Landsat LST':'Bundled Landsat scene · fallback',
+      valid:scene.date+' · acquisition date',
+      updateLabel:'Catalog checked',
+      updated:utcStamp(fromCatalog?live.generatedAt:null),
+      missing:'Cloud and quality masks can leave gaps. Scene cloud cover is '+Number(scene.cloudCover).toFixed(2)+'%, measured across the full scene.'
+    });
     state.researchLayer='none';map.setLayoutProperty('london-research','visibility','none');document.querySelectorAll('[data-research-layer]').forEach(button=>button.classList.toggle('active',button.dataset.researchLayer==='none'));
     $('#urban-raster').hidden=false;$('#urban-raster-name').textContent=`${String(scene.platform||'Landsat').toUpperCase()} LST`;$('#urban-raster-meta').textContent=`${shortDate(scene.date)} · 30 m output grid · ${Number(scene.cloudCover).toFixed(2)}% scene cloud · GLA boundary clip`;
     $('#landsat-event').classList.toggle('active',mode==='event');$('#landsat-latest').classList.toggle('active',mode==='latest');$('#legend').dataset.field='landsat';$('#legend-name').textContent='LANDSAT LST · LONDON';$('#legend-date').textContent=scene.date;const [low,high]=scene.rescale||[15,45];$('#legend .temperature-ramp').style.background='linear-gradient(90deg,#30123b,#4662d8,#35abf8,#1ae4b6,#72fe5e,#c8ef34,#faba39,#f66b19,#ca2a04,#7a0403)';$('#legend-ticks').innerHTML=Array.from({length:5},(_,i)=>`<span>${Number((low+(high-low)*i/4).toFixed(1))}</span>`).join('');$('#timeline').classList.add('city-raster-active');
@@ -242,8 +276,15 @@
   }
   function activateResearchLayer(id){
     if(!map?.getLayer('london-research')||state.selected?.name!=='London')return;
-    if(id==='none'){activateLondonScene(state.landsatMode||'event');$('#research-layer-note').textContent='Landsat Collection 2 Level-2 surface temperature for 18 July 2022. Output grid 30 m; native thermal sensing is coarser.';return}
+    if(id==='none'){activateLondonScene(state.landsatMode||'event');return}
     const layer=londonResearch.layers.find(item=>item.id===id);if(!layer)return;state.researchLayer=id;
+    showLayerProvenance({
+      kind:id==='elevation'?'Static terrain · NASADEM':id==='aef'?'Historical annual embedding · AlphaEarth':'Historical composite · satellite',
+      valid:id==='elevation'?'Static elevation':id==='aef'?'2022 · annual':'1 June – 31 August 2022',
+      updateLabel:'Web build',
+      updated:utcStamp(londonResearch.generated),
+      missing:id==='elevation'||id==='aef'?'Pixel coverage not quantified in the web preview':'Cloud and quality masks can leave gaps. Coverage is not quantified.'
+    });
     map.getSource('london-research').updateImage({url:`${layer.image}?v=${encodeURIComponent(londonResearch.generated)}`,coordinates:layer.coordinates});map.setLayoutProperty('london-research','visibility','visible');map.setLayoutProperty('london-landsat','visibility','none');['london-mask','london-outline'].forEach(layerId=>map.setLayoutProperty(layerId,'visibility','visible'));
     document.querySelectorAll('[data-research-layer]').forEach(button=>button.classList.toggle('active',button.dataset.researchLayer===id));
     $('#landsat-event').classList.remove('active');$('#landsat-latest').classList.remove('active');
@@ -370,6 +411,7 @@
   }
   function spinGlobe(){if(!state.autoRotate||map.getZoom()>2.2||map.isMoving())return;const center=map.getCenter();map.easeTo({center:[center.lng+12,center.lat],duration:6000,easing:t=>t,essential:true})}
   function renderRanks(){
+    $('#rank-time').textContent='GFS snapshot · '+utcStamp(gfs.frames.at(-1).validIso);
     const ranked=cities.map(city=>({city,current:nearestSeries(city).at(-1)})).filter(x=>Number.isFinite(x.current.at)).sort((a,b)=>b.current.at-a.current.at).slice(0,4),box=$('#rank-list');box.innerHTML='';ranked.forEach((item,index)=>{const button=document.createElement('button');button.className='rank-item';button.innerHTML=`<i>${String(index+1).padStart(2,'0')}</i><b>${item.city.name}</b><span>${item.current.at.toFixed(1)}°</span>`;button.addEventListener('click',()=>selectCity(item.city));box.appendChild(button)})
   }
   function populateCityOptions(){const list=$('#city-options');cities.forEach(city=>{const option=document.createElement('option');option.value=city.name;option.label=city.country;list.appendChild(option)})}
