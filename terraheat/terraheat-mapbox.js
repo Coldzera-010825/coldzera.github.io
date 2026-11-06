@@ -365,17 +365,25 @@
       const padding=high===low?0.5:0;
       return [unit,unit==='°'?[0,360]:[low-padding,high+padding]];
     }));
-    const x=time=>48+(time-start)/(end-start)*346;
+    const dual=units.length===2;
+    const right=dual?358:394;
+    const plotWidth=right-48;
+    const x=time=>48+(time-start)/(end-start)*plotWidth;
     const y=(value,unit)=>{
       const [low,high]=ranges.get(unit);
       return 166-(value-low)/(high-low)*142;
     };
-    const mixed=units.length>1;
+    const mixed=units.length>2;
+    const tick=(unit,fraction)=>{
+      const [low,high]=ranges.get(unit);
+      return Number((low+(high-low)*fraction).toFixed(2));
+    };
+    const axisColor=unit=>wowColors[visible.find(field=>field.unit===unit).id]||'#c3e4e9';
     const axis=Array.from({length:5},(_,i)=>{
       const pos=166-i*35.5;
-      const [low,high]=ranges.get(units[0]);
-      const label=mixed?i*25:Number((low+(high-low)*i/4).toFixed(2));
-      return `<path d="M48 ${pos}H394" stroke="#38434b"/><text x="42" y="${pos+3}" text-anchor="end">${label}</text>`;
+      const label=mixed?i*25:tick(units[0],i/4);
+      const rightLabel=dual?`<text x="${right+6}" y="${pos+3}" style="fill:${axisColor(units[1])}">${tick(units[1],i/4)}</text>`:'';
+      return `<path d="M48 ${pos}H${right}" stroke="#38434b"/><text x="42" y="${pos+3}" text-anchor="end" style="fill:${mixed?'#b6c7c9':axisColor(units[0])}">${label}</text>${rightLabel}`;
     }).join('');
     const dates=Array.from({length:5},(_,i)=>{
       const time=start+(end-start)*i/4;
@@ -398,16 +406,18 @@
     svg.setAttribute('viewBox','0 0 410 192');
     svg.setAttribute('role','img');
     svg.setAttribute('aria-label','Selected station observations on a shared UTC time axis');
-    svg.innerHTML=`${axis}${dates}${curves}`;
+    const axisUnits=mixed?'<text x="42" y="12" text-anchor="end">Relative</text>':
+      `<text x="42" y="12" text-anchor="end" style="fill:${axisColor(units[0])}">${units[0]}</text>${dual?`<text x="${right+6}" y="12" style="fill:${axisColor(units[1])}">${units[1]}</text>`:''}`;
+    svg.innerHTML=`${axisUnits}${axis}${dates}${curves}`;
     target.append(svg);
     const note=document.createElement('small');
-    note.textContent=mixed?'Y axis: relative scale (0–100 per unit). Hover for original values.':`Y axis: ${units[0]} · Dates in UTC.`;
+    note.textContent=mixed?'Relative Y axis: 0 = lower bound, 100 = upper bound for each unit. Hover for original values.':dual?`Left: ${units[0]} · Right: ${units[1]} · Dates in UTC.`:`Y axis: ${units[0]} · Dates in UTC.`;
     const empty=selected.filter(field=>!visible.includes(field));
     if(empty.length)note.textContent+=' No data in this period: '+empty.map(field=>field.label).join(', ')+'.';
     target.append(note);
     bindCurveTooltip(svg,(px,py)=>{
-      if(px<48||px>394||py<12||py>176)return null;
-      const time=start+(px-48)/346*(end-start);
+      if(px<48||px>right||py<12||py>176)return null;
+      const time=start+(px-48)/plotWidth*(end-start);
       const nearest=rows.reduce((best,row)=>Math.abs(Date.parse(row[0])-time)<Math.abs(Date.parse(best[0])-time)?row:best);
       if(Math.abs(Date.parse(nearest[0])-time)>1800000)return null;
       const readings=visible.filter(field=>Number.isFinite(nearest[field.index]));
