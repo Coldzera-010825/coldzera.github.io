@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="terraheat-mapbox.css?v=map-floats-20261104">
+  <link rel="stylesheet" href="terraheat-mapbox.css?v=uk-exposure-20261107">
   <link rel="stylesheet" href="terraheat-floats.css?v=london-utci-20261107">
   <link rel="stylesheet" href="terraheat-motion.css?v=curve-tooltips-20261104">
 </head>
@@ -51,6 +51,11 @@
 
     <aside class="layers-panel" id="layers-panel" aria-label="Map layers" hidden>
       <div class="panel-heading"><div><span>DATA LAYERS</span><b>Thermal fields</b></div><button id="layers-close" type="button">×</button></div>
+      <div class="layer-section exposure-options">
+        <span>HEAT EXPOSURE · 18 JUL 2022</span>
+        <button type="button" id="exposure-uk" aria-pressed="false"><i class="exposure-swatch"></i><span><b>UK open-sky heat</b><small>Station-adjusted UTCI · 100 m output</small></span><em>UK</em></button>
+        <button type="button" id="exposure-london" aria-pressed="false"><i class="exposure-swatch"></i><span><b>London pedestrian heat</b><small>Street and shade model · 100 m cells</small></span><em>LONDON</em></button>
+      </div>
       <fieldset class="layer-options">
         <legend>Primary temperature field</legend>
         <h3 class="layer-category">Historical replay</h3>
@@ -131,7 +136,6 @@
       <section class="london-research" id="london-research" hidden aria-label="London research layers">
         <div class="research-heading"><span>AEF RESEARCH DEMONSTRATOR</span><b>London · summer 2022</b><small>Choose one environmental layer. Roads, labels and the GLA boundary stay visible for orientation.</small></div>
         <div class="research-layers" role="group" aria-label="London environmental layer">
-          <button type="button" data-research-layer="utci"><i class="research-swatch" style="background:linear-gradient(0deg,#4b2c85,#a23881,#ed6455,#fca947,#fff5b0)"></i><span><b>Pedestrian heat</b><small>UTCI · 18 July 2022</small></span></button>
           <button type="button" data-research-layer="lst-summer"><i class="research-swatch lst-summer"></i><span><b>Summer LST</b><small>MODIS · 1 km</small></span></button>
           <button type="button" data-research-layer="ndvi"><i class="research-swatch ndvi"></i><span><b>Vegetation</b><small>Landsat 8 NDVI · 30 m</small></span></button>
           <button type="button" data-research-layer="emissivity"><i class="research-swatch emissivity"></i><span><b>Surface emissivity</b><small>MODIS · 1 km</small></span></button>
@@ -205,7 +209,7 @@
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
   <script src="mapbox-token.js"></script>
-  <script src="terraheat-mapbox.js?v=london-utci-soft-edge-20261107"></script>
+  <script src="terraheat-mapbox.js?v=uk-exposure-20261107"></script>
   <script src="terraheat-motion.js?v=motion-20261104"></script>
 </body>
 </html>

@@ -19,6 +19,9 @@
   let gfs,era5,live,londonBoundary,cityBoundaries,londonResearch,map,baseSymbols=[],toggleLayers=()=>{},tourTarget=null,storySnapshot=null;
   let cityEventData=null,cityEventRequest=null,stationIndexRequest=null;
   let cityBoundaryIndex=new Map();
+  const ukExposureBounds=[-8.646,49.884,1.756,60.844];
+  const ukExposureColors=['#263884','#6553a4','#ad498b','#eb6658','#ffb653','#fff2ab'];
+  let ukExposureActive=false;
   const tourSteps=[
     {target:'#layers-panel',title:'Switch global data layers',copy:'Use Layers to compare ERA5-Land daily maximum temperature, 2 m air temperature, surface skin temperature and MODIS Terra LST. The legend and timeline update with the selected field.',enter:()=>{resetGlobal(false);toggleLayers(true)}},
     {target:'#timeline',title:'Move through time',copy:'Drag the timeline or press play to move through every available frame. The valid date is always shown in the legend and beside the slider.',enter:()=>toggleLayers(false)},
@@ -162,6 +165,11 @@
     map.setFog({'space-color':'#050505','star-intensity':.18,'horizon-blend':.05,'color':'#171716','high-color':'#2c2624'});
     const styleLayers=map.getStyle().layers;baseSymbols=styleLayers.filter(layer=>layer.type==='symbol').map(layer=>layer.id);
     const firstSymbol=baseSymbols[0],firstRoad=styleLayers.find(layer=>layer.type==='line'&&/(road|street|transport)/i.test(layer.id))?.id||firstSymbol;
+    map.addSource('uk-utci',{type:'raster',tiles:['data/uk-utci/{z}/{x}/{y}.webp?v=1'],tileSize:256,
+      minzoom:4,maxzoom:10,bounds:ukExposureBounds,attribution:'NOAA NCEI Global Hourly · Copernicus ERA5 · SOLWEIG · geoBoundaries / Eurostat GISCO'});
+    map.addLayer({id:'uk-utci',type:'raster',source:'uk-utci',layout:{visibility:'none'},paint:{
+      'raster-opacity':.82,'raster-resampling':'linear','raster-fade-duration':320
+    }},firstRoad);
     map.addSource('thermal-field',{type:'raster',tiles:[thermalUrls['thermal-field']],tileSize:256,minzoom:0,maxzoom:2});
     map.addLayer({id:'thermal-field',type:'raster',source:'thermal-field',paint:{'raster-opacity':thermalOpacity(1),'raster-resampling':'linear','raster-fade-duration':0}},firstSymbol);
     map.addSource('thermal-field-buffer',{type:'raster',tiles:[thermalUrls['thermal-field-buffer']],tileSize:256,minzoom:0,maxzoom:2});
@@ -186,7 +194,7 @@
     map.addLayer({id:'london-outline',type:'line',source:'london-outline',minzoom:7,layout:{visibility:'none'},paint:{'line-color':'#f2b267','line-width':['interpolate',['linear'],['zoom'],8,.9,10,1.5,13,2.2],'line-opacity':.9,'line-blur':.15}},firstRoad);
     map.addSource('london-utci',{type:'geojson',data:emptyFeatures,attribution:'Environment Agency LiDAR · OpenStreetMap · SOLWEIG'});
     map.addLayer({id:'london-utci',type:'heatmap',source:'london-utci',minzoom:7,layout:{visibility:'none'},paint:{
-      'heatmap-weight':['*',['get','edgeWeight'],['interpolate',['linear'],['get','utci'],33,.12,38,1]],
+      'heatmap-weight':['*',['get','edgeWeight'],['interpolate',['linear'],['get','utci'],34.8,.13,37.4,1]],
       'heatmap-intensity':.58,
       'heatmap-opacity':['interpolate',['linear'],['zoom'],7,.45,9,.77,14,.70,17,.52],
       'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(75,44,133,0)',.12,'#4b2c85',.29,'#a23881',.47,'#ed6455',.66,'#fca947',1,'#fff5b0']
@@ -258,6 +266,7 @@
   }
   function shortDate(value){const date=new Date(value.length===10?`${value}T00:00:00Z`:value+'Z');return date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:value.length===10?'numeric':undefined,timeZone:'UTC'}).toUpperCase()+(value.length>10?` ${value.slice(11,16)}Z`:'')}
   function setField(field,index){
+    hideUkExposure();
     state.field=field;const frames=framesFor(field);state.frame=Math.max(0,Math.min(frames.length-1,index??frames.length-1));
     const slider=$('#time-slider');slider.max=frames.length-1;slider.value=state.frame;
     $('#time-start').textContent=shortDate(frameLabel(field,0)).replace(/ 20\d\d/,'');$('#time-end').textContent=shortDate(frameLabel(field,frames.length-1)).replace(/ 20\d\d/,'');
@@ -285,6 +294,46 @@
     hideWowSurface();
     hidePedestrianHeat();
     closeWowStation();
+  }
+  function hideUkExposure(){
+    if(!ukExposureActive)return;
+    ukExposureActive=false;
+    map.setLayoutProperty('uk-utci','visibility','none');
+    $('#exposure-uk').setAttribute('aria-pressed','false');
+    document.querySelector(`input[name=field][value=${state.field}]`).checked=true;
+    $('#timeline').classList.remove('city-raster-active');
+  }
+  function activateUkExposure(){
+    if(!map?.getLayer('uk-utci'))return;
+    pausePlayback();
+    cancelThermalTransition();
+    clearCityClimate();
+    state.selected=null;
+    state.autoRotate=false;
+    $('#analysis').classList.remove('open','london-mode');
+    $('#analysis').setAttribute('aria-hidden','true');
+    $('#urban-raster').hidden=true;
+    $('#london-research').hidden=true;
+    $('#place-search').value='';
+    map.getSource('city-boundary').setData(emptyFeatures);
+    [...thermalLayers,'modis-field','local-heat','london-landsat','london-mask','london-outline','london-research']
+      .forEach(id=>map.setLayoutProperty(id,'visibility','none'));
+    ukExposureActive=true;
+    map.setLayoutProperty('uk-utci','visibility','visible');
+    $('#exposure-uk').setAttribute('aria-pressed','true');
+    document.querySelectorAll('input[name=field]').forEach(input=>{input.checked=false});
+    $('#timeline').classList.add('city-raster-active');
+    $('#legend').dataset.field='uk-utci';
+    $('#legend-name').textContent='UK OPEN-SKY HEAT · UTCI';
+    $('#legend-date').textContent='18 JUL 2022 · 10:52Z';
+    $('#legend .temperature-ramp').style.background=`linear-gradient(90deg,${ukExposureColors.join(',')})`;
+    $('#legend-ticks').innerHTML=['≤16','20','24','28','32','≥36'].map(value=>`<span>${value}</span>`).join('');
+    $('#legend>small').textContent='°C UTCI · 100 M OUTPUT GRID';
+    showLayerProvenance({kind:'Historical open-sky estimate · 166 NOAA stations + ERA5 + SOLWEIG',
+      valid:'18 July 2022 · 10:52 UTC',updated:'Fixed July 2022 simulation',
+      missing:'Sea is transparent. Weather is estimated on a 0.25° mesh and sampled at 100 m. The model assumes flat, open grass with no building or tree shade.'});
+    updateScale();
+    map.fitBounds(ukExposureBounds,{padding:{top:96,right:38,bottom:96,left:38},pitch:0,bearing:0,duration:1900});
   }
   async function loadCityEvent(city){
     cityEventRequest?.abort();
@@ -381,7 +430,7 @@
     }
   }
   function selectCity(city){
-    if(!city)return;pausePlayback();clearCityClimate();state.selected=city;state.autoRotate=false;const series=nearestSeries(city);
+    if(!city)return;hideUkExposure();pausePlayback();clearCityClimate();state.selected=city;state.autoRotate=false;const series=nearestSeries(city);
     const isLondon=city.name==='London',boundary=cityBoundaryIndex.get(city.name);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility',isLondon?'visible':'none'));if(!isLondon)hideLondonResearch();map.setLayoutProperty('local-heat','visibility','none');
     if(isLondon){state.landsatMode='event';state.researchLayer='none';activateLondonScene('event');map.getSource('city-boundary').setData({type:'FeatureCollection',features:[]})}
     else{map.getSource('city-boundary').setData(boundary||emptyFeatures);updateFrame()}
@@ -444,6 +493,7 @@
   function hidePedestrianHeat(){
     if(!pedestrianActive)return;
     pedestrianActive=false;
+    $('#exposure-london').setAttribute('aria-pressed','false');
     pedestrianRequest++;
     pedestrianPopup?.remove();
     ['london-utci','london-utci-pick'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
@@ -499,6 +549,7 @@
   function activatePedestrianHeat(){
     state.researchLayer='utci';
     pedestrianActive=true;
+    $('#exposure-london').setAttribute('aria-pressed','true');
     ['london-landsat','london-research','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
     ['london-utci','london-utci-pick'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
     $('#research-layer-note').textContent='Loading pedestrian heat estimate…';
@@ -509,7 +560,7 @@
     $('#legend-date').textContent='18 JUL 2022 · 10:52Z';
     $('#legend .temperature-ramp').style.background=`linear-gradient(90deg,${pedestrianColors.join(',')})`;
     $('#legend-ticks').innerHTML='<span>LOW</span><span>HIGH</span>';
-    $('#legend>small').textContent='RELATIVE DISPLAY INTENSITY · CLICK FOR °C';
+    $('#legend>small').textContent='RELATIVE COLOUR · 34.8–37.4 °C WEIGHTING';
     showLayerProvenance({kind:'Historical pedestrian heat estimate · SOLWEIG + UTCI',
       valid:'18 July 2022 · 10:52 UTC · Landsat overpass',updated:'Fixed July 2022 simulation',
       missing:'Cells with fewer than 20 m of valid walking routes are omitted. Display intensity fades at the study edge; grid values remain available.'});
@@ -848,6 +899,7 @@
     if(city.name==='London'){activateLondonScene(state.landsatMode);populateLondonResearch()}
   }
   function resetGlobal(animate=true,rotate=state.tourIndex<0&&state.storyIndex<0){
+    hideUkExposure();
     clearCityClimate();
     state.autoRotate=rotate;state.selected=null;$('#analysis').classList.remove('open');$('#analysis').setAttribute('aria-hidden','true');
     if(map.getLayer('local-heat'))map.setLayoutProperty('local-heat','visibility','none');if(map.getSource('city-boundary'))map.getSource('city-boundary').setData({type:'FeatureCollection',features:[]});hideLondonResearch();['london-landsat','london-mask','london-outline'].forEach(id=>{if(map.getLayer(id))map.setLayoutProperty(id,'visibility','none')});$('#urban-raster').hidden=true;$('#london-research').hidden=true;$('#analysis').classList.remove('london-mode');$('#timeline').classList.remove('city-raster-active');updateFrame();map.easeTo({padding:{right:0},duration:350});
@@ -875,12 +927,13 @@
     $('#story-count').textContent=`${String(index+1).padStart(2,'0')} / ${String(storySteps.length).padStart(2,'0')}`;$('#story-progress').style.width=`${(index+1)/storySteps.length*100}%`;$('#story-eyebrow').textContent=step.eyebrow;$('#story-title').textContent=step.title;$('#story-copy').textContent=step.copy;$('#story-fact').textContent=step.fact;$('#story-prev').disabled=index===0;$('#story-next').textContent=index===storySteps.length-1?'RETURN TO MAP':index===0?'BEGIN':'NEXT';step.enter?.();
   }
   function startStory(){
-    pausePlayback();if(state.tourIndex>=0)endTour();storySnapshot={stations:$('#research-stations-switch').checked,field:state.field,frame:state.frame,selected:state.selected,researchLayer:state.researchLayer,landsatMode:state.landsatMode,wowField:$('#wow-surface-field').value,wowTime:$('#wow-surface-time').value};state.autoRotate=false;$('#welcome').classList.add('dismissed');$('#heat-story').hidden=false;$('#story-toggle').setAttribute('aria-expanded','true');showStoryStep(0);
+    pausePlayback();if(state.tourIndex>=0)endTour();storySnapshot={ukExposure:ukExposureActive,stations:$('#research-stations-switch').checked,field:state.field,frame:state.frame,selected:state.selected,researchLayer:state.researchLayer,landsatMode:state.landsatMode,wowField:$('#wow-surface-field').value,wowTime:$('#wow-surface-time').value};state.autoRotate=false;$('#welcome').classList.add('dismissed');$('#heat-story').hidden=false;$('#story-toggle').setAttribute('aria-expanded','true');showStoryStep(0);
   }
   function endStory(restore=true){
     const snapshot=storySnapshot;state.storyIndex=-1;storySnapshot=null;$('#heat-story').hidden=true;$('#story-toggle').setAttribute('aria-expanded','false');
     if(!restore||!snapshot)return;
-    if(snapshot.selected){
+    if(snapshot.ukExposure){setField(snapshot.field,snapshot.frame);activateUkExposure()}
+    else if(snapshot.selected){
       selectCity(snapshot.selected);
       if(snapshot.selected.name==='London'){
         if(snapshot.researchLayer&&snapshot.researchLayer!=='none')activateResearchLayer(snapshot.researchLayer);else activateLondonScene(snapshot.landsatMode||'event');
@@ -899,7 +952,9 @@
   }
   function updateScale(){
     const zoom=map.getZoom(),indicator=$('#scale-indicator'),rank=$('#city-rank');let level,title;
-    if(zoom<2.3){level='01 · PLANET';title='GLOBAL THERMAL FIELD';rank.classList.remove('hidden')}
+    if(ukExposureActive){level='02 · UK HEAT EXPOSURE';title='OPEN-SKY UTCI · JULY 2022';rank.classList.add('hidden')}
+    else if(pedestrianActive){level='03 · LONDON HEAT EXPOSURE';title='PEDESTRIAN UTCI · JULY 2022';rank.classList.add('hidden')}
+    else if(zoom<2.3){level='01 · PLANET';title='GLOBAL THERMAL FIELD';rank.classList.remove('hidden')}
     else if(zoom<6.7){level='02 · CITY NETWORK';title='SELECT AN URBAN OBSERVATORY';rank.classList.add('hidden')}
     else if(state.selected?.name==='London'){level='03 · LOCAL HEAT';title='LONDON THERMAL SURFACE';rank.classList.add('hidden')}
     else if(state.selected){level='03 · CITY OBSERVATORY';title=state.selected.name.toUpperCase()+' · JULY 2022 ARCHIVE';rank.classList.add('hidden')}
@@ -915,6 +970,14 @@
   function wireUI(){
     $('#place-search').addEventListener('input',event=>event.target.setCustomValidity(''));const welcome=$('#welcome'),layers=$('#layers-panel'),layersToggle=$('#layers-toggle');const dismiss=()=>welcome.classList.add('dismissed');$('#welcome-close').addEventListener('click',dismiss);$('#skip-intro').addEventListener('click',dismiss);$('#start-explore').addEventListener('click',()=>{dismiss();startTour()});$('#about-toggle').addEventListener('click',()=>{if(state.tourIndex>=0)endTour();if(state.storyIndex>=0)endStory(true);welcome.classList.toggle('dismissed')});$('.brand').addEventListener('click',event=>{event.preventDefault();if(state.tourIndex>=0)endTour();if(state.storyIndex>=0)endStory(false);resetGlobal(true,true);setTimeout(spinGlobe,1900)});
     toggleLayers=force=>{const open=force??layers.hidden;layers.hidden=!open;layersToggle.setAttribute('aria-expanded',String(open))};layersToggle.addEventListener('click',()=>toggleLayers());$('#layers-close').addEventListener('click',()=>toggleLayers(false));
+    $('#exposure-uk').onclick=()=>{toggleLayers(false);activateUkExposure()};
+    $('#exposure-london').onclick=()=>{
+      toggleLayers(false);
+      if(state.selected?.name!=='London')selectCity(cities.find(city=>city.name==='London'));
+      activateResearchLayer('utci');
+      $('#analysis:not(.compact) .float-collapse')?.click();
+      updateScale();
+    };
     document.querySelectorAll('input[name=field]').forEach(input=>input.addEventListener('change',()=>{if(state.selected?.name==='London')resetGlobal(true,false);setField(input.value,framesFor(input.value).length-1)}));$('#cities-switch').addEventListener('change',event=>['city-halo','city-points','city-labels'].forEach(id=>map.setLayoutProperty(id,'visibility',event.target.checked?'visible':'none')));$('#labels-switch').addEventListener('change',event=>baseSymbols.forEach(id=>{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',event.target.checked?'visible':'none')}));
     $('#time-slider').addEventListener('input',event=>{state.frame=+event.target.value;updateFrame()});$('#play').addEventListener('click',()=>{state.playing=!state.playing;const button=$('#play');button.classList.toggle('playing',state.playing);button.setAttribute('aria-label',state.playing?'Pause temperature sequence':'Play temperature sequence');clearInterval(state.timer);if(state.playing)state.timer=setInterval(()=>{const frames=framesFor(state.field);state.frame=(state.frame+1)%frames.length;updateFrame()},1250)});
     $('#analysis-close').addEventListener('click',()=>{$('#analysis').classList.remove('open');$('#analysis').setAttribute('aria-hidden','true');map.easeTo({padding:{right:0},duration:600})});$('#search-form').addEventListener('submit',event=>{event.preventDefault();const input=$('#place-search'),query=input.value.trim().toLowerCase(),city=cities.find(c=>c.name.toLowerCase()===query)||cities.find(c=>c.name.toLowerCase().startsWith(query));if(!query||!city){input.setCustomValidity('Choose a city from the TerraHeat list.');input.reportValidity();return}input.blur();selectCity(city)});
