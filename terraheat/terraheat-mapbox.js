@@ -186,7 +186,7 @@
     map.addLayer({id:'london-outline',type:'line',source:'london-outline',minzoom:7,layout:{visibility:'none'},paint:{'line-color':'#f2b267','line-width':['interpolate',['linear'],['zoom'],8,.9,10,1.5,13,2.2],'line-opacity':.9,'line-blur':.15}},firstRoad);
     map.addSource('london-utci',{type:'geojson',data:emptyFeatures,attribution:'Environment Agency LiDAR · OpenStreetMap · SOLWEIG'});
     map.addLayer({id:'london-utci',type:'heatmap',source:'london-utci',minzoom:7,layout:{visibility:'none'},paint:{
-      'heatmap-weight':['interpolate',['linear'],['get','utci'],33,.12,38,1],
+      'heatmap-weight':['*',['get','edgeWeight'],['interpolate',['linear'],['get','utci'],33,.12,38,1]],
       'heatmap-intensity':.58,
       'heatmap-opacity':['interpolate',['linear'],['zoom'],7,.45,9,.77,14,.70,17,.52],
       'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(75,44,133,0)',.12,'#4b2c85',.29,'#a23881',.47,'#ed6455',.66,'#fca947',1,'#fff5b0']
@@ -433,7 +433,7 @@
         const stale=[...pedestrianCache.keys()].find(key=>key.startsWith('grid-'));
         if(stale)pedestrianCache.delete(stale);
       }
-      const request=fetch(pedestrianDirectory+file+'?v=20261107').then(response=>{
+      const request=fetch(pedestrianDirectory+file+'?v=soft-edge-20261107').then(response=>{
         if(!response.ok)throw new Error('Pedestrian heat archive unavailable');
         return response.json();
       }).catch(error=>{pedestrianCache.delete(file);throw error});
@@ -447,6 +447,7 @@
     pedestrianRequest++;
     pedestrianPopup?.remove();
     ['london-utci','london-utci-pick'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
+    map.setLayoutProperty('london-outline','visibility','visible');
     map.getSource('london-utci').setData(emptyFeatures);
   }
   function showPedestrianCell(event){
@@ -477,8 +478,13 @@
       }else rows=await pedestrianJson('overview.json');
       if(request!==pedestrianRequest)return;
       const grid=detailed?manifest.grid:manifest.overview_grid;
-      const features=rows.map(([lon,lat,utci,tmrt,sun,,lst])=>({type:'Feature',geometry:{type:'Point',coordinates:[lon,lat]},
-        properties:{utci,tmrt,sun,grid,...(Number.isFinite(lst)?{lst}:{})}}));
+      const fadeDistance=detailed?550:1400;
+      const features=rows.map(([lon,lat,utci,tmrt,sun,,lst,edge])=>{
+        const t=Number.isFinite(edge)?Math.max(0,Math.min(1,edge/fadeDistance)):1;
+        const edgeWeight=t*t*(3-2*t);
+        return {type:'Feature',geometry:{type:'Point',coordinates:[lon,lat]},
+          properties:{utci,tmrt,sun,grid,edgeWeight,...(Number.isFinite(lst)?{lst}:{})}};
+      });
       map.getSource('london-utci').setData({type:'FeatureCollection',features});
       map.setPaintProperty('london-utci','heatmap-radius',detailed
         ?['interpolate',['exponential',2],['zoom'],12.3,17,14,52,16,155,18,175]
@@ -493,7 +499,7 @@
   function activatePedestrianHeat(){
     state.researchLayer='utci';
     pedestrianActive=true;
-    ['london-landsat','london-research','london-mask'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
+    ['london-landsat','london-research','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
     ['london-utci','london-utci-pick'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
     $('#research-layer-note').textContent='Loading pedestrian heat estimate…';
     $('#urban-raster-name').textContent='PEDESTRIAN HEAT · UTCI';
@@ -506,7 +512,7 @@
     $('#legend>small').textContent='RELATIVE DISPLAY INTENSITY · CLICK FOR °C';
     showLayerProvenance({kind:'Historical pedestrian heat estimate · SOLWEIG + UTCI',
       valid:'18 July 2022 · 10:52 UTC · Landsat overpass',updated:'Fixed July 2022 simulation',
-      missing:'Cells with fewer than 20 m of valid sampled walking routes are omitted. Heat colours blend near cell centres.'});
+      missing:'Cells with fewer than 20 m of valid walking routes are omitted. Display intensity fades at the study edge; grid values remain available.'});
     $('#analysis-status').textContent='MODELLED PEDESTRIAN HEAT';
     $('#analysis-story').textContent='Radiation was modelled on a 5 m LiDAR grid, then UTCI was averaged along candidate walking routes into 100 m cells.';
     $('#analysis-note').textContent='Exploratory SOLWEIG estimate. Canopy is inferred from LiDAR and building footprints. Local wind and air temperature are not independently resolved at 100 m.';
