@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="terraheat-mapbox.css?v=uk-exposure-20261107">
+  <link rel="stylesheet" href="terraheat-mapbox.css?v=exposure-zoom-20261107">
   <link rel="stylesheet" href="terraheat-floats.css?v=london-utci-20261107">
   <link rel="stylesheet" href="terraheat-motion.css?v=curve-tooltips-20261104">
 </head>
@@ -53,8 +53,7 @@
       <div class="panel-heading"><div><span>DATA LAYERS</span><b>Thermal fields</b></div><button id="layers-close" type="button">×</button></div>
       <div class="layer-section exposure-options">
         <span>HEAT EXPOSURE · 18 JUL 2022</span>
-        <button type="button" id="exposure-uk" aria-pressed="false"><i class="exposure-swatch"></i><span><b>UK open-sky heat</b><small>Station-adjusted UTCI · 100 m output</small></span><em>UK</em></button>
-        <button type="button" id="exposure-london" aria-pressed="false"><i class="exposure-swatch"></i><span><b>London pedestrian heat</b><small>Street and shade model · 100 m cells</small></span><em>LONDON</em></button>
+        <button type="button" id="exposure-uk" aria-pressed="false"><i class="exposure-swatch"></i><span><b>Pedestrian Heat Exposure</b><small>Explore the UK from national overview to city detail</small></span><em>UK</em></button>
       </div>
       <fieldset class="layer-options">
         <legend>Primary temperature field</legend>
@@ -81,7 +80,7 @@
       <p class="layer-note">London also has Landsat, environmental layers and a WOW station heatmap. The city ranking uses the bundled NOAA GFS snapshot.</p>
     </aside>
 
-    <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small></div>
+    <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small><button id="exposure-guide" type="button" aria-expanded="false" aria-controls="heat-story" hidden>HOW TO READ</button></div>
 
     <section class="legend" id="legend" data-field="era5" aria-label="Temperature legend">
       <div class="legend-title"><span id="legend-name">ERA5-LAND TMAX</span><b id="legend-date">2022-07-19</b></div>
@@ -209,7 +208,7 @@
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
   <script src="mapbox-token.js"></script>
-  <script src="terraheat-mapbox.js?v=uk-exposure-20261107"></script>
-  <script src="terraheat-motion.js?v=motion-20261104"></script>
+  <script src="terraheat-mapbox.js?v=exposure-zoom-20261107"></script>
+  <script src="terraheat-motion.js?v=exposure-zoom-20261107"></script>
 </body>
 </html>

@@ -50,4 +50,12 @@
 .exposure-options b{font-size:11px;font-weight:500}
 .exposure-options small{margin-top:4px;color:var(--muted);font-size:9px;line-height:1.3}
 .exposure-options em{color:var(--dim);font-size:8px;font-style:normal;letter-spacing:.07em}
-.exposure-swatch{height:6px;background:linear-gradient(90deg,#263884,#8e458b,#eb6658,#ffb653,#fff2ab)}
+.exposure-swatch{height:6px;background:linear-gradient(90deg,#393581,#79418d,#b84483,#e8655b,#ffb653,#fff2ab)}
+.navigation-stage :is(.legend,.timeline){visibility:hidden;opacity:0;pointer-events:none}
+.welcome.dismissed{pointer-events:none}
+#exposure-guide{grid-column:2;justify-self:start;margin-top:7px;padding:4px 0 1px;border:0;border-bottom:1px solid transparent;background:none;color:var(--amber);font-family:inherit;font-size:8px;font-weight:500;letter-spacing:.1em;cursor:pointer;pointer-events:auto;transition:border-color .2s,color .2s}
+#exposure-guide:is(:hover,:focus-visible,[aria-expanded=true]){border-color:currentColor;color:var(--ink)}
+.exposure-story .story-card{top:188px;bottom:auto;max-height:calc(100dvh - 370px);overflow:auto}
+@media (max-height:690px) and (min-width:701px){.exposure-story .story-card{top:auto;left:auto;right:26px;bottom:28px;max-height:calc(100dvh - 125px)}}
+@media (max-width:700px){.exposure-story .story-card{top:auto;bottom:30px;max-height:calc(100dvh - 165px)}
+#app:has(.exposure-story:not([hidden])) .legend{visibility:hidden}}

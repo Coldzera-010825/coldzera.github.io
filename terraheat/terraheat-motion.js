@@ -11,7 +11,7 @@
     const close=button.matches('#wow-close,#layers-close,#story-close,#analysis-close');
     if(close&&!reduced.matches&&!replay.has(button)){
       const panel=button.closest('#wow-panel,#layers-panel,#heat-story,#analysis'),surface=panel?.querySelector('.story-card')||panel;
-      if(surface){event.preventDefault();event.stopImmediatePropagation();if(closing.has(button))return;closing.add(button);surface.style.pointerEvents='none';const a=animate(surface,[{opacity:1,translate:'0 0',filter:'blur(0px)'},{opacity:0,translate:'0 8px',filter:'blur(1px)'}],{duration:180});a.finished.catch(()=>{}).then(()=>{surface.style.pointerEvents='';closing.delete(button);replay.add(button);button.click();replay.delete(button)});return}
+      if(surface){event.preventDefault();event.stopImmediatePropagation();if(closing.has(button))return;closing.add(button);surface.style.pointerEvents='none';const revision=panel.dataset.revision,a=animate(surface,[{opacity:1,translate:'0 0',filter:'blur(0px)'},{opacity:0,translate:'0 8px',filter:'blur(1px)'}],{duration:180});a.finished.catch(()=>{}).then(()=>{surface.style.pointerEvents='';closing.delete(button);if(revision!==panel.dataset.revision)return;replay.add(button);button.click();replay.delete(button)});return}
     }
     if(!replay.has(button))animate(button,[{scale:'1'},{scale:'.96',offset:.28},{scale:'1'}],{duration:280});
     if(button.matches('[data-research-layer],#landsat-event,#landsat-latest,#landsat-summer')){
