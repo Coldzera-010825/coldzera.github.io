@@ -73,7 +73,7 @@
         <button type="button" data-open-city="Bristol">BRISTOL</button>
         <button type="button" data-open-city="Manchester">MANCHESTER</button>
       </div>
-      <p class="layer-note">London also has Landsat, environmental layers and WOW interpolation. The city ranking uses the bundled NOAA GFS snapshot.</p>
+      <p class="layer-note">London also has Landsat, environmental layers and a WOW station heatmap. The city ranking uses the bundled NOAA GFS snapshot.</p>
     </aside>
 
     <div class="scale-indicator" id="scale-indicator"><i></i><span>01 · PLANET</span><small>GLOBAL THERMAL FIELD</small></div>
@@ -141,11 +141,11 @@
           <button type="button" data-research-layer="none"><i class="research-swatch none"></i><span><b>Landsat temperature</b><small>Event / summer / latest</small></span></button>
         </div>
         <div class="wow-surface-control">
-          <label for="wow-surface-field">WOW interpolated weather</label>
-          <select id="wow-surface-field" aria-label="WOW interpolated weather variable"><option value="">Off · show surface layers</option></select>
+          <label for="wow-surface-field">WOW station heatmap</label>
+          <select id="wow-surface-field" aria-label="WOW station heatmap variable"><option value="">Off · show surface layers</option></select>
           <label for="wow-surface-time" hidden>Observation hour (UTC)</label>
           <select id="wow-surface-time" aria-label="WOW observation hour (UTC)" hidden></select>
-          <small id="wow-surface-status" aria-live="polite">Ordinary kriging · 18–19 July 2022</small>
+          <small id="wow-surface-status" aria-live="polite">Hourly station observations · 18–19 July 2022</small>
         </div>
         <div class="research-layer-note" id="research-layer-note">Select a research layer to compare environmental context with the July 2022 heat surface.</div>
         <div class="research-weather">
@@ -204,7 +204,7 @@
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.33.0/mapbox-gl.js"></script>
   <script src="mapbox-token.js"></script>
-  <script src="terraheat-mapbox.js?v=wow-street-overlay-20261107"></script>
+  <script src="terraheat-mapbox.js?v=wow-native-heat-20261107"></script>
   <script src="terraheat-motion.js?v=motion-20261104"></script>
 </body>
 </html>
