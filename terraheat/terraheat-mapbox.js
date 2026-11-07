@@ -185,7 +185,11 @@
     map.addSource('london-outline',{type:'geojson',data:londonBoundary,attribution:'Greater London Authority · OGL v3.0'});
     map.addLayer({id:'london-outline',type:'line',source:'london-outline',minzoom:7,layout:{visibility:'none'},paint:{'line-color':'#f2b267','line-width':['interpolate',['linear'],['zoom'],8,.9,10,1.5,13,2.2],'line-opacity':.9,'line-blur':.15}},firstRoad);
     map.addSource('wow-surface',{type:'image',url:blankImage(),coordinates:londonResearch.layers[0].coordinates});
-    map.addLayer({id:'wow-surface',type:'raster',source:'wow-surface',minzoom:7,layout:{visibility:'none'},paint:{'raster-opacity':.83,'raster-fade-duration':200,'raster-resampling':'linear'}},firstRoad);
+    map.addLayer({id:'wow-surface',type:'raster',source:'wow-surface',minzoom:7,layout:{visibility:'none'},paint:{
+      'raster-opacity':['interpolate',['linear'],['zoom'],7,.2,9,.54,10,.48,12,.38,14,.30],
+      'raster-fade-duration':200,
+      'raster-resampling':'linear'
+    }},firstRoad);
     map.addSource('wow-stations',{type:'geojson',data:emptyFeatures,attribution:'Met Office WOW · NOAA NCEI Global Hourly'});
     map.addLayer({id:'wow-stations-halo',type:'circle',source:'wow-stations',minzoom:7,paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,7,12,13],'circle-color':'#55dded','circle-opacity':.22,'circle-blur':.65}},firstSymbol);
     map.addLayer({id:'wow-stations',type:'circle',source:'wow-stations',minzoom:7,paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,3,12,5.5],'circle-color':'#102e3b','circle-stroke-color':'#78ecf5','circle-stroke-width':1.6,'circle-opacity':.96}},firstSymbol);
@@ -437,7 +441,7 @@
     }
     map.getSource('wow-surface').updateImage({url:frame.image+'?v=1',coordinates:wowSurfaceManifest.coordinates});
     map.setLayoutProperty('wow-surface','visibility','visible');
-    ['london-landsat','london-research'].forEach(layer=>map.setLayoutProperty(layer,'visibility','none'));
+    ['london-landsat','london-research','london-mask'].forEach(layer=>map.setLayoutProperty(layer,'visibility','none'));
     document.querySelectorAll('[data-research-layer], #urban-raster button').forEach(button=>button.classList.remove('active'));
     const constant=frame.constant===null?'':` · all reports ${frame.constant} ${field.unit}`;
     $('#wow-surface-status').textContent=`${frame.sites} sampling locations · ${frame.coverage}% GLA coverage${constant}`;
