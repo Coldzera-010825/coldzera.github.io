@@ -21,3 +21,11 @@
 #wow-panel .wow-period[hidden]{display:none}
 #city-event .scene-switch{grid-template-columns:1fr}
 #city-event-summary{font-size:8px;color:#b9d9dd}
+#city-event-chart{width:100%;margin-top:9px}
+.city-climate-min{fill:none;stroke:#6dc8df;stroke-width:1.5}
+#locate-city-station{margin-top:7px;color:#9be2ec}
+#locate-city-station[hidden],#city-event-actions[hidden]{display:none}
+.wow-surface-control{display:grid;gap:6px;margin-top:11px;padding:9px;border-radius:5px;background:#16303988}
+.wow-surface-control label{font-size:9px;color:#d5ecee}
+.wow-surface-control select{width:100%;padding:6px;border:1px solid #78a7b25e;border-radius:4px;background:#10242b;color:#dfedf0;font:inherit;font-size:9px;color-scheme:dark}
+.wow-surface-control small{font-size:8px;color:#b1cdd1}

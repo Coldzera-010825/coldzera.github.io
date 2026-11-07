@@ -1,10 +1,10 @@
 # TerraHeat city boundaries
 
-`city-boundaries.geojson` contains simplified administrative outlines derived from OpenStreetMap relations on 2026-10-30. Each feature records its OpenStreetMap relation ID and the administrative scope used by TerraHeat.
+`city-boundaries.geojson` contains simplified administrative outlines derived from OpenStreetMap relations. The original boundaries were retrieved on 2026-10-30. Birmingham, Bristol and Manchester were added on 2026-11-07. Each feature records its OpenStreetMap relation ID and administrative scope.
 
 - Source: © OpenStreetMap contributors, https://www.openstreetmap.org/copyright
 - Licence: Open Database Licence 1.0 (ODbL), https://opendatacommons.org/licenses/odbl/1-0/
 - Geocoding and geometry delivery: Nominatim, https://nominatim.org/
-- Processing: simplified to approximately 0.002° for web display; remote polygon components more than 3° from the platform city coordinate were removed to prevent outlying islands from controlling the map camera.
+- Processing: requested simplification thresholds were 0.002° for the original outlines and 0.001° for the three additions. For the original outlines, remote polygon components more than 3° from the platform city coordinate were removed to prevent outlying islands from controlling the map camera.
 
 The data is approximate and is not intended for navigation, surveying, cadastral work, or legal boundary determination. Administrative scope varies by local governance system; consult feature properties before comparing cities.

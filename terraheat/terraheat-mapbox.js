@@ -10,7 +10,6 @@
     cities.push({name,country:'United Kingdom',lon,lat,index:cities.length});
   }
   const emptyFeatures={type:'FeatureCollection',features:[]};
-  const eventRamp=[[15,'#3c70a2'],[20,'#5bbcc4'],[25,'#e0d799'],[30,'#f9af64'],[35,'#e96b4f'],[40,'#a72645']];
   const state={field:'era5',frame:6,playing:false,selected:null,autoRotate:true,timer:null,tourIndex:-1,storyIndex:-1,researchLayer:'none',landsatMode:'event',thermalFront:'thermal-field',thermalTransitioning:false,thermalTransition:0,thermalSwapCount:0,thermalLastDuration:0};
   const fieldCache=new Map();
   const thermalLayers=['thermal-field','thermal-field-buffer'];
@@ -45,7 +44,7 @@
     fetch('data/era5-land-heatwave.json').then(r=>{if(!r.ok)throw new Error('ERA5 data unavailable');return r.json()}),
     fetch('data/live-manifest.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null),
     fetch('data/greater-london-boundary.geojson').then(r=>{if(!r.ok)throw new Error('Greater London boundary unavailable');return r.json()}),
-    fetch('data/city-boundaries.geojson').then(r=>{if(!r.ok)throw new Error('City boundaries unavailable');return r.json()}),
+    fetch('data/city-boundaries.geojson?v=20261107').then(r=>{if(!r.ok)throw new Error('City boundaries unavailable');return r.json()}),
     fetch('data/london-research/manifest.json?v=london-layers-20261104-2',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('London research manifest unavailable');return r.json()})
   ]).then(([gfsData,era5Data,liveData,boundaryData,cityBoundaryData,researchData])=>{gfs=gfsData;era5=era5Data;live=liveData;londonBoundary=boundaryData;cityBoundaries=cityBoundaryData;londonResearch=researchData;cityBoundaryIndex=new Map(cityBoundaries.features.map(feature=>[feature.properties.name,feature]));if(live?.modis?.dates?.length)modisDates=live.modis.dates;init()}).catch(error=>showFatal(error.message));
 
@@ -185,13 +184,9 @@
     map.addLayer({id:'london-mask',type:'fill',source:'london-mask',minzoom:7,layout:{visibility:'none'},paint:{'fill-color':'#0f0f0e','fill-opacity':['interpolate',['linear'],['zoom'],7,0,8.5,.96,10,1]}},firstRoad);
     map.addSource('london-outline',{type:'geojson',data:londonBoundary,attribution:'Greater London Authority · OGL v3.0'});
     map.addLayer({id:'london-outline',type:'line',source:'london-outline',minzoom:7,layout:{visibility:'none'},paint:{'line-color':'#f2b267','line-width':['interpolate',['linear'],['zoom'],8,.9,10,1.5,13,2.2],'line-opacity':.9,'line-blur':.15}},firstRoad);
-    map.addSource('city-heatwave',{type:'geojson',data:emptyFeatures,attribution:'Copernicus ERA5-Land · <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>'});
-    map.addLayer({id:'city-heatwave',type:'fill',source:'city-heatwave',minzoom:6.5,paint:{
-      'fill-color':['interpolate',['linear'],['get','tmax'],...eventRamp.flat()],
-      'fill-opacity':['interpolate',['linear'],['zoom'],6.5,0,8,.64,12,.48],
-      'fill-outline-color':'rgba(239,225,198,.26)'
-    }},firstRoad);
-    map.addSource('wow-stations',{type:'geojson',data:emptyFeatures,attribution:'Met Office Weather Observations Website'});
+    map.addSource('wow-surface',{type:'image',url:blankImage(),coordinates:londonResearch.layers[0].coordinates});
+    map.addLayer({id:'wow-surface',type:'raster',source:'wow-surface',minzoom:7,layout:{visibility:'none'},paint:{'raster-opacity':.83,'raster-fade-duration':200,'raster-resampling':'linear'}},firstRoad);
+    map.addSource('wow-stations',{type:'geojson',data:emptyFeatures,attribution:'Met Office WOW · NOAA NCEI Global Hourly'});
     map.addLayer({id:'wow-stations-halo',type:'circle',source:'wow-stations',minzoom:7,paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,7,12,13],'circle-color':'#55dded','circle-opacity':.22,'circle-blur':.65}},firstSymbol);
     map.addLayer({id:'wow-stations',type:'circle',source:'wow-stations',minzoom:7,paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,3,12,5.5],'circle-color':'#102e3b','circle-stroke-color':'#78ecf5','circle-stroke-width':1.6,'circle-opacity':.96}},firstSymbol);
     map.addSource('city-boundary',{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'© OpenStreetMap contributors · ODbL 1.0'});
@@ -253,7 +248,6 @@
     $('#legend').dataset.field=field;$('#legend-ticks').innerHTML=tickSets[field].map(value=>`<span>${value}</span>`).join('');
     $('#legend-date').textContent=label;$('#time-value').textContent=shortDate(label);$('#time-slider').value=index;
     showGlobalProvenance(field,index);
-    updateCityEventFrame();
   }
   function clearCityClimate(){
     cityEventRequest?.abort();
@@ -262,8 +256,8 @@
     $('#city-event').hidden=true;
     $('#city-station-control').hidden=true;
     $('#research-stations-switch').checked=false;
-    map.getSource('city-heatwave').setData(emptyFeatures);
     map.getSource('wow-stations').setData(emptyFeatures);
+    hideWowSurface();
     closeWowStation();
   }
   async function loadCityEvent(city){
@@ -272,42 +266,57 @@
     cityEventRequest=request;
     $('#city-event-summary').textContent='Loading July 2022 archive…';
     $('#wow-station-count').textContent='Loading station index…';
+    $('#city-event-actions').hidden=true;
+    $('#city-event-chart').hidden=true;
+    const local=cityEventNames.has(city.name);
+    const slug=encodeURIComponent(city.name.toLowerCase());
+    $('#city-event-title').textContent=local?'13–19 July 2022 heatwave':'July 2022 · historical weather';
+    $('#city-event-source').textContent=local?'ERA5-Land via Open-Meteo · regional mean Tmax':'ERA5-Land via Open-Meteo · city-centre sample · Tmax / Tmin';
+    $('#city-station-label').textContent=local?'WOW station network':'NOAA station observation';
+    $('#locate-city-station').hidden=true;
     try{
-      const response=await fetch(`data/city-heatwave/${city.name.toLowerCase()}/event.json?v=1`,{signal:request.signal});
+      const url=local?`data/city-heatwave/${slug}/event.json?v=1`:`data/city-climate/${slug}.json`;
+      const response=await fetch(url,{signal:request.signal});
       if(!response.ok)throw new Error('City archive unavailable');
       const data=await response.json();
       if(request.signal.aborted)return;
       cityEventData=data;
-      updateCityEventFrame();
+      const days=local?Object.entries(data.frames).map(([date, values])=>{
+        const valid=values.filter(Number.isFinite);
+        return [date,valid.length?valid.reduce((sum,value)=>sum+value,0)/valid.length:null];
+      }):data.days;
+      renderCityClimate(days,local);
       updateWowStations();
     }catch(error){
       if(request.signal.aborted)return;
-      $('#city-event-summary').textContent='Archive unavailable. Use the replay button to retry.';
+      $('#city-event-summary').textContent='Archive unavailable. Select retry to load it again.';
       $('#wow-station-count').textContent='Station index unavailable';
+      $('#city-event-actions').hidden=false;
     }
   }
-  function updateCityEventFrame(){
-    if(!cityEventData)return;
-    const {points,frames}=cityEventData;
-    const date=state.field==='era5'?frameLabel('era5',state.frame):null;
-    const values=date?frames[date]:null;
-    const features=values?points.flatMap(([lon,lat],index)=>{
-      const tmax=values[index];
-      if(!Number.isFinite(tmax))return [];
-      const west=lon-.05,east=lon+.05,south=lat-.05,north=lat+.05;
-      return [{type:'Feature',geometry:{type:'Polygon',coordinates:[[[west,south],[east,south],[east,north],[west,north],[west,south]]]},properties:{tmax}}];
-    }):[];
-    map.getSource('city-heatwave').setData({type:'FeatureCollection',features});
-    const valid=values?.filter(Number.isFinite)||[];
-    $('#city-event-summary').textContent=!values?'Use the replay to show daily temperatures on the map.':valid.length
-      ?`${shortDate(date)} · mean Tmax ${(valid.reduce((sum,value)=>sum+value,0)/valid.length).toFixed(1)} °C · peak cell ${Math.max(...valid).toFixed(1)} °C`
-      :`${shortDate(date)} · no complete daily cells`;
-    if(!values)return;
-    $('#legend-name').textContent=`${state.selected.name.toUpperCase()} · ERA5-LAND TMAX`;
-    $('#legend .temperature-ramp').style.background=`linear-gradient(90deg,${eventRamp.map(([,color])=>color).join(',')})`;
-    $('#legend-ticks').innerHTML=eventRamp.map(([value])=>`<span>${value}</span>`).join('');
-    $('#legend>small').textContent='°C · 0.1° TARGET GRID';
-    showLayerProvenance({kind:'Historical replay · ERA5-Land via Open-Meteo',valid:date+' · max of 24 hourly values (UTC)',updated:'Fixed July 2022 archive',missing:`${points.length-valid.length} of ${points.length} target cells missing or incomplete`});
+  function renderCityClimate(days,local){
+    const svg=$('#city-event-chart'),valid=days.flatMap(day=>day.slice(1)).filter(Number.isFinite);
+    if(!valid.length){$('#city-event-summary').textContent='No daily values in this archive.';return}
+    const hottest=days.reduce((best,day)=>Number.isFinite(day[1])&&day[1]>(best[1]??-Infinity)?day:best,days[0]);
+    $('#city-event-summary').textContent=`${local?'Peak grid-mean Tmax':'Peak daily Tmax'} · ${hottest[1].toFixed(1)} °C · ${shortDate(hottest[0])}`;
+    const lo=Math.floor(Math.min(...valid)/5)*5-5,hi=Math.ceil(Math.max(...valid)/5)*5+5;
+    const x=i=>30+i*273/(days.length-1),y=v=>81-(v-lo)*68/(hi-lo);
+    const path=column=>{
+      let drawing=false;
+      return days.map((day,i)=>{
+        if(!Number.isFinite(day[column])){drawing=false;return ''}
+        const command=drawing?'L':'M';drawing=true;return `${command}${x(i)},${y(day[column])}`;
+      }).join(' ');
+    };
+    const guides=[lo,(lo+hi)/2,hi].map(v=>`<line x1="30" y1="${y(v)}" x2="303" y2="${y(v)}" class="weather-grid"/><text x="2" y="${y(v)+3}" fill="#aec8ca" font-size="8">${v}°</text>`).join('');
+    svg.innerHTML=`${guides}<path d="${path(1)}" class="weather-mean"/>${local?'':`<path d="${path(2)}" class="city-climate-min"/>`}<text x="30" y="96" fill="#aec8ca" font-size="8">${days[0][0].slice(8)} JUL</text><text x="303" y="96" fill="#aec8ca" font-size="8" text-anchor="end">${days.at(-1)[0].slice(8)} JUL</text>`;
+    svg.hidden=false;
+    bindCurveTooltip(svg,(px,py)=>{
+      const i=Math.max(0,Math.min(days.length-1,Math.round((px-30)/273*(days.length-1))));
+      const [date,max,min]=days[i];
+      if(!Number.isFinite(max))return null;
+      return {x:x(i),y:Number.isFinite(min)&&Math.abs(y(min)-py)<Math.abs(y(max)-py)?y(min):y(max),text:`${date}\n${local?'Grid-mean Tmax':'Tmax'} ${max.toFixed(1)} °C${Number.isFinite(min)?`\nTmin ${min.toFixed(1)} °C`:''}`};
+    });
   }
   async function updateWowStations(){
     stationIndexRequest?.abort();
@@ -319,7 +328,9 @@
     if(state.selected?.name!=='London'){
       if(cityEventData){
         const stations=cityEventData.stations;
-        status.textContent=`${stations.features.length} screened sites · 13–19 July 2022`;
+        const local=cityEventNames.has(state.selected?.name),nearest=stations.features[0];
+        status.textContent=local?`${stations.features.length} screened sites · 13–19 July 2022`:nearest?`${nearest.properties.distanceKm} km from city centre · 13–19 July 2022`:'No nearby station with sufficient July 2022 data';
+        $('#locate-city-station').hidden=local||!nearest||!control.checked;
         if(control.checked)source.setData(stations);
       }
       return;
@@ -345,22 +356,27 @@
   }
   function selectCity(city){
     if(!city)return;pausePlayback();clearCityClimate();state.selected=city;state.autoRotate=false;const series=nearestSeries(city);
-    const isLondon=city.name==='London',hasEvent=cityEventNames.has(city.name),boundary=cityBoundaryIndex.get(city.name);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility',isLondon?'visible':'none'));if(!isLondon)hideLondonResearch();map.setLayoutProperty('local-heat','visibility','none');
+    const isLondon=city.name==='London',boundary=cityBoundaryIndex.get(city.name);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility',isLondon?'visible':'none'));if(!isLondon)hideLondonResearch();map.setLayoutProperty('local-heat','visibility','none');
     if(isLondon){state.landsatMode='event';state.researchLayer='none';activateLondonScene('event');map.getSource('city-boundary').setData({type:'FeatureCollection',features:[]})}
-    else{map.getSource('city-boundary').setData(boundary||emptyFeatures);if(hasEvent)setField('era5',era5.frames.length-1);else updateFrame()}
-    $('#city-station-control').hidden=!(isLondon||hasEvent);
-    $('#city-event').hidden=!hasEvent;
-    if(hasEvent){
+    else{map.getSource('city-boundary').setData(boundary||emptyFeatures);updateFrame()}
+    $('#city-station-control').hidden=false;
+    $('#city-event').hidden=isLondon;
+    if(!isLondon){
       $('#research-stations-switch').checked=true;
       loadCityEvent(city);
-    }else if(isLondon)updateWowStations();
+    }else{
+      $('#city-station-label').textContent='WOW station network';
+      $('#locate-city-station').hidden=true;
+      updateWowStations();
+      loadWowSurfaceOptions();
+    }
     if(isLondon)map.flyTo({center:[city.lon,city.lat],zoom:9.7,pitch:10,bearing:-8,duration:2700,curve:1.25,essential:true,padding:{right:0}});
-    else if(hasEvent)map.flyTo({center:[city.lon,city.lat],zoom:map.getContainer().clientWidth<700?8:8.8,pitch:10,bearing:0,duration:2200,essential:true,padding:{right:0}});
-    else if(boundary?.bbox)map.fitBounds([[boundary.bbox[0],boundary.bbox[1]],[boundary.bbox[2],boundary.bbox[3]]],{padding:{top:100,bottom:90,left:45,right:45},maxZoom:10.8,pitch:24,bearing:-8,duration:2400,essential:true});
+    else if(boundary?.bbox)map.fitBounds([[boundary.bbox[0],boundary.bbox[1]],[boundary.bbox[2],boundary.bbox[3]]],{padding:{top:100,bottom:90,left:45,right:45},maxZoom:10.8,pitch:10,bearing:0,duration:2400,essential:true});
     else map.flyTo({center:[city.lon,city.lat],zoom:8.3,pitch:34,bearing:-8,duration:2200,curve:1.25,essential:true,padding:{right:0}});
     populateAnalysis(city,series);updateScale();$('#analysis').classList.add('open');$('#analysis').setAttribute('aria-hidden','false');$('#welcome').classList.add('dismissed');
   }
   function activateLondonScene(mode){
+    hideWowSurface();
     $('#landsat-summer').classList.remove('active');
     $('#legend .temperature-ramp').style.background='';$('#legend>small').textContent='°C · SCENE';
     const scenes=londonScenes(),scene=scenes[mode]||scenes.event;state.landsatMode=mode;map.getSource('london-landsat').setTiles([landsatTile(scene)]);['london-landsat','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
@@ -380,8 +396,68 @@
   function hideLondonResearch(){
     map.setLayoutProperty('london-research','visibility','none');
   }
+  let wowSurfaceManifest;
+  async function loadWowSurfaceOptions(){
+    const select=$('#wow-surface-field'),status=$('#wow-surface-status');
+    if(wowSurfaceManifest||select.disabled)return;
+    select.disabled=true;
+    try{
+      const response=await fetch('data/london-research/wow-kriging/manifest.json?v=1');
+      if(!response.ok)throw new Error('WOW surface archive unavailable');
+      wowSurfaceManifest=await response.json();
+      Object.entries(wowSurfaceManifest.fields).forEach(([id,field])=>select.add(new Option(`${field.title} (${field.unit})`,id)));
+      const times=Object.keys(wowSurfaceManifest.frames);
+      times.forEach(time=>$('#wow-surface-time').add(new Option(`${shortDate(time.slice(0,10))} · ${time.slice(11,16)} UTC`,time)));
+      $('#wow-surface-time').value=times.at(-1);
+      status.textContent='Ordinary kriging · 18–19 July 2022';
+    }catch(error){
+      status.textContent='Surface archive unavailable. Reopen London to retry.';
+    }finally{
+      select.disabled=false;
+    }
+  }
+  function hideWowSurface(){
+    map.setLayoutProperty('wow-surface','visibility','none');
+    $('#wow-surface-field').value='';
+    $('#wow-surface-time').hidden=true;
+    $('#wow-surface-status').textContent='Ordinary kriging · 18–19 July 2022';
+  }
+  function updateWowSurface(){
+    const id=$('#wow-surface-field').value,time=$('#wow-surface-time').value;
+    if(!id){
+      activateResearchLayer(state.researchLayer);
+      return;
+    }
+    const frame=wowSurfaceManifest?.frames[time]?.[id],field=wowSurfaceManifest?.fields[id];
+    $('#wow-surface-time').hidden=false;
+    if(!frame||!field){
+      map.setLayoutProperty('wow-surface','visibility','none');
+      $('#wow-surface-status').textContent='Too few usable stations for this variable and hour.';
+      return;
+    }
+    map.getSource('wow-surface').updateImage({url:frame.image+'?v=1',coordinates:wowSurfaceManifest.coordinates});
+    map.setLayoutProperty('wow-surface','visibility','visible');
+    ['london-landsat','london-research'].forEach(layer=>map.setLayoutProperty(layer,'visibility','none'));
+    document.querySelectorAll('[data-research-layer], #urban-raster button').forEach(button=>button.classList.remove('active'));
+    const constant=frame.constant===null?'':` · all reports ${frame.constant} ${field.unit}`;
+    $('#wow-surface-status').textContent=`${frame.sites} sampling locations · ${frame.coverage}% GLA coverage${constant}`;
+    $('#legend').dataset.field='wow';
+    $('#legend-name').textContent=`WOW · ${field.title.toUpperCase()}`;
+    $('#legend-date').textContent=time.slice(0,16).replace('T',' ')+'Z';
+    $('#legend .temperature-ramp').style.background=`linear-gradient(90deg,${field.colors.join(',')})`;
+    $('#legend-ticks').innerHTML=field.ticks.map((value,i)=>`<span>${id==='direction'?'':i===0&&value!==0?'≤':i===field.ticks.length-1?'≥':''}${value}</span>`).join('');
+    $('#legend>small').textContent=`${field.unit} · ORDINARY KRIGING`;
+    showLayerProvenance({kind:'Historical station interpolation · Met Office WOW',
+      valid:time.slice(0,16).replace('T',' ')+' UTC · hourly reports',
+      updated:'Fixed July 2022 archive',
+      missing:`${100-frame.coverage}% of the GLA footprint is masked where station support is weak. Surface is exploratory.`});
+    $('#analysis-status').textContent='WOW STATION INTERPOLATION';
+    $('#analysis-story').textContent='Ordinary kriging estimates values between screened stations. The surface is clipped to Greater London, and areas far from usable stations are transparent.';
+    $('#analysis-note').textContent='Exploratory interpolation of citizen observations. The displayed detail depends on station coverage and the fitted variogram.';
+  }
   function activateResearchLayer(id){
     if(!map?.getLayer('london-research')||state.selected?.name!=='London')return;
+    hideWowSurface();
     if(id==='none'){activateLondonScene(state.landsatMode||'event');return}
     const layer=londonResearch.layers.find(item=>item.id===id);if(!layer)return;state.researchLayer=id;
     showLayerProvenance({
@@ -433,8 +509,7 @@
     const panel=$('#analysis'),station=$('#wow-panel');$('#app').append(station);
     const makeDetails=(title,nodes,open=false)=>{const details=document.createElement('details');details.className='map-float-details';details.open=open;const summary=document.createElement('summary');summary.textContent=title;details.append(summary);nodes.filter(Boolean).forEach(node=>details.append(node));panel.append(details);return details};
     const research=$('#london-research');
-    const layers=makeDetails('MAP LAYERS',[$('#urban-raster'),research,$('#city-event'),$('#city-station-control')],true);
-    layers.id='city-map-layers';
+    makeDetails('MAP LAYERS',[$('#urban-raster'),research,$('#city-event'),$('#city-station-control')],true);
     const context=makeDetails('CITY CONTEXT & RESEARCH',[$('.metric-grid'),$('.chart-title'),$('#point-chart'),$('.chart-key'),$('.analysis-story'),$('.research-weather'),$('#research-pipeline'),$('.research-source'),$('#analysis-note')]);
     context.id='city-context';
     const toggle=document.createElement('button');toggle.type='button';toggle.className='float-collapse';toggle.textContent='−';toggle.setAttribute('aria-label','Collapse map controls');panel.prepend(toggle);toggle.onclick=()=>{const collapsed=panel.classList.toggle('compact');toggle.textContent=collapsed?'+':'−';toggle.setAttribute('aria-label',collapsed?'Expand map controls':'Collapse map controls')};
@@ -445,8 +520,11 @@
     closeWowStation();
     const request=new AbortController();
     wowRequest=request;
-    const eventOnly=cityEventNames.has(state.selected?.name);
-    $('#wow-period-label').textContent=eventOnly?'WOW STATION · 13–19 JULY 2022':'WOW STATION · JUNE–AUGUST 2022';
+    const noaa=feature.properties.network==='NOAA',eventOnly=state.selected?.name!=='London';
+    $('#wow-period-label').textContent=eventOnly?`${noaa?'NOAA NCEI':'WOW'} STATION · 13–19 JULY 2022`:'WOW STATION · JUNE–AUGUST 2022';
+    $('#station-observation-note').textContent=noaa
+      ?'NOAA NCEI Global Hourly · one quality-screened observation per UTC hour · gaps preserved. This station represents its own location.'
+      :'Met Office WOW · UTC hourly means · gust: hourly maximum · gaps preserved. Rain shows mean reported amount. Basic screening; unvalidated observations.';
     $('#wow-period').hidden=eventOnly;
     $('#wow-period').querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.period==='event')));
     $('#wow-panel').setAttribute('aria-busy','true');
@@ -574,7 +652,6 @@
     $('#research-pipeline').innerHTML=`<div class="pipeline-title">NEXT RESEARCH MODULES</div>${londonResearch.pipeline.map((item,index)=>`<div class="pipeline-card"><i>0${index+1}</i><span><b>${item.title}</b><small>${item.copy}</small></span><em>RESERVED</em></div>`).join('')}`;
   }
   function populateAnalysis(city,series){
-    $('#city-map-layers').hidden=city.name!=='London'&&!cityEventNames.has(city.name);
     const current=series.at(-1),delta=Number.isFinite(current.lst)&&Number.isFinite(current.at)?current.lst-current.at:null,hot=series.filter(d=>Number.isFinite(d.at)&&d.at>=35).length;
     $('#analysis-city').textContent=city.name;$('#analysis-place').textContent=`${city.country} · ${city.lat.toFixed(3)}°, ${city.lon.toFixed(3)}°`;$('#metric-at').textContent=Number.isFinite(current.at)?`${current.at.toFixed(1)} °C`:'—';$('#metric-lst').textContent=Number.isFinite(current.lst)?`${current.lst.toFixed(1)} °C`:'—';$('#metric-delta').textContent=Number.isFinite(delta)?`${delta>=0?'+':''}${delta.toFixed(1)} °C`:'—';$('#metric-hot').textContent=`${hot} / ${series.length}`;$('#chart-period').textContent=`${series[0].validIso.slice(5,16).replace('T',' ')} → ${series.at(-1).validIso.slice(5,16).replace('T',' ')}`;
     const status=!Number.isFinite(current.at)?'NO DATA':current.at>=35?'EXTREME HEAT':current.at>=30?'HIGH HEAT':'MODEL SNAPSHOT';$('#analysis-status').textContent=status;$('#analysis-story').textContent=Number.isFinite(delta)?`At the selected model cell, the land surface is ${Math.abs(delta).toFixed(1)} °C ${delta>=0?'warmer':'cooler'} than the air at the latest timestep.`:'The selected model cell does not contain a complete paired observation.';$('#urban-raster').hidden=city.name!=='London';$('#london-research').hidden=city.name!=='London';$('#analysis').classList.toggle('london-mode',city.name==='London');if(city.name!=='London'){const boundary=cityBoundaryIndex.get(city.name);resetMetricLabels();$('#analysis-note').textContent=`${boundary?`${boundary.properties.scope} boundary from OpenStreetMap (ODbL). `:''}Point values use the nearest bundled NOAA GFS model cell. No street-scale temperature raster is loaded for this city yet.`;$('#timeline').classList.remove('city-raster-active')}renderChart(series);
@@ -608,7 +685,7 @@
     $('#story-count').textContent=`${String(index+1).padStart(2,'0')} / ${String(storySteps.length).padStart(2,'0')}`;$('#story-progress').style.width=`${(index+1)/storySteps.length*100}%`;$('#story-eyebrow').textContent=step.eyebrow;$('#story-title').textContent=step.title;$('#story-copy').textContent=step.copy;$('#story-fact').textContent=step.fact;$('#story-prev').disabled=index===0;$('#story-next').textContent=index===storySteps.length-1?'RETURN TO MAP':index===0?'BEGIN':'NEXT';step.enter?.();
   }
   function startStory(){
-    pausePlayback();if(state.tourIndex>=0)endTour();storySnapshot={stations:$('#research-stations-switch').checked,field:state.field,frame:state.frame,selected:state.selected,researchLayer:state.researchLayer,landsatMode:state.landsatMode};state.autoRotate=false;$('#welcome').classList.add('dismissed');$('#heat-story').hidden=false;$('#story-toggle').setAttribute('aria-expanded','true');showStoryStep(0);
+    pausePlayback();if(state.tourIndex>=0)endTour();storySnapshot={stations:$('#research-stations-switch').checked,field:state.field,frame:state.frame,selected:state.selected,researchLayer:state.researchLayer,landsatMode:state.landsatMode,wowField:$('#wow-surface-field').value,wowTime:$('#wow-surface-time').value};state.autoRotate=false;$('#welcome').classList.add('dismissed');$('#heat-story').hidden=false;$('#story-toggle').setAttribute('aria-expanded','true');showStoryStep(0);
   }
   function endStory(restore=true){
     const snapshot=storySnapshot;state.storyIndex=-1;storySnapshot=null;$('#heat-story').hidden=true;$('#story-toggle').setAttribute('aria-expanded','false');
@@ -617,6 +694,11 @@
       selectCity(snapshot.selected);
       if(snapshot.selected.name==='London'){
         if(snapshot.researchLayer&&snapshot.researchLayer!=='none')activateResearchLayer(snapshot.researchLayer);else activateLondonScene(snapshot.landsatMode||'event');
+        if(snapshot.wowField){
+          $('#wow-surface-field').value=snapshot.wowField;
+          $('#wow-surface-time').value=snapshot.wowTime;
+          updateWowSurface();
+        }
       }else setField(snapshot.field,snapshot.frame);
       $('#research-stations-switch').checked=snapshot.stations;
       updateWowStations();
@@ -630,7 +712,7 @@
     if(zoom<2.3){level='01 · PLANET';title='GLOBAL THERMAL FIELD';rank.classList.remove('hidden')}
     else if(zoom<6.7){level='02 · CITY NETWORK';title='SELECT AN URBAN OBSERVATORY';rank.classList.add('hidden')}
     else if(state.selected?.name==='London'){level='03 · LOCAL HEAT';title='LONDON THERMAL SURFACE';rank.classList.add('hidden')}
-    else if(cityEventNames.has(state.selected?.name)){level='03 · CITY OBSERVATORY';title=state.selected.name.toUpperCase()+' · JULY 2022 ARCHIVE';rank.classList.add('hidden')}
+    else if(state.selected){level='03 · CITY OBSERVATORY';title=state.selected.name.toUpperCase()+' · JULY 2022 ARCHIVE';rank.classList.add('hidden')}
     else{level='03 · CITY DETAIL';title=state.selected?`${state.selected.name.toUpperCase()} ADMINISTRATIVE BOUNDARY`:'CITY DETAIL';rank.classList.add('hidden')}
     indicator.querySelector('span').textContent=level;indicator.querySelector('small').textContent=title;
   }
@@ -649,11 +731,21 @@
     $('#open-london').addEventListener('click',()=>{toggleLayers(false);selectCity(cities.find(city=>city.name==='London'))});$('#landsat-event').addEventListener('click',()=>activateLondonScene('event'));$('#landsat-latest').addEventListener('click',()=>activateLondonScene('latest'));$('#landsat-summer').addEventListener('click',()=>activateResearchLayer('lst-landsat'));
     document.querySelectorAll('[data-open-city]').forEach(button=>button.onclick=()=>{toggleLayers(false);selectCity(cities.find(city=>city.name===button.dataset.openCity))});
     document.querySelectorAll('[data-research-layer]').forEach(button=>button.addEventListener('click',()=>activateResearchLayer(button.dataset.researchLayer)));$('#research-stations-switch').addEventListener('change',updateWowStations);
-    $('#city-event-replay').onclick=()=>{
-      pausePlayback();
-      setField('era5',0);
-      if(!cityEventData)loadCityEvent(state.selected);
+    $('#city-event-replay').onclick=()=>loadCityEvent(state.selected);
+    $('#locate-city-station').onclick=()=>{
+      const station=cityEventData?.stations.features[0];
+      if(!station)return;
+      map.easeTo({center:station.geometry.coordinates,zoom:Math.max(8,map.getZoom()),duration:800});
+      openWowStation(station);
     };
+    $('#wow-surface-field').onchange=()=>{
+      if($('#wow-surface-field').value&&$('#wow-surface-time').hidden){
+        $('#research-stations-switch').checked=true;
+        updateWowStations();
+      }
+      updateWowSurface();
+    };
+    $('#wow-surface-time').onchange=updateWowSurface;
     $('#tour-next').addEventListener('click',()=>showTourStep(state.tourIndex+1));$('#tour-skip').addEventListener('click',endTour);
     $('#story-toggle').addEventListener('click',()=>state.storyIndex>=0?endStory(true):startStory());$('#story-close').addEventListener('click',()=>endStory(true));$('#story-prev').addEventListener('click',()=>showStoryStep(state.storyIndex-1));$('#story-next').addEventListener('click',()=>state.storyIndex===storySteps.length-1?endStory(true):showStoryStep(state.storyIndex+1));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.storyIndex>=0)endStory(true)});
   }
