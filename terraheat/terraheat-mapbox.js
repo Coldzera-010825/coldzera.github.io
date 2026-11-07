@@ -23,8 +23,14 @@
   let cityEventData=null,cityEventRequest=null,stationIndexRequest=null;
   let cityBoundaryIndex=new Map();
   const ukExposureBounds=[-8.646,49.884,1.756,60.844];
-  const ukExposureColors=['#393581','#79418d','#b84483','#e8655b','#ffb653','#fff2ab'];
+  const ukExposureColors=['#9c3e48','#cf5545','#ed784b','#f49954','#ffbc6d'];
   const ukDetailZoom=12.3;
+  const ukOverviewPadding={top:96,right:38,bottom:96,left:38};
+  const ukOverviewOpacity=['interpolate',['linear'],['zoom'],ukDetailZoom-.35,.72,ukDetailZoom+.3,0];
+  const londonHeatOpacity=['interpolate',['linear'],['zoom'],7,.45,9,.77,14,.70,17,.52];
+  const ukTileDirectory='data/uk-utci-hot/';
+  const ukTileGroups=new Map();
+  let ukTileIndex,transparentTile;
   const ukExposureCities=[
     ...cities.filter(city=>city.country==='United Kingdom'),
     {name:'Edinburgh',lon:-3.1883,lat:55.9533},{name:'Glasgow',lon:-4.2518,lat:55.8642},
@@ -35,6 +41,7 @@
   const cityLayers=['city-halo','city-points','city-labels'];
   const ukCityLayers=['uk-city-points','uk-city-labels'];
   let ukExposureActive=false,ukExposureEntered=false,ukExposureCity=null,exposureGuideActive=false,exposureGuideSeen=false;
+  let londonHandoffZoom=5.3,ukLondonReady=false;
   const tourSteps=[
     {target:'#layers-panel',title:'Switch global data layers',copy:'Use Layers to compare ERA5-Land daily maximum temperature, 2 m air temperature, surface skin temperature and MODIS Terra LST. The legend and timeline update with the selected field.',enter:()=>{resetGlobal(false);toggleLayers(true)}},
     {target:'#timeline',title:'Move through time',copy:'Drag the timeline or press play to move through every available frame. The valid date is always shown in the legend and beside the slider.',enter:()=>toggleLayers(false)},
@@ -60,7 +67,7 @@
       fact:'The UK model represents flat, open grass. London uses LiDAR to resolve the effects of buildings and tree shade.'},
     {eyebrow:'02 · FOLLOW THE ZOOM',title:'From the country to a city',
       copy:'Zoom in or select a city marker. The national view averages results into 500 m cells. At city scale the map automatically loads 100 m cells for the visible area. Zoom out to return to the overview.',
-      fact:'The UK weather field is estimated on a 0.25° mesh. The 100 m grid samples that field at finer spacing.'},
+      fact:'The UK view starts colouring at 30 °C UTCI. The 100 m grid samples weather estimated on a 0.25° mesh.'},
     {eyebrow:'03 · ON THE STREET',title:'Follow the shade in London',
       copy:'At street scale in Greater London, the map switches to the pedestrian model. Its 100 m cells summarize UTCI along sampled walking routes. Tap near a cell centre to read UTCI, mean radiant temperature and sunlit fraction.',
       fact:'London uses relative colour to highlight local contrasts. Tap a cell for its UTCI in °C.',
@@ -184,7 +191,7 @@
 
   function init(){
     setupMapFloats();
-    map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/dark-v11',projection:'globe',center:[14,18],zoom:1.35,pitch:0,bearing:0,antialias:true,attributionControl:true});
+    map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/dark-v11',projection:'globe',center:[14,18],zoom:1.35,pitch:0,bearing:0,antialias:true,attributionControl:true,transformRequest:transformUkTile});
     map.addControl(new mapboxgl.NavigationControl({showCompass:true,visualizePitch:true}),'top-right');
     map.on('error',event=>{const text=String(event.error?.message||'');if(/401|403|access token|style/i.test(text))showFatal('Mapbox rejected the token. Check its URL restrictions for localhost.')});
     map.on('load',setupMap);
@@ -218,10 +225,10 @@
     map.addSource('london-outline',{type:'geojson',data:londonBoundary,attribution:'Greater London Authority · OGL v3.0'});
     map.addLayer({id:'london-outline',type:'line',source:'london-outline',minzoom:7,layout:{visibility:'none'},paint:{'line-color':'#f2b267','line-width':['interpolate',['linear'],['zoom'],8,.9,10,1.5,13,2.2],'line-opacity':.9,'line-blur':.15}},firstRoad);
     map.addSource('london-utci',{type:'geojson',data:emptyFeatures,attribution:'Environment Agency LiDAR · OpenStreetMap · SOLWEIG'});
-    map.addLayer({id:'london-utci',type:'heatmap',source:'london-utci',minzoom:7,layout:{visibility:'none'},paint:{
+    map.addLayer({id:'london-utci',type:'heatmap',source:'london-utci',minzoom:4.3,layout:{visibility:'none'},paint:{
       'heatmap-weight':['*',['get','edgeWeight'],['interpolate',['linear'],['get','utci'],34.8,.13,37.4,1]],
       'heatmap-intensity':.58,
-      'heatmap-opacity':['interpolate',['linear'],['zoom'],7,.45,9,.77,14,.70,17,.52],
+      'heatmap-opacity':londonHeatOpacity,
       'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(75,44,133,0)',.12,'#4b2c85',.29,'#a23881',.47,'#ed6455',.66,'#fca947',1,'#fff5b0']
     }},firstRoad);
     map.addLayer({id:'london-utci-pick',type:'circle',source:'london-utci',minzoom:7,layout:{visibility:'none'},
@@ -267,15 +274,48 @@
     $('#map-loading').classList.add('done');setTimeout(spinGlobe,700);
     window.__terraHeatMap={map,state,cities,cityBoundaries,londonResearch,selectCity,setField,transitionThermal,activateResearchLayer};
   }
+  function transformUkTile(url){
+    const match=url.match(/\/uk-utci-hot\/tile\/(\d+)\/(\d+)\/(\d+)\.webp$/);
+    if(!match)return;
+    return readUkTile(...match.slice(1).map(Number));
+  }
+  async function readUkTile(z,x,y){
+    // Each archive holds a 4 × 4 block. Its header indexes the WebP byte ranges.
+    const size=4,headerSize=(size*size+1)*4;
+    const group=`${z}-${Math.floor(x/size)}-${Math.floor(y/size)}`;
+    const index=(y%size)*size+x%size;
+    transparentTile??=blankImage();
+    ukTileIndex??=fetch(ukTileDirectory+'groups.json').then(response=>{
+      if(!response.ok)throw new Error('UK heat index unavailable');
+      return response.json();
+    }).then(groups=>new Set(groups)).catch(error=>{ukTileIndex=null;throw error});
+    if(!(await ukTileIndex).has(group))return {url:transparentTile};
+    if(!ukTileGroups.has(group)){
+      ukTileGroups.set(group,fetch(ukTileDirectory+group+'.bin').then(response=>{
+        if(!response.ok)throw new Error('UK heat tile group unavailable');
+        return response.arrayBuffer();
+      }).then(buffer=>({buffer,offsets:new DataView(buffer,0,headerSize),urls:new Map()}))
+        .catch(error=>{ukTileGroups.delete(group);throw error}));
+    }
+    const {buffer,offsets,urls}=await ukTileGroups.get(group);
+    const start=offsets.getUint32(index*4,true),end=offsets.getUint32((index+1)*4,true);
+    if(start===end)return {url:transparentTile};
+    if(!urls.has(index)){
+      const tile=new Blob([buffer.slice(headerSize+start,headerSize+end)],{type:'image/webp'});
+      urls.set(index,URL.createObjectURL(tile));
+    }
+    return {url:urls.get(index)};
+  }
   function setupUkExposure(before){
     const attribution='NOAA NCEI Global Hourly · Copernicus ERA5 · SOLWEIG · geoBoundaries / Eurostat GISCO';
     const hidden={visibility:'none'};
-    map.addSource('uk-utci',{type:'raster',tiles:['data/uk-utci-grid/500m/{z}/{x}/{y}.webp'],tileSize:512,
+    const tiles=[new URL(ukTileDirectory,location.href).href+'tile/{z}/{x}/{y}.webp'];
+    map.addSource('uk-utci',{type:'raster',tiles,tileSize:512,
       minzoom:4,maxzoom:8,bounds:ukExposureBounds,attribution});
-    map.addSource('uk-utci-detail',{type:'raster',tiles:['data/uk-utci-grid/100m/{z}/{x}/{y}.webp'],tileSize:512,
+    map.addSource('uk-utci-detail',{type:'raster',tiles,tileSize:512,
       minzoom:10,maxzoom:10,bounds:ukExposureBounds,attribution});
     map.addLayer({id:'uk-utci',type:'raster',source:'uk-utci',maxzoom:ukDetailZoom+.3,layout:hidden,paint:{
-      'raster-opacity':['interpolate',['linear'],['zoom'],ukDetailZoom-.35,.72,ukDetailZoom+.3,0],
+      'raster-opacity':ukOverviewOpacity,
       'raster-resampling':'linear','raster-fade-duration':620
     }},before);
     map.addLayer({id:'uk-utci-detail',type:'raster',source:'uk-utci-detail',minzoom:ukDetailZoom-.35,layout:hidden,paint:{
@@ -283,7 +323,7 @@
       'raster-resampling':'linear','raster-fade-duration':520
     }},before);
 
-    map.addSource('uk-country',{type:'geojson',data:'data/uk-utci-grid/boundary.geojson',attribution:'geoBoundaries / Eurostat GISCO · CC BY 4.0'});
+    map.addSource('uk-country',{type:'geojson',data:ukTileDirectory+'boundary.geojson',attribution:'geoBoundaries / Eurostat GISCO · CC BY 4.0'});
     map.addSource('uk-country-point',{type:'geojson',data:{type:'Point',coordinates:[-2.7,55.6]}});
     map.addSource('uk-exposure-cities',{type:'geojson',data:{type:'FeatureCollection',features:ukExposureCities.map(city=>({
       type:'Feature',properties:{name:city.name},geometry:{type:'Point',coordinates:[city.lon,city.lat]}
@@ -419,6 +459,7 @@
     ukExposureActive=true;
     ukExposureEntered=map.getZoom()>=navigationZoom;
     ukExposureCity=city;
+    londonHandoffZoom=Math.min(6,Math.max(4.6,(map.cameraForBounds(ukExposureBounds,{padding:ukOverviewPadding}).zoom??4.7)+Math.log2(1.5)));
     ukExposureLayers.forEach(id=>setLayerVisible(id,true));
     $('#exposure-uk').setAttribute('aria-pressed','true');
     document.querySelectorAll('input[name=field]').forEach(input=>{input.checked=false});
@@ -427,7 +468,7 @@
     updateScale();
     if(city)flyToExposureCity(city);
     else{
-      map.fitBounds(ukExposureBounds,{padding:{top:96,right:38,bottom:96,left:38},pitch:0,bearing:0,duration:1900});
+      map.fitBounds(ukExposureBounds,{padding:ukOverviewPadding,pitch:0,bearing:0,duration:1900});
       if(intro&&!exposureGuideSeen)startExposureGuide();
     }
   }
@@ -441,10 +482,10 @@
     $('#legend-name').textContent='UK OPEN-SKY HEAT · UTCI';
     $('#legend-date').textContent='18 JUL 2022 · 10:52Z';
     $('#legend .temperature-ramp').style.background=`linear-gradient(90deg,${ukExposureColors.join(',')})`;
-    $('#legend-ticks').innerHTML=['≤16','20','24','28','32','≥36'].map(value=>`<span>${value}</span>`).join('');
+    $('#legend-ticks').innerHTML=['30','31.5','33','34.5','36+'].map(value=>`<span>${value}</span>`).join('');
     showLayerProvenance({kind:'Historical open-sky estimate · 166 NOAA stations + ERA5 + SOLWEIG',
       valid:'18 July 2022 · 10:52 UTC',updated:'Fixed July 2022 simulation',
-      missing:'Weather is estimated on a 0.25° mesh. The 100 m output is averaged into 500 m overview cells. The model assumes flat, open grass.'});
+      missing:'Values below 30 °C UTCI are transparent. Weather is estimated on a 0.25° mesh for flat, open grass and sampled into the 500 m and 100 m display grids.'});
   }
   function insideLondon({lng,lat}){
     const insideRing=ring=>{
@@ -462,26 +503,38 @@
   function leaveUkStreetDetail(){
     if(!ukExposureActive||!pedestrianActive)return;
     hidePedestrianHeat();
+    ukLondonReady=false;
+    map.setPaintProperty('uk-utci','raster-opacity',ukOverviewOpacity);
     setLayerVisible('london-outline',false);
     state.researchLayer='none';
   }
+  function returnToUkOverview(){
+    leaveUkStreetDetail();
+    ukExposureLayers.forEach(id=>setLayerVisible(id,true));
+    showUkExposureLegend();
+  }
+  function londonInView(){
+    const bounds=map.getBounds();
+    return bounds.getWest()<.34&&bounds.getEast()>-.52&&bounds.getSouth()<51.70&&bounds.getNorth()>51.28;
+  }
   async function syncUkStreetDetail(){
-    if(map.getZoom()<ukDetailZoom||!insideLondon(map.getCenter().wrap())){
-      if(!pedestrianActive){updateScale();return}
-      leaveUkStreetDetail();
-      ukExposureLayers.forEach(id=>setLayerVisible(id,true));
-      showUkExposureLegend();
+    const zoom=map.getZoom();
+    const nearLondon=zoom>=ukDetailZoom?insideLondon(map.getCenter().wrap()):pedestrianActive&&londonInView();
+    if(zoom<londonHandoffZoom-.22||!nearLondon){
+      if(pedestrianActive)returnToUkOverview();
       updateScale();
       return;
     }
     const ready=await (pedestrianActive?updatePedestrianHeat():activatePedestrianHeat());
     if(ready&&ukExposureActive&&pedestrianActive){
-      ukExposureLayers.forEach(id=>setLayerVisible(id,false));
+      if(!ukLondonReady){
+        ukLondonReady=true;
+        map.setPaintProperty('uk-utci','raster-opacity',['interpolate',['linear'],['zoom'],
+          londonHandoffZoom-.22,.72,londonHandoffZoom+.32,0]);
+      }
       updateScale();
     }else if(ready===false&&ukExposureActive&&pedestrianActive){
-      leaveUkStreetDetail();
-      ukExposureLayers.forEach(id=>setLayerVisible(id,true));
-      showUkExposureLegend();
+      returnToUkOverview();
       updateScale();
     }else if(ukExposureActive)updateScale();
   }
@@ -625,7 +678,7 @@
   const pedestrianDirectory='data/london-utci/';
   const pedestrianColors=['#4b2c85','#a23881','#ed6455','#fca947','#fff5b0'];
   const pedestrianCache=new Map();
-  let pedestrianActive=false,pedestrianRequest=0,pedestrianPopup;
+  let pedestrianActive=false,pedestrianRequest=0,pedestrianPopup,pedestrianGrid=500;
   function pedestrianJson(file){
     if(!pedestrianCache.has(file)){
       if(pedestrianCache.size>=24){
@@ -677,6 +730,7 @@
       }else rows=await pedestrianJson('overview.json');
       if(request!==pedestrianRequest)return;
       const grid=detailed?manifest.grid:manifest.overview_grid;
+      pedestrianGrid=grid;
       const fadeDistance=detailed?550:1400;
       const features=rows.map(([lon,lat,utci,tmrt,sun,,lst,edge])=>{
         const t=Number.isFinite(edge)?Math.max(0,Math.min(1,edge/fadeDistance)):1;
@@ -687,7 +741,7 @@
       map.getSource('london-utci').setData({type:'FeatureCollection',features});
       map.setPaintProperty('london-utci','heatmap-radius',detailed
         ?['interpolate',['exponential',2],['zoom'],12.3,17,14,52,16,155,18,175]
-        :['interpolate',['exponential',2],['zoom'],7,5,9,12,11,31,12.3,72]);
+        :['interpolate',['exponential',2],['zoom'],4.3,3,7,5,9,12,11,31,12.3,72]);
       map.setPaintProperty('london-utci','heatmap-intensity',detailed?1.2:.58);
       note.textContent=rows.length?`${grid} m display · ${manifest.cells.toLocaleString()} modelled 100 m cells across Greater London · click near a grid centre for values`:'No sampled walking routes in this view.';
       return rows.length>0;
@@ -700,6 +754,9 @@
   function activatePedestrianHeat(){
     state.researchLayer='utci';
     pedestrianActive=true;
+    map.setPaintProperty('london-utci','heatmap-opacity',ukExposureActive
+      ?['interpolate',['linear'],['zoom'],londonHandoffZoom-.22,0,londonHandoffZoom+.32,.54,9,.77,14,.70,17,.52]
+      :londonHeatOpacity);
     ['london-landsat','london-research','london-mask','london-outline'].forEach(id=>map.setLayoutProperty(id,'visibility','none'));
     ['london-utci','london-utci-pick'].forEach(id=>map.setLayoutProperty(id,'visibility','visible'));
     $('#research-layer-note').textContent='Loading pedestrian heat estimate…';
@@ -1115,10 +1172,12 @@
   function updateScale(){
     const zoom=map.getZoom(),indicator=$('#scale-indicator'),rank=$('#city-rank');let level,title;
     if(ukExposureActive&&zoom>=navigationZoom)ukExposureEntered=true;
-    if(ukExposureActive&&pedestrianActive&&zoom<ukDetailZoom-.15){
-      leaveUkStreetDetail();
-      ukExposureLayers.forEach(id=>setLayerVisible(id,true));
-      showUkExposureLegend();
+    if(ukExposureActive&&ukLondonReady){
+      if(zoom<londonHandoffZoom-.22)returnToUkOverview();
+      else{
+        setLayerVisible('uk-utci',zoom<londonHandoffZoom+.32);
+        setLayerVisible('uk-utci-detail',false);
+      }
     }
     const navigation=!ukExposureActive&&!storySnapshot&&!state.selected&&zoom>=navigationZoom;
     const showCities=$('#cities-switch').checked;
@@ -1128,14 +1187,17 @@
     $('#app').classList.toggle('navigation-stage',navigation);
     $('#exposure-guide').hidden=!ukExposureActive;
     rank.classList.toggle('hidden',ukExposureActive||Boolean(state.selected)||zoom>=2.3);
-    if(pedestrianActive){level='03 · LONDON HEAT EXPOSURE';title='PEDESTRIAN UTCI · JULY 2022'}
+    if(pedestrianActive){
+      level='03 · LONDON HEAT EXPOSURE';title=`${pedestrianGrid} M · PEDESTRIAN UTCI`;
+      if(ukExposureActive)$('#legend>small').textContent=`${pedestrianGrid} M WALKING GRID · RELATIVE COLOUR`;
+    }
     else if(ukExposureActive){
       const grid=zoom>=ukDetailZoom?100:500;
       const center=map.getCenter().wrap(),city=ukExposureCity;
       const cityName=city&&zoom>=10&&Math.abs(center.lat-city.lat)<.22&&Math.abs(center.lng-city.lon)<.32?city.name.toUpperCase()+' · ':'';
       level=grid===100?'03 · CITY HEAT EXPOSURE':'02 · UK HEAT EXPOSURE';
       title=`${cityName}${grid} M · OPEN-SKY UTCI`;
-      $('#legend>small').textContent=`°C UTCI · ${grid} M OUTPUT GRID`;
+      $('#legend>small').textContent=`${grid} M · BELOW 30 °C UTCI TRANSPARENT`;
     }
     else if(navigation){level='02 · EXPLORE THE MAP';title='SELECT A COUNTRY OR CITY'}
     else if(!state.selected){level='01 · PLANET';title='GLOBAL THERMAL FIELD'}
