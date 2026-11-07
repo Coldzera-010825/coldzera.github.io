@@ -29,3 +29,6 @@
 .wow-surface-control label{font-size:9px;color:#d5ecee}
 .wow-surface-control select{width:100%;padding:6px;border:1px solid #78a7b25e;border-radius:4px;background:#10242b;color:#dfedf0;font:inherit;font-size:9px;color-scheme:dark}
 .wow-surface-control small{font-size:8px;color:#b1cdd1}
+.utci-popup .mapboxgl-popup-content{padding:11px 22px 11px 12px;border:1px solid #8bd7e54d;border-radius:8px;background:#0d242bef;color:#daf2f5;font:11px/1.55 'Space Grotesk',sans-serif}
+.utci-popup .mapboxgl-popup-tip{display:none}
+.utci-popup .mapboxgl-popup-close-button{color:#daf2f5;font-size:16px}
