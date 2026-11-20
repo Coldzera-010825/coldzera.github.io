@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-19T11:45:53.317Z",
+  "generatedAt": "2026-11-20T11:46:45.632Z",
   "timezone": "UTC",
   "modis": {
     "dataset": "NASA GIBS MODIS Terra MOD11A1 v6.1 daytime LST",
-    "latestAvailable": "2026-11-14",
+    "latestAvailable": "2026-11-17",
     "dates": [
-      "2026-11-08",
-      "2026-11-09",
-      "2026-11-10",
       "2026-11-11",
       "2026-11-12",
       "2026-11-13",
-      "2026-11-14"
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17"
     ],
     "source": "https://gibs.earthdata.nasa.gov/"
   },
@@ -73,5 +73,5 @@
       "presence of ST_B10/lwir11 asset"
     ]
   },
-  "previousGeneratedAt": "2026-11-18T11:49:09.602Z"
+  "previousGeneratedAt": "2026-11-19T11:45:53.317Z"
 }
