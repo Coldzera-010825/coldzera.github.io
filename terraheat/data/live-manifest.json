@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-22T11:30:52.905Z",
+  "generatedAt": "2026-11-23T12:54:39.107Z",
   "timezone": "UTC",
   "modis": {
     "dataset": "NASA GIBS MODIS Terra MOD11A1 v6.1 daytime LST",
@@ -73,5 +73,5 @@
       "presence of ST_B10/lwir11 asset"
     ]
   },
-  "previousGeneratedAt": "2026-11-21T11:11:43.057Z"
+  "previousGeneratedAt": "2026-11-22T11:30:52.905Z"
 }
